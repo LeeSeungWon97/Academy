@@ -152,15 +152,16 @@ public class BankManager {
       System.out.print("받는 사람의 계좌번호를 입력하세요>>");
       String accountNumber2 = scan.next();
       int idx2 = searchIdx(accountNumber2);
-      int balance2 = accountList.get(idx2).getBalance();
 
       if (idx2 > -1) {
+        int balance2 = accountList.get(idx2).getBalance();
 
         if (balance >= transfer) {
           accountList.get(idx).setBalance(balance - transfer);
           accountList.get(idx2).setBalance(balance2 + transfer);
           System.out.println("이체가 완료되었습니다.");
         } else {
+          
           System.out.println("잔액이 부족합니다.");
         }
 
