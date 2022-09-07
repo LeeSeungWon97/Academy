@@ -1,0 +1,1013 @@
+-- 계정 생성
+ALTER SESSION SET "_ORACLE_SCRIPT" = true;    -- c##을 넣지 않아도 계정 생성 가능
+
+-- CREATE USER 아이디 IDENTIFIED BY "비밀번호";
+CREATE USER c##TESTID IDENTIFIED BY "1111";
+-- F9 : 데이터베이스에 명령어를 전송 
+
+CREATE USER TESTID02 IDENTIFIED BY "1111";
+
+-- 계정 생성
+CREATE USER YKD_DEV IDENTIFIED BY "1111"; -- ORA-65096: 공통 사용자 또는 롤 이름이 부적합합니다.
+-- 공통 사용자 해제
+ALTER SESSION SET "_ORACLE_SCRIPT" = true;
+
+-- YKD_DEV 계정 생성
+CREATE USER YKD_DEV IDENTIFIED BY "1111";
+
+-- YKD_DEV 계정 DB 접속 시도 - 접속 권한 X
+/* 상태: 실패 -테스트 실패: ORA-01045: 사용자 YKD_DEV는 CREATE SESSION 권한을 가지고있지 않음; 로그온이 거절되었습니다 */
+
+-- 관리자 계정으로 YKD_DEV 계정 접속권한 부여
+-- GRANT <부여할 권한> TO <계정명>;
+GRANT
+    CREATE SESSION
+TO ykd_dev;
+
+-- YKD_DEV 계정으로 실행
+ALTER SESSION SET "_ORACLE_SCRIPT" = true;
+
+CREATE USER YKD_DEV01 IDENTIFIED BY "1111";
+
+/* 계정 생성 >> 권한 부여 */
+
+
+/* 권한 회수 >> 계정 삭제 */
+
+/* 권한 회수 */
+-- REVOKE <회수할 권한> FROM <계정명>
+REVOKE
+    CREATE SESSION
+FROM YKD_DEV; -- 관리자 계정으로 실행
+
+/* 계정 삭제 */
+-- DROP USER <계정명>
+DROP USER YKD_DEV;
+
+-- 계정 삭제 이후 접속 시도 >> 사용자명/비밀번호 부적합. 로그온할 수 없습니다.
+
+/* 개발자 계정 생성 >> 개발자 계정에 접속 권한 부여 >> 개발자 계정으로 접속 >> 테이블 생성 */
+
+/* 1. 개발자 계정 생성 */
+CREATE USER LSW_DEV IDENTIFIED BY "1111";   -- 관리자 계정으로 실행
+
+/* 2. 접속 권한 부여 */
+GRANT
+    CREATE SESSION
+TO LSW_DEV;
+
+/* 3. 개발자 계정으로 접속 */
+
+/* 4. Table 생성 */
+CREATE TABLE test_tbl (
+    test_col1 NUMBER,
+    test_col2 NVARCHAR2(5)
+);  -- LSW_DEV 계정으로 실행
+
+/* 관리자 계정으로 접속 & 개발자 계정 접속 해제 */
+
+/* 5. 테이블 생성 권한 부여 */
+GRANT
+    CREATE TABLE
+TO LSW_DEV;
+
+/* 개발자 계정으로 접속 & 관리자 계정 접속 해제 */
+
+/* 6. Table 생성 */
+CREATE TABLE TEST_TB1 (
+    TEST_COL1 NUMBER,
+    TEST_COL2 NVARCHAR2(5)
+); -- 생성 완료
+
+/* 7. 생성된 테이블에 데이터 입력 시도 */
+INSERT INTO TEST_TB1 VALUES (
+    100,
+    '테스트'
+); -- LSW_DEV 계정으로 실행
+    -- ORA-01950: 테이블스페이스 'USERS'에 대한 권한이 없습니다.
+    
+/* 8. LSW_DEV 계정에 테이블스페이스 'USERS'에 대한 권한 부여 */
+-- ALTER: 만들어진 데이터를 변경할 때 사용
+ALTER USER LSW_DEV
+
+-- 사용량에 제한없이 사용
+    QUOTA UNLIMITED ON USERS;   -- 관리자계정으로 실행
+-- User LSW_DEV이(가) 변경되었습니다.
+
+/* 9. 생성된 테이블에 데이터 입력 재시도 */
+INSERT INTO TEST_TBL VALUES (
+    100,
+    '테스트'
+);
+-- 1 행 이(가) 삽입되었습니다.
+
+COMMIT; -- LSW_DEV 계정으로 실행
+-- 커밋 완료.
+-- 커밋: 실제로 데이터를 넣어주는 역할.
+
+/* 관리자 계정으로 접속 */
+
+/* LSW_DEV2 계정 생성 */
+ALTER SESSION SET "_ORACLE_SCRIPT" = true;
+
+CREATE USER LSW_DEV2 IDENTIFIED BY "1111"
+    QUOTA UNLIMITED ON USERS;
+
+/* 권한 부여 (접속 권한, 테이블권한) */
+GRANT
+    CREATE SESSION,
+    CREATE TABLE
+TO LSW_DEV2;
+
+/* LSW_DEV2 계정으로 접속 */
+CREATE TABLE TEST_TBL2 (
+    TEST_COL NUMBER
+);
+
+INSERT INTO TEST_TBL2 VALUES(1);
+-- 1 행 이(가) 삽입되었습니다.
+COMMIT;
+
+/* LSW_DEV, LSW_DEV2 */
+
+/* 관리자 계정으로 접속 */
+ALTER USER LSW_DEV
+QUOTA 0M ON USERS; -- 관리자 계정으로 실행
+
+/* ROLE */
+CREATE USER LSW_DEV3 IDENTIFIED BY "1111"
+QUOTA UNLIMITED ON USERS;   -- 관리자 계정으로 실행
+GRANT CONNECT TO LSW_DEV3;
+GRANT RESOURCE TO LSW_DEV3; -- 여러개의 권한을 한번에 줄 수 있다.
+
+/*  */
+CREATE TABLE TEST_TBL3 (
+    TEST_COL NUMBER
+); -- Table TEST_TBL3이(가) 생성되었습니다.
+INSERT INTO TEST_TBL3 VALUES(100);
+
+/* 관리자 계정으로 */
+SELECT * FROM DBA_SYS_PRIVS
+WHERE GRANTEE = 'RESOURCE';
+
+/* LSW_DEV 계정 삭제 */
+DROP USER LSW_DEV CASCADE;
+/* LSW_DEV2 계정 삭제 */
+DROP USER LSW_DEV2 CASCADE;
+/* LSW_DEV3 계정 삭제 */
+DROP USER LSW_DEV3 CASCADE;
+
+/* LSW_DBA 계정 생성 */
+CREATE USER LSW_DBA IDENTIFIED BY "1111";
+GRANT DBA TO LSW_DBA;   -- DBA: 관리자 계정. (최고 관리자 아랫단계)
+
+/* LSW_DBA 계정으로 접속 */
+CREATE TABLE TEST_TBL1 (
+    TEST_COL NUMBER
+);
+
+-- GRANT SELECT ON [접속한 아이디가 볼 데이터] [접속시킬 아이디] : 
+INSERT INTO TEST_TBL1 VALUES(100);
+
+-- ROLLBACK: 이전 COMMIT을 수행한 시점으로 돌아감.
+
+
+/* 2022-09-02 */
+/* LSW_DBA 계정 */
+
+/*
+[테이블 생성]
+
+테이블 이름: 표 전체를 의미하는 표의 제목
+
+CREATE TABLE 테이블명(
+    컬럼명1 데이터타입,
+    컬럼명2 데이터타입,
+    ...
+); 
+*/
+
+-- 시험성적(Scores) 테이블
+CREATE TABLE SCORES( -- 테이블명: SCORES
+    STUDENTNAME NVARCHAR2(5),   -- 학생 이름, NVARCHAR2: 문자열을 의미
+    JAVASCORE NUMBER,           -- 자바 점수
+    ORACLESCORE NUMBER,         -- 오라클 점수
+    HTMLSCORES NUMBER           -- HTML점수
+); -- Table SCORES이(가) 생성되었습니다.
+DESC SCORES; -- TABLE 구조를 확인하는 명령어
+
+/*
+이름          널? 유형           
+----------- -- ------------ 
+STUDENTNAME    NVARCHAR2(5) 
+JAVASCORE      NUMBER       
+ORACLESCORE    NUMBER       
+HTMLSCORES     NUMBER
+*/
+
+/* 시험성적 데이터 입력 */
+/*
+INSERT INTO 테이블명(컬럼명1, 컬럼명2, ....)
+VALUES(컬럼명1에 입력할 데이터, 컬럼명2에 입력할 데이터,...);
+*/
+INSERT INTO SCORES(STUDENTNAME, JAVASCORE, ORACLESCORE, HTMLSCORES)
+VALUES('이승원', 90, 80, 70); -- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO SCORES(STUDENTNAME, JAVASCORE, ORACLESCORE, HTMLSCORES)
+VALUES('김창현', 100, 100, 100); -- 1 행 이(가) 삽입되었습니다.
+
+/* 데이터 조회 */
+SELECT *
+FROM SCORES;
+
+/* 데이터 조회 - 조건 부여 */
+SELECT *
+FROM SCORES
+WHERE STUDENTNAME = '이승원';
+
+/* SCORES테이블 데이터 입력 */
+/*
+INSERT INTO 테이블명(컬럼명1, 컬럼명2, ....) 
+VALUES(컬럼명1에 입력할 데이터, 컬럼명2에 입력할 데이터,...);
+
+- 컬럼명의 순서를 꼭 따라할 필요 X
+- 컬럼명과 넣을 데이터값의 순서만 맞춰주면 됨.
+*/
+INSERT INTO SCORES(JAVASCORE, STUDENTNAME, ORACLESCORE, HTMLSCORES)
+VALUES(90,'테스트', 80, 70); -- 1 행 이(가) 삽입되었습니다.
+
+-- 명시된 컬럼과 데이터의 순서가 불일치할 경우
+INSERT INTO SCORES(JAVASCORE, STUDENTNAME, ORACLESCORE, HTMLSCORES)
+VALUES('테스트',90, 80, 70); -- ORA-01722: 수치가 부적합합니다
+-- 명시된 컬럼의 수와 데이터의 수가 다를경우
+INSERT INTO SCORES(STUDENTNAME, ORACLESCORE, HTMLSCORES)
+VALUES('테스트',90, 80, 70); -- ORA-00913: 값의 수가 너무 많습니다
+
+INSERT INTO SCORES(STUDENTNAME, ORACLESCORE, HTMLSCORES)
+VALUES('테스트',90, 80); -- 1 행 이(가) 삽입되었습니다. . JAVASCORE는 NULL
+
+/* 컬럼명을 명시하지 않은 경우: 데이터를 모든 컬럼에 입력. */
+INSERT INTO SCORES
+VALUES('테스트', 70, 70, 70); -- 1 행 이(가) 삽입되었습니다.
+
+-- 데이터의 수가 적을 경우.
+INSERT INTO SCORES
+VALUES('테스트', 70, 60); -- ORA-00947: 값의 수가 충분하지 않습니다
+
+SELECT * FROM SCORES;
+
+/*
+학생 정보(STUINFO) 테이블
+학생이름 NVARCHAR2(5)   -- '이름'
+학교 NVARCHAR2(10)     -- '학교이름' 
+전화번호 NVARCHAR2(13)  -- '010-1111-1111'
+생년월일 NVARCHAR2(6)   -- '220902'
+*/
+
+CREATE TABLE STUINFO(
+    STUNAME NVARCHAR2(5),
+    SCHOOL NVARCHAR2(10),
+    PHONENUM NVARCHAR2(13),
+    BIRTH NVARCHAR2(6)
+);
+
+INSERT INTO STUINFO
+VALUES ('이승원', '인천대학교', '010-7138-4656', '971011');
+
+SELECT * FROM STUINFO;
+
+INSERT INTO YKD_DBA.STUINFO
+VALUES ('이승원', '인천대학교', '010-7138-4656', '971011');
+COMMIT;
+
+/*
+[DATA TYPE]
+
+1. 숫자형
+    > NUMBER
+        - 정수의 자릿수 & 소숫점 상관없이 데이터를 모두 입력
+    > NUMBER(n)
+        - n: 입력 가능한 정수의 자릿수
+    > NUMBER(n,m)
+        - n: 전체 숫자의 자릿수
+        - m: 그 중 소숫점의 자릿수
+        
+2. 문자형
+
+[고정형]
+    > CHAR(n)
+        - 문자의 크기: n Byte
+    > NCHAR(n)
+        - 문자의 개수: n개
+[가변형]
+    > VARCHAR(n)
+        - 문자의 크기: n Byte
+    > NVARCHAR2(n)
+        - 문자의 개수: n개
+        
+    입력값: 이름 = 이승원, 전화번호 = 01071384656
+    [고정형] - 지정한 크기 유지, 메모리 낭비 발생, 처리속도 빠름
+    이,승,원, , ,0,1,0,7,1,3,8,4,6,5,6
+    [가변형] - 입력 데이터만큼 크기 변화, 메모리 낭비 적음, 처리속도 느림
+    이,승,원,0,1,0,7,1,3,8,4,6,5,6
+
+       
+3. 날짜형 - 년월일 / 시분초
+
+*/
+
+
+
+
+
+/* 문자형 */
+CREATE TABLE TESTTBL01(
+    TESTCOL1 CHAR(2),
+    TESTCOL2 NCHAR(2) -- 2글자까지 들어감
+);
+
+INSERT INTO TESTTBL01(TESTCOL1) VALUES('가'); -- 가: 3 Byte
+-- ORA-12899: "LSW_DBA"."TESTTBL01"."TESTCOL1" 열에 대한 값이 너무 큼(실제: 3, 최대값: 2)
+INSERT INTO TESTTBL01(TESTCOL1) VALUES('A'); -- 영어: 1 Byte
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL01(TESTCOL1) VALUES('AB');
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL01(TESTCOL1) VALUES('ABC');
+-- ORA-12899: "LSW_DBA"."TESTTBL01"."TESTCOL1" 열에 대한 값이 너무 큼(실제: 3, 최대값: 2)
+
+
+INSERT INTO TESTTBL01(TESTCOL2) VALUES('나');
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL01(TESTCOL2) VALUES('가나');
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL01(TESTCOL2) VALUES('가나다');
+-- ORA-12899: "LSW_DBA"."TESTTBL01"."TESTCOL2" 열에 대한 값이 너무 큼(실제: 3, 최대값: 2)
+
+SELECT * FROM TESTTBL01;
+COMMIT;
+
+
+/* 숫자형 */
+CREATE TABLE TESTTBL02(
+    TESTNUM1 NUMBER,
+    TESTNUM2 NUMBER(3),
+    TESTNUM3 NUMBER(3,2)
+);
+
+-- TESTNUM2: NUMBER(3)
+INSERT INTO TESTTBL02(TESTNUM2) VALUES(1);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM2) VALUES(11);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM2) VALUES(111);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM2) VALUES(1111);
+-- ORA-01438: 이 열에 대해 지정된 전체 자릿수보다 큰 값이 허용됩니다.
+INSERT INTO TESTTBL02(TESTNUM2) VALUES(1.11);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM2) VALUES(2.222);
+-- 1 행 이(가) 삽입되었습니다.
+
+SELECT * FROM TESTTBL02;
+
+-- TESTNUM1: NUMBER
+INSERT INTO TESTTBL02(TESTNUM1) VALUES(1.11);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM1) VALUES(1.11111);
+-- 1 행 이(가) 삽입되었습니다.
+
+SELECT * FROM TESTTBL02;
+
+-- TESTNUM3: NUMBER(3,2)
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(1.1);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(1.12);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(1.123);
+-- 1 행 이(가) 삽입되었습니다.
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(1.1234);
+-- 1 행 이(가) 삽입되었습니다.
+SELECT * FROM TESTTBL02;
+
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(21.1);
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(21.12);
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(21.123);
+INSERT INTO TESTTBL02(TESTNUM3) VALUES(21.1234);
+-- ORA-01438: 이 열에 대해 지정된 전체 자릿수보다 큰 값이 허용됩니다.
+-- 전체 자리수 3개중 소숫점이 2개의 자리를 차지. 정수가 2개이므로 크기가 맞지 않음.
+
+SELECT * FROM TESTTBL02;
+
+/* 날짜형 */
+CREATE TABLE TESTTBL03(
+    TESTDATE DATE
+);
+
+/* 날짜입력 */
+INSERT INTO TESTTBL03 VALUES('2022-09-02');
+-- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO TESTTBL03 VALUES('2022/09/02');
+-- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO TESTTBL03 VALUES('2022AA');
+INSERT INTO TESTTBL03 VALUES('2022');
+-- ORA-01861: 리터럴이 형식 문자열과 일치하지 않음. 
+-- 날짜형식을 맞춰준 데이터만 입력가능
+
+INSERT INTO TESTTBL03 VALUES('2002/09/02 20:57:30');
+-- ORA-01861: 리터럴이 형식 문자열과 일치하지 않음
+
+-- 날짜, 시간 모두 표시
+INSERT INTO TESTTBL03 VALUES(TO_DATE('2022-09-02 20:58:30', 'YYYY-MM-DD HH24:MI:SS'));
+-- 날짜만 표시. 시간은 00:00:00초로 표시
+INSERT INTO TESTTBL03 VALUES(TO_DATE('2022-09-10', 'YYYY-MM-DD'));
+-- 현재 날짜, 시간 입력
+INSERT INTO TESTTBL03 VALUES(SYSDATE);
+-- 현재 날짜&시간의 하루 전
+INSERT INTO TESTTBL03 VALUES(SYSDATE - 1);
+-- 현재 날짜&시간의 한시간 전
+INSERT INTO TESTTBL03 VALUES(SYSDATE - 1/24);
+-- 현재 날짜&시간의 30분 전
+INSERT INTO TESTTBL03 VALUES(SYSDATE - (30/24/60));
+SELECT * FROM TESTTBL03;
+
+/*
+전화번호부(PHONEBOOK)
+이름, 전화번호, 생년월일, 단축번호
+*/
+
+CREATE TABLE PHONEBOOK(
+    PNAME NVARCHAR2(5),
+    PHONENUM NVARCHAR2(13),
+    PBIRTH DATE
+);
+
+/* 2022-09-05 */
+
+/*
+[제약 조건 (CONSTRAINT)]
+    1. PRIMARY KEY(기본키) (PK)
+        > UNIQUE + NOT NULL
+        > 테이블에서 레코드를 구분 지을 수 있는 특정한 컬럼
+        > 레코드의 유일성을 확보하기 위해 중복값을 방지하고 비어있지 않도록 하는 제약
+        > 한개의 테이블에 한번 부여
+        
+    2. FOREIGN KEY(외래키) (FK)
+        > 서로 다른 테이블간의 관계를 정의하는데 사용
+        > 특정한 테이블에서 PRIMARY KEY 또는 UNIQUE가 부여된 컬럼을 
+          다른 테이블의 특정한 컬럼에서 참조
+        
+    3. UNIQUE (UK)
+        > 테이블에서 특정한 컬럼에 중복되는 값이 입력되지 않도록 방지.
+        
+    4. NOT NULL (NK)
+        > 특정한 컬럼에 NULL 값이 입력되지 않도록 방지
+        
+    5. DEFAULT (DK)
+        > 컴럼에 입력되는 데이터가 없어도 미리 설정된 값으로 자동 입력
+    6. CHECK (CK)
+        > 특정한 범위의 값만 입력 가능하도록 하는 제약
+*/
+
+/* UNIQUE */
+CREATE TABLE TEST_UNIQUE(
+    PHNAME NVARCHAR2(5), -- 이름
+    PHNUM NVARCHAR2(13) -- 전화번호
+);
+
+/*
+<제약조건 부여>
+TEST_UNIQUE 테이블에 PHNUM 컬럼에 UNIQUE 제약조건 부여.
+
+ALTR TABLE 테이블 이름
+ADD CONSTRAINT [식별할 제약조건명] [제약조건(부여할 컬럼이름)] ;
+
+<제약조건 삭제>
+ALTER TABLE 테이블이름
+DROP CONSTRAINT 제약조건이름;
+*/
+ALTER TABLE TEST_UNIQUE
+ADD CONSTRAINT UK_PHNUM UNIQUE(PHNUM);
+-- Table TEST_UNIQUE이(가) 변경되었습니다.
+
+INSERT INTO TEST_UNIQUE(PHNAME, PHNUM)
+VALUES('이승원', '010-7138-4656');
+-- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO TEST_UNIQUE(PHNAME, PHNUM)
+VALUES('이승원', '010-7138-4656');
+-- ORA-00001: 무결성 제약 조건(LSW_DBA.UK_PHNUM)에 위배됩니다
+
+SELECT * FROM TEST_UNIQUE;
+
+-- TEST_UNIQUE2 테이블 생성
+CREATE TABLE TEST_UNIQUE2(
+    PHNAME2 NVARCHAR2(5), -- 이름
+    PHNUM2 NVARCHAR2(13) UNIQUE  -- 전화번호
+);
+
+INSERT INTO TEST_UNIQUE2(PHNAME, PHNUM)
+VALUES('이승원', '010-7138-4656');
+-- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO TEST_UNIQUE2(PHNAME, PHNUM)
+VALUES('이승원', '010-7138-4656');
+-- ORA-00001: 무결성 제약 조건(LSW_DBA.SYS_C007404)에 위배됩니다
+
+SELECT * FROM USER_CONSTRAINTS;
+
+/*
+제약 조건 삭제
+TEST_UNIQUE 테이블의 UK_PHNUM 제약조건 삭제
+*/
+ALTER TABLE TEST_UNIQUE
+DROP CONSTRAINT UK_PHNUM;
+INSERT INTO TEST_UNIQUE(PHNAME,PHNUM)
+VALUES('이승원', '010-7138-4656');
+SELECT * FROM TEST_UNIQUE;
+COMMIT;
+
+ALTER TABLE TEST_UNIQUE
+ADD CONSTRAINT UK_PHNUM UNIQUE(PHNUM); -- ORA-02299: 제약 (LSW_DBA.UK_PHNUM)을 사용 가능하게 할 수 없음 - 중복 키가 있습니다
+-- 이미 중복된 값을 가지고 있기 때문에 변경할 수 없음.
+
+
+/*
+1. 테이블 생성(CREATE TABLE) - 제약조건 부여(ALTER TABLE)
+2. 테이블 생성하면서 컬럼에 제약조건 부여 
+3. 테이블 생성시 CREATE TABLE 안에 제약조건 부여
+*/
+
+CREATE TABLE TEST_UNIQUE3(
+    PHNAME3 NVARCHAR2(5), -- 이름
+    PHNUM3 NVARCHAR2(13),  -- 전화번호
+    CONSTRAINT UK_PHNUM3 UNIQUE(PHNUM3)
+); -- Table TEST_UNIQUE3이(가) 생성되었습니다.
+
+SELECT * FROM USER_CONSTRAINTS;
+
+/* NOT NULL */
+CREATE TABLE PHONEBOOK(
+    PHNAME NVARCHAR2(5),    -- 이름
+    PHNUM NVARCHAR2(13)     -- 전화번호
+);
+INSERT INTO PHONEBOOK(PHNUM)
+VALUES('010-1111-1111'); -- 1 행 이(가) 삽입되었습니다.
+INSERT INTO PHONEBOOK(PHNAME)
+VALUES('이승원'); -- 1 행 이(가) 삽입되었습니다.
+SELECT * FROM PHONEBOOK;
+COMMIT;
+
+ALTER TABLE PHONEBOOK
+MODIFY PHNAME NOT NULL; -- ORA-02296: (LSW_DBA.) 사용으로 설정 불가 - 널 값이 발견되었습니다.
+/*
+해결방안
+1. PHNAME 컬럼의 NULL값을 수정
+2. PHNAME 컬럼의 값이 NULL인 레코드를 삭제
+*/
+
+-- PHNAME 컬럼의 NULL값을 '이름없음'으로 수정
+UPDATE PHONEBOOK
+SET PHNAME = '이름없음'
+WHERE PHNAME IS NULL;
+SELECT * FROM PHONEBOOK;
+
+/* PHONEBOOK 테이블의 PHNAME 컬럼에 NOT NULL 부여 */
+ALTER TABLE PHONEBOOK
+MODIFY PHNAME NOT NULL; -- Table PHONEBOOK이(가) 변경되었습니다.
+
+INSERT INTO PHONEBOOK(PHNUM)
+VALUES('010-2222-2222'); -- ORA-01400: NULL을 ("LSW_DBA"."PHONEBOOK"."PHNAME") 안에 삽입할 수 없습니다
+
+/* PHONEBOOK테이블의 PHNAME 칼럼에 NULL 허용 */
+ALTER TABLE PHONEBOOK
+MODIFY PHNAME NULL;
+DESC PHONEBOOK;
+
+DROP TABLE PHONEBOOK;
+CREATE TABLE PHONEBOOK(
+    PHNAME NVARCHAR2(5) NOT NULL,
+    PHNUM NVARCHAR2(13)
+);
+DESC PHONEBOOK;
+
+/* PRIMARY KEY */
+
+/* 회원정보 테이블 */
+CREATE TABLE MEMBER_TEST( 
+    MID NVARCHAR2(20),      -- 아이디 :: 중복 X , NULL값 X
+    MPW NVARCHAR2(20),      -- 비밀번호 :: NULL값 X
+    MNAME NVARCHAR2(5),     -- 이름 :: NULL값 X
+    MGENDER NUMBER(1),      -- 성별(1,3: 남자 | 2,4: 여자)
+    MBIRTH DATE,             -- 생년월일
+    MEMAIL NVARCHAR2(50)    -- 이메일 :: 중복값 X, NULL 값 X
+);
+DROP TABLE MEMBER_TEST;
+INSERT INTO MEMBER_TEST(MID, MPW, MNAME, MGENDER, MBIRTH,MEMAIL)
+VALUES('YYYY','1111','이승원',1,TO_DATE('1997-10-11','YYYY-MM-DD'),'QWER@NAVER.COM');
+SELECT * FROM MEMBER_TEST;
+
+/* 회원 아이디에 PRIMARY KEY 부여 */
+ALTER TABLE MEMBER_TEST
+ADD CONSTRAINT PK_MID PRIMARY KEY(MID); -- Table MEMBER_TEST이(가) 변경되었습니다.
+
+ALTER TABLE MEMBER_TEST
+ADD CONSTRAINT PK_MEMAIL PRIMARY KEY(MEMAIL); -- ORA-02260: 테이블에는 하나의 기본 키만 가질 수 있습니다.
+
+INSERT INTO MEMBER_TEST(MID, MPW, MNAME, MGENDER, MBIRTH,MEMAIL)
+VALUES('YYYY','1111','이승원',1,'1997-10-11','TMDDNJS1122@NAVER.COM'); -- ORA-00001: 무결성 제약 조건(LSW_DBA.PK_MID)에 위배됩니다
+
+SELECT * FROM MEMBER_TEST;
+
+INSERT INTO MEMBER_TEST(MID, MPW, MNAME, MGENDER, MBIRTH,MEMAIL)
+VALUES(NULL,'1111','이승원',1,'1997-10-11','TMDDNJS1122@NAVER.COM'); 
+-- ORA-01400: NULL을 ("LSW_DBA"."MEMBER_TEST"."MID") 안에 삽입할 수 없습니다
+
+INSERT INTO MEMBER_TEST(MID, MPW, MNAME, MGENDER, MBIRTH,MEMAIL)
+VALUES('AAAA','1111','테스트A',1,'1997-10-11','TMDDNJS1122@NAVER.COM'); 
+INSERT INTO MEMBER_TEST(MID, MPW, MNAME, MGENDER, MBIRTH,MEMAIL)
+VALUES('BBBB','1111','테스트B',1,'1997-10-11','TMDDNJS1122@NAVER.COM'); 
+INSERT INTO MEMBER_TEST(MID, MPW, MNAME, MGENDER, MBIRTH,MEMAIL)
+VALUES('CCCC','1111','테스트C',1,'1997-10-11','TMDDNJS1122@NAVER.COM'); 
+
+SELECT * FROM MEMBER_TEST
+WHERE TO_CHAR(MBIRTH,'YYYY-MM-DD') = '1997-10-11';
+
+SELECT * FROM MEMBER_TEST
+WHERE MGENDER = 1;
+
+/* 2022-09-06 */
+
+/* FOREIGN KEY (외래키) */
+SELECT * FROM MEMBER_TEST;
+COMMIT;
+
+CREATE TABLE SCORE_TEST(
+    SCMID NVARCHAR2(20), -- MEMBER_TEST의 MID 칼럼을 참조 받을 컬럼.
+    SCSUBJECT NVARCHAR2(10), -- 과목명
+    SCSCORE NUMBER -- 점수
+);
+
+SELECT * FROM SCORE_TEST;
+
+-- FOREIGN KEY 부여 -- 
+ALTER TABLE SCORE_TEST
+ADD CONSTRAINT FK_SCMID FOREIGN KEY(SCMID) REFERENCES MEMBER_TEST(MID);
+
+INSERT INTO SCORE_TEST(SCMID, SCSUBJECT, SCSCORE)
+VALUES('YYYY', 'JAVA', 80); --- MEMBER_TEST에 있는 ID
+
+INSERT INTO SCORE_TEST(SCMID, SCSUBJECT, SCSCORE)
+VALUES('TESTID', 'JAVA', 80); --- ORA-02291: 무결성 제약조건(LSW_DBA.FK_SCMID)이 위배되었습니다- 부모 키가 없습니다
+
+/* 상품정보 테이블 , 주문내역 테이블 */
+
+/* 1. 상품정보 테이블 */
+CREATE TABLE PRODUCT(
+    PR_NUM NUMBER,          -- 상품번호(PK)
+    PR_NAME NVARCHAR2(20),  -- 상품이름
+    PR_PRICE NUMBER,        -- 상품가격
+    PR_AMOUNT NUMBER,       -- 상품재고
+    PR_TYPE NVARCHAR2(10)   -- 상품종류
+);
+/* 제약조건 부여 */
+ALTER TABLE PRODUCT
+ADD CONSTRAINT PK_PR_NUM PRIMARY KEY(PR_NUM);
+/* 상품정보 등록 */
+INSERT INTO PRODUCT(PR_NUM, PR_NAME, PR_PRICE, PR_AMOUNT, PR_TYPE)
+VALUES(1, '콜라', 1500, 20, '탄산음료');
+INSERT INTO PRODUCT(PR_NUM, PR_NAME, PR_PRICE, PR_AMOUNT, PR_TYPE)
+VALUES(2, '사이다', 1300, 10, '탄산음료');
+INSERT INTO PRODUCT(PR_NUM, PR_NAME, PR_PRICE, PR_AMOUNT, PR_TYPE)
+VALUES(3, '꼬북칩', 1500, 20, '과자');
+INSERT INTO PRODUCT(PR_NUM, PR_NAME, PR_PRICE, PR_AMOUNT, PR_TYPE)
+VALUES(4, '프링글스', 2000, 30, '과자');
+INSERT INTO PRODUCT(PR_NUM, PR_NAME, PR_PRICE, PR_AMOUNT, PR_TYPE)
+VALUES(5, '500ML생수', 1000, 20, '물');
+
+SELECT * FROM PRODUCT;
+COMMIT;
+
+/* 2. 주문내역 테이블 */
+CREATE TABLE ORDERLIST(
+    ODNUM NUMBER,               -- 주문번호
+    ODCUSTOMER NVARCHAR2(5),    -- 주문자
+    ODPRNUM NUMBER,             -- 상품번호(PRODUCT 테이블의 PRNUM 참조). DATA TYPE 동일해야 함.
+    ODQTY NUMBER,               -- 주문수
+    ODDATE DATE                 -- 주문일
+);
+/* 제약조건 부여 */
+ALTER TABLE ORDERLIST
+ADD CONSTRAINT FK_ODPRNUM FOREIGN KEY(ODPRNUM) REFERENCES PRODUCT(PR_NUM);
+
+INSERT INTO ORDERLIST(ODNUM, ODCUSTOMER, ODPRNUM, ODQTY, ODDATE)
+VALUES(1, '양기두', 6, 5, SYSDATE); -- ORA-02291: 무결성 제약조건(LSW_DBA.FK_ODPRNUM)이 위배되었습니다- 부모 키가 없습니다
+INSERT INTO ORDERLIST(ODNUM, ODCUSTOMER, ODPRNUM, ODQTY, ODDATE)
+VALUES(1, '양기두', 1, 5, SYSDATE); -- 1 행 이(가) 삽입되었습니다.
+
+SELECT * FROM ORDERLIST;
+
+INSERT INTO ORDERLIST(ODNUM, ODCUSTOMER, ODPRNUM, ODQTY, ODDATE)
+VALUES(2, '양기두', 3, 2, SYSDATE); -- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO ORDERLIST(ODNUM, ODCUSTOMER, ODPRNUM, ODQTY, ODDATE)
+VALUES(3, '남형진', 4, 1, SYSDATE); -- 1 행 이(가) 삽입되었습니다.
+
+/* 주문내역 조회 */
+SELECT *
+FROM ORDERLIST, PRODUCT
+WHERE ORDERLIST.ODPRNUM = PRODUCT.PR_NUM;
+
+/* PRODUCT 테이블 삭제 시도 */
+DROP TABLE PRODUCT; -- ORA-02449: 외래 키에 의해 참조되는 고유/기본 키가 테이블에 있습니다
+
+
+/* DEFAULT */
+CREATE TABLE DEFAULT_TEST(
+    MID NVARCHAR2(5),
+    MPW NVARCHAR2(10)
+);
+INSERT INTO DEFAULT_TEST(MID)
+VALUES('AA');
+SELECT * FROM DEFAULT_TEST;
+
+/* MPW 컬럼에 기본값 '1234' 설정 */
+ALTER TABLE DEFAULT_TEST
+MODIFY MPW DEFAULT '1234'; -- Table DEFAULT_TEST이(가) 변경되었습니다.
+
+INSERT INTO DEFAULT_TEST(MID)
+VALUES('BB');
+INSERT INTO DEFAULT_TEST(MID,MPW)
+VALUES('CC', DEFAULT); -- 더 선호하는 방법
+
+/* CHECK */ -- 잘 사용하진 않음
+CREATE TABLE CHECK_TEST(
+    MID NVARCHAR2(5),
+    MPW NVARCHAR2(10)
+);
+
+/* 비밀번호는 최소 4자리 이상 */
+ALTER TABLE CHECK_TEST
+ADD CONSTRAINT CK_MPW CHECK(LENGTH(MPW)>=4); -- Table CHECK_TEST이(가) 변경되었습니다.
+INSERT INTO CHECK_TEST(MID, MPW)
+VALUES ('AA', '123'); -- ORA-02290: 체크 제약조건(LSW_DBA.CK_MPW)이 위배되었습니다
+
+INSERT INTO CHECK_TEST(MID, MPW)
+VALUES ('AA', '1234'); -- 1 행 이(가) 삽입되었습니다.
+
+SELECT * FROM CHECK_TEST;
+
+/* 2022-09-07 */
+/*
+Create: INSERT
+Read: SELECT
+Update: UPDATE
+Delete: DELETE
+*/
+CREATE TABLE INSERT_TEST(
+    NUMBER_COL NUMBER,
+    NVARCHAR2_COL NVARCHAR2(10),
+    DATE_COL DATE
+);
+SELECT * FROM INSERT_TEST;
+
+/*
+[INSERT]
+
+INSERT INTO 테이블명 (컬럼명1, 컬럼명2, ...) VALUES(컬럼명1의 입력값, 컬럼명2의 입력값, ...);
+*/
+
+INSERT INTO INSERT_TEST(NUMBER_COL, NVARCHAR2_COL, DATE_COL)
+VALUES(1, '문자열', '2022-09-07 17:26:30'); -- 1 행 이(가) 삽입되었습니다.
+
+/* TO_DATE('문자데이터', '문자데이터형식') */
+INSERT INTO INSERT_TEST(NUMBER_COL, NVARCHAR2_COL, DATE_COL)
+VALUES(2, '문자열2', TO_DATE('2022-09-07 17:29','YYYY-MM-DD HH24-MI')); -- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO INSERT_TEST(NUMBER_COL, NVARCHAR2_COL, DATE_COL)
+VALUES(3, '문자열3', TO_DATE('20220907 1729','YYYYMMDD HH24MI')); -- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO INSERT_TEST(NUMBER_COL, NVARCHAR2_COL, DATE_COL)
+VALUES(4, '문자열4', TO_DATE('202209071729','YYYYMMDDHH24MI')); -- 1 행 이(가) 삽입되었습니다.
+
+INSERT INTO INSERT_TEST(NUMBER_COL, NVARCHAR2_COL, DATE_COL)
+VALUES(5, '문자열5', SYSDATE); -- 1 행 이(가) 삽입되었습니다.
+
+COMMIT;
+
+/* EMP테이블, DEPT테이블 */
+DROP TABLE DEPT;
+CREATE TABLE DEPT
+       (DEPTNO NUMBER(2) CONSTRAINT PK_DEPT PRIMARY KEY,
+	DNAME VARCHAR2(14) ,
+	LOC VARCHAR2(13) ) ;
+DROP TABLE EMP;
+CREATE TABLE EMP
+       (EMPNO NUMBER(4) CONSTRAINT PK_EMP PRIMARY KEY,
+	ENAME VARCHAR2(10),
+	JOB VARCHAR2(9),
+	MGR NUMBER(4),
+	HIREDATE DATE,
+	SAL NUMBER(7,2),
+	COMM NUMBER(7,2),
+	DEPTNO NUMBER(2) CONSTRAINT FK_DEPTNO REFERENCES DEPT);
+INSERT INTO DEPT VALUES
+	(10,'ACCOUNTING','NEW YORK');
+INSERT INTO DEPT VALUES (20,'RESEARCH','DALLAS');
+INSERT INTO DEPT VALUES
+	(30,'SALES','CHICAGO');
+INSERT INTO DEPT VALUES
+	(40,'OPERATIONS','BOSTON');
+INSERT INTO EMP VALUES
+(7369,'SMITH','CLERK',7902,to_date('17-12-1980','dd-mm-yyyy'),800,NULL,20);
+INSERT INTO EMP VALUES
+(7499,'ALLEN','SALESMAN',7698,to_date('20-2-1981','dd-mm-yyyy'),1600,300,30);
+INSERT INTO EMP VALUES
+(7521,'WARD','SALESMAN',7698,to_date('22-2-1981','dd-mm-yyyy'),1250,500,30);
+INSERT INTO EMP VALUES
+(7566,'JONES','MANAGER',7839,to_date('2-4-1981','dd-mm-yyyy'),2975,NULL,20);
+INSERT INTO EMP VALUES
+(7654,'MARTIN','SALESMAN',7698,to_date('28-9-1981','dd-mm-yyyy'),1250,1400,30);
+INSERT INTO EMP VALUES
+(7698,'BLAKE','MANAGER',7839,to_date('1-5-1981','dd-mm-yyyy'),2850,NULL,30);
+INSERT INTO EMP VALUES
+(7782,'CLARK','MANAGER',7839,to_date('9-6-1981','dd-mm-yyyy'),2450,NULL,10);
+INSERT INTO EMP VALUES
+(7788,'SCOTT','ANALYST',7566,to_date('13-JUL-87')-85,3000,NULL,20);
+INSERT INTO EMP VALUES
+(7839,'KING','PRESIDENT',NULL,to_date('17-11-1981','dd-mm-yyyy'),5000,NULL,10);
+INSERT INTO EMP VALUES
+(7844,'TURNER','SALESMAN',7698,to_date('8-9-1981','dd-mm-yyyy'),1500,0,30);
+INSERT INTO EMP VALUES
+(7876,'ADAMS','CLERK',7788,to_date('13-JUL-87')-51,1100,NULL,20);
+INSERT INTO EMP VALUES
+(7900,'JAMES','CLERK',7698,to_date('3-12-1981','dd-mm-yyyy'),950,NULL,30);
+INSERT INTO EMP VALUES
+(7902,'FORD','ANALYST',7566,to_date('3-12-1981','dd-mm-yyyy'),3000,NULL,20);
+INSERT INTO EMP VALUES
+(7934,'MILLER','CLERK',7782,to_date('23-1-1982','dd-mm-yyyy'),1300,NULL,10);
+DROP TABLE BONUS;
+CREATE TABLE BONUS
+	(
+	ENAME VARCHAR2(10)	,
+	JOB VARCHAR2(9)  ,
+	SAL NUMBER,
+	COMM NUMBER
+	) ;
+DROP TABLE SALGRADE;
+CREATE TABLE SALGRADE
+      ( GRADE NUMBER,
+	LOSAL NUMBER,
+	HISAL NUMBER );
+INSERT INTO SALGRADE VALUES (1,700,1200);
+INSERT INTO SALGRADE VALUES (2,1201,1400);
+INSERT INTO SALGRADE VALUES (3,1401,2000);
+INSERT INTO SALGRADE VALUES (4,2001,3000);
+INSERT INTO SALGRADE VALUES (5,3001,9999);
+COMMIT;
+/* EMP(직원정보) 테이블 */
+SELECT * FROM EMP;
+/* DEPT(부서정보) 테이블 */
+SELECT * FROM DEPT;
+
+/*
+[SELECT]
+    SELECT 조회할컬럼명1, 조회할컬럼명2, ...  ( *: 모든 컬럼 )
+    FROM 조회할테이블명
+    WHERE 조회할 조건1 AND/OR 조회할 조건2 ...
+    GROUP BY 그룹 컬럼명
+    HAVING 그룹에 대한 조건1 AND/OR 조건2 ...
+        > HAVING 절은 GROUP BY절이 필요.
+    ORDER BY 정렬방식
+
+[확인 순서]
+    FROM >> WHERE >> GROUP BY >> HAVING >> SELECT >> ORDER BY
+
+[필수 절]
+    [1] SELECT
+    [2] FROM
+
+[별칭 부여]
+    [1] 컬럼명 AS 별칭   >> 권장 방법.
+    [2] 컬럼명 AS "별칭"
+    [3] 컬렴명 별칭
+    [4] 컬렴명 "별칭"
+
+*/
+SELECT *
+FROM EMP
+ORDER BY ENAME ASC;
+
+/* EMP테이블에서 직원이름(ENAME), 직무(JOB) 조회 */
+SELECT ENAME, JOB
+FROM EMP;
+
+/* 컬럼에 별칭 */
+SELECT ENAME AS 직원이름, JOB AS "직무", SAL 급여, DEPTNO "부서변호"
+FROM EMP;
+
+/* WHERE 조건절 */
+
+/* 숫자 조건 */
+-- 부서번호가 20번인 직원들을 이름, 직무를 조회
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO = 20;
+
+-- 급여가 1000 이상인 직원의 이름, 직무, 급여, 부서번호 조회
+SELECT ENAME AS 이름, JOB AS 직무, SAL AS 급여, DEPTNO AS 부서번호
+FROM EMP
+WHERE SAL >= 1000;
+
+-- 부서번호가 20번이고, 급여가 1000 이상인 직원의 이름, 직무, 급여, 부서번호 조회
+SELECT ENAME AS 이름, JOB AS 직무, SAL AS 급여, DEPTNO AS 부서번호
+FROM EMP
+WHERE SAL >= 1000 AND DEPTNO = 20;
+
+-- 부서번호가 20번이거나, 급여가 1000 이상인 직원의 이름, 직무, 급여, 부서번호 조회
+SELECT ENAME AS 이름, JOB AS 직무, SAL AS 급여, DEPTNO AS 부서번호
+FROM EMP
+WHERE SAL >= 1000 OR DEPTNO = 20;
+
+-- 급여가 1000이상 2000이하인 직원들의 정보 조회
+SELECT *
+FROM EMP
+WHERE SAL >= 1000 AND SAL <= 2000; 
+
+SELECT *
+FROM EMP
+WHERE SAL BETWEEN 1000 AND 2000;
+
+/* 문자열 조건 */
+/*
+[와일드 문자] - LIKE 연산자와 함께 사용
+    1. _: 한글자
+    2. %: 여러글자
+*/
+-- 직원 이름이 SMITH인 직원의 정보 조회
+SELECT *
+FROM EMP
+WHERE ENAME = 'SMITH';
+
+-- 직원 이름이 S로 시작하는 직원의 정보 조회
+SELECT *
+FROM EMP
+WHERE ENAME LIKE 'S%';
+
+-- 직원 이름에 L이 포함되는 직원의 정보 조회
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '%L%';
+
+-- 직원 이름이 N으로 끝나는 직원의 정보 조회
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '%N';
+
+-- 직원 이름이 5글자인 N으로 끝나는 직원의 정보 조회
+SELECT * 
+FROM EMP
+WHERE ENAME LIKE '____N'; 
+
+-- 이름이 5글자인 직원 중 두번째 글자가 'O'인 직원의 정보 조회
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '_O___';
+
+/* 날짜 */
+
+-- 입사일(HIREDATE) 1981년 11월 17일인 직원의 정보를 조회
+SELECT *
+FROM EMP 
+WHERE HIREDATE = '1981/11/17';
+
+-- TO_CHAR(): 날짜 >> 문자로 변환
+SELECT HIREDATE
+FROM EMP;
+
+SELECT TO_CHAR(HIREDATE, 'YYYY-MM-DD')
+FROM EMP;
+
+SELECT *
+FROM EMP
+WHERE TO_CHAR(HIREDATE, 'YYYY-MM-DD') = '1981-11-17';
+
+SELECT *
+FROM EMP
+WHERE HIREDATE BETWEEN '1981-11-17 00:00:00' AND '1981-11-18 00:00:00';
+
+-- 1981년 6월 9일 이후에 입사한 직원들의 정보
+SELECT *
+FROM EMP
+WHERE TO_CHAR(HIREDATE, 'YYYY-MM-DD') >= '1981-06-09';
+
+SELECT *
+FROM EMP
+WHERE HIREDATE >= TO_DATE('1981-06-09', 'YYYY-MM-DD');
+
+-- 부서번호가 30번, 이름이 5글자인 직원 중 입사일이 1981년 5월 이후인 직원들의 정보 조회
+SELECT *
+FROM EMP
+WHERE DEPTNO = 30 AND ENAME LIKE '_____' AND TO_CHAR(HIREDATE, 'YYYY-MM-DD') >= '1981-05';
+
