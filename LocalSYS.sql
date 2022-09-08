@@ -1011,3 +1011,187 @@ SELECT *
 FROM EMP
 WHERE DEPTNO = 30 AND ENAME LIKE '_____' AND TO_CHAR(HIREDATE, 'YYYY-MM-DD') >= '1981-05';
 
+/* 2022-09-08 */
+
+-- COMM 컬럼이 NULL인 직원들의 정보를 조회
+SELECT *
+FROM EMP
+WHERE COMM IS NULL;
+
+-- COMM 컬럼이 NULL이 아닌 직원들의 정보를 조회
+SELECT *
+FROM EMP
+WHERE COMM IS NOT NULL;
+
+-- 부서번호가 30번이 아닌 직원들의 정보 조회
+SELECT *
+FROM EMP
+WHERE DEPTNO != 30;
+
+-- 직무(JOB)가 SALESMAN 이거나 MANAGER인 직원들의 정보 조회
+SELECT *
+FROM EMP
+WHERE JOB = 'SALESMAN' OR JOB = 'MANAGER';
+
+SELECT *
+FROM EMP
+WHERE JOB IN ('SALESMAN', 'MANAGER');
+
+SELECT *
+FROM EMP
+WHERE JOB NOT IN ('SALESMAN', 'MANAGER');
+
+-- 직무(JOB)가 SALESMAN 이거나 MANAGER인 직원들 중에서 급여(SAL)가 2500이상인 직원들의 정보 조회
+
+SELECT *
+FROM EMP
+WHERE JOB IN ('SALESMAN', 'MANAGER') AND (SAL >= 2500);
+
+/* 
+[그룹 함수]
+COUNT, SUM, AVG, MAX, MIN
+*/
+
+/* COUNT */
+-- EMP 전체 직원의 수
+SELECT COUNT(*)
+FROM EMP;
+
+SELECT COUNT(ENAME)
+FROM EMP;
+
+/* SUM */
+-- 직원들의 급여 총합
+SELECT SUM(SAL)
+FROM EMP;
+
+/* AVG */
+-- 직원들의 평균 급여
+SELECT AVG(SAL)
+FROM EMP;
+
+/* MAX, MIN */
+-- 가장 많은 급여
+SELECT MAX(SAL)
+FROM EMP;
+-- 가장 적은 급여
+SELECT MIN(SAL)
+FROM EMP;
+
+
+/* GROUP BY절 */
+-- 부서별 인원수
+SELECT DEPTNO, COUNT(*)
+FROM EMP
+GROUP BY DEPTNO;
+
+-- 직무별 인원수
+SELECT JOB, COUNT(*)
+FROM EMP
+GROUP BY JOB;
+
+-- 부서별 급여의 총합
+SELECT DEPTNO, SUM(SAL)
+FROM EMP; -- ORA-00937: 단일 그룹의 그룹 함수가 아닙니다
+
+SELECT DEPTNO, SUM(SAL)
+FROM EMP
+GROUP BY DEPTNO;
+
+-- 부서별 직무별 인원수
+SELECT DEPTNO, JOB, COUNT(*)
+FROM EMP
+GROUP BY DEPTNO, JOB;
+
+-- 부서별 직무별 인원수 및 급여의 총합
+SELECT DEPTNO, JOB, COUNT(*), SUM(SAL)
+FROM EMP
+GROUP BY DEPTNO, JOB;
+
+
+/* HAVING절 */
+-- 부서별 직무별 인원수 및 급여의 총합이 3000이상
+SELECT DEPTNO, JOB, COUNT(*), SUM(SAL)
+FROM EMP
+GROUP BY DEPTNO,JOB
+HAVING SUM(SAL) >= 3000;
+
+/* 평균 급여가 3000 이상인 직무 조회 */
+SELECT JOB, AVG(SAL)
+FROM EMP
+GROUP BY JOB
+HAVING AVG(SAL) >= 3000;
+
+/* 직원수가 3명 이상인 직무 조회 */
+SELECT JOB AS 직무, COUNT(*) AS 인원수
+FROM EMP
+GROUP BY JOB
+HAVING COUNT(*) >= 3;
+
+/* 직무별 최소 급여 조회 - 'PRESIDENT'직무 제외 */
+SELECT JOB, MIN(SAL)
+FROM EMP
+GROUP BY JOB
+HAVING JOB != 'PRESIDENT';
+
+/* WHERE절 이용 */
+SELECT JOB, MIN(SAL)
+FROM EMP
+WHERE JOB NOT IN('PRESIDENT')
+GROUP BY JOB;
+
+-- 입사 연도별 직원 수
+SELECT TO_CHAR(HIREDATE,'YYYY') AS 입사연도 , COUNT(*) AS 직원수
+FROM EMP 
+GROUP BY TO_CHAR(HIREDATE,'YYYY');
+
+-- 입사 연도 및 월별 직원 수
+SELECT TO_CHAR(HIREDATE,'YYYY-MM') AS 입사연도 , COUNT(*)||'명' AS 인원수
+FROM EMP 
+GROUP BY TO_CHAR(HIREDATE,'YYYY-MM');
+
+SELECT ENAME, TO_CHAR(HIREDATE,'YYYY')||'년'||TO_CHAR(HIREDATE,'MM')||'월' AS 입사일
+FROM EMP;
+
+/* ORDER BY절 */
+-- 오름차순 (기본값: ASC)
+SELECT ENAME, SAL
+FROM EMP
+ORDER BY SAL;
+
+-- 내림차순
+SELECT ENAME, SAL
+FROM EMP
+ORDER BY SAL DESC;
+
+
+SELECT *
+FROM EMP
+ORDER BY DEPTNO, SAL DESC;
+
+/*
+[연습 문제]
+1. 직무가 'SALESMAN'이 아닌 직원들을 대상으로 직무별 급여 합계가 5000이상인 직무와 급여의 합계 조회
+급여의 총합을 기준으로 내림차순 정렬
+
+2. 직무별 평균 연봉, 직원수 조회
+단 평균 연봉이 20000이상인 직무 그룹만 조회
+평균 연봉을 기준으로 오름차순 정렬
+*/
+SELECT *
+FROM EMP;
+
+-- EX 1 
+SELECT JOB AS 직무, SUM(SAL) AS 급여합계
+FROM EMP
+WHERE JOB NOT IN 'SALESMAN'
+GROUP BY JOB
+HAVING SUM(SAL) >= 5000
+ORDER BY SUM(SAL) DESC;
+
+-- EX 2
+SELECT JOB AS 직무, AVG(SAL*12) AS 평균연봉, COUNT(*) AS 직원수
+FROM EMP
+GROUP BY JOB
+HAVING AVG(SAL*12) >= 20000
+ORDER BY AVG(SAL*12);
