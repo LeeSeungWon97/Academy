@@ -1195,3 +1195,161 @@ FROM EMP
 GROUP BY JOB
 HAVING AVG(SAL*12) >= 20000
 ORDER BY AVG(SAL*12);
+
+
+/* 2022-09-13 */
+SELECT * FROM EMP;
+SELECT * FROM DEPT;
+
+/* JOIN : 두개 이상의 테이블을 연결하여 데이터를 조회 */
+SELECT * 
+FROM EMP, DEPT
+WHERE EMP.DEPTNO = DEPT.DEPTNO;
+
+SELECT *
+FROM EMP
+INNER JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO;
+
+-- 부서명이 'RESEARCH'인 직원 정보 조회
+SELECT *
+FROM EMP, DEPT
+WHERE EMP.DEPTNO = DEPT.DEPTNO AND DEPT.DNAME = 'RESEARCH';
+
+SELECT *
+FROM EMP
+INNER JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO
+WHERE DEPT.DNAME = 'RESEARCH';
+
+SELECT EMP.ENAME, DEPT.LOC
+FROM EMP, DEPT
+WHERE (EMP.DEPTNO = DEPT.DEPTNO) AND DEPT.DNAME = 'RESEARCH';
+
+-- 직원이름이 'MARTIN'인 직원의 직원 번호, 직원이름, 부서명, 부서위치 조회
+SELECT EMP.EMPNO, EMP.ENAME, DEPT.DNAME, DEPT.LOC
+FROM EMP, DEPT
+WHERE (EMP.DEPTNO = DEPT.DEPTNO) AND EMP.ENAME = 'MARTIN';
+
+SELECT EMP.EMPNO, EMP.ENAME, DEPT.DNAME, DEPT.LOC
+FROM EMP
+INNER JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO
+WHERE EMP.ENAME = 'MARTIN';
+
+-- 부서위치가 'NEW YORK'인 직원들의 이름, 직무 조회
+SELECT EMP.ENAME, EMP.JOB
+FROM EMP
+INNER JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO
+WHERE DEPT.LOC = 'NEW YORK';
+
+-- COMM이 있는 직원의 이름, 부서명 조회
+SELECT EMP.ENAME, DEPT.DNAME
+FROM EMP
+INNER JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO
+WHERE EMP.COMM IS NOT NULL;
+
+-- 각 부서별 인원수
+SELECT EMP.DEPTNO, DEPT.DNAME, COUNT(*)
+FROM EMP, DEPT
+WHERE (EMP.DEPTNO = DEPT.DEPTNO)
+GROUP BY EMP.DEPTNO, DEPT.DNAME;
+
+SELECT DEPT.DEPTNO, DEPT.DNAME, EMP.DEPTCOUNT
+FROM DEPT
+LEFT OUTER JOIN (SELECT EMP.DEPTNO, COUNT(*) AS DEPTCOUNT
+                 FROM EMP
+                 GROUP BY EMP.DEPTNO) EMP
+                 ON DEPT.DEPTNO = EMP.DEPTNO;
+
+-- 1. 부서위치(DEPT.LOC)가 'NEW YORK'인 부서 번호
+SELECT DEPTNO
+FROM DEPT
+WHERE LOC = 'NEW YORK'; 
+
+-- 2. 부서번호가 10번인 직원의 이름, 직무 조회
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO = 10;
+
+-- 3. 부서위치(DEPT.LOC)가 'NEW YORK'인 직원들의 이름(EMP.ENAME), 직무(EMP.JOB) 조회
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO = (SELECT DEPTNO
+                FROM DEPT
+                WHERE LOC = 'NEW YORK');
+    
+/* 서브 쿼리 */
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO = (SELECT DEPTNO
+                FROM DEPT); -- ORA-01427: 단일 행 하위 질의에 2개 이상의 행이 리턴되었습니다.
+
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO IN (SELECT DEPTNO
+                 FROM DEPT);
+               
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO = (SELECT DNAME
+                FROM DEPT
+                WHERE LOC = 'NEW YORK');    -- ORA-01722: 수치가 부적합합니다
+                
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO = (SELECT DEPTNO, DNAME
+                FROM DEPT
+                WHERE LOC = 'NEW YORK');    -- ORA-00913: 값의 수가 너무 많습니다
+                
+-- 'KING'과 같은 부서에서 근무하는 직원들의 이름, 직무 조회
+SELECT ENAME, JOB
+FROM EMP
+WHERE DEPTNO = (SELECT DEPTNO
+                FROM EMP
+                WHERE ENAME = 'KING');
+-- 급여가 1500인 직원과 같은 직무의 직원들의 이름 조회
+SELECT ENAME
+FROM EMP
+WHERE JOB = (SELECT JOB
+             FROM EMP
+             WHERE SAL = 1500);
+             
+-- 급여가 1500인 직원과, 다른 직무의 직원들의 이름 조회
+SELECT ENAME
+FROM EMP
+WHERE JOB != (SELECT JOB
+             FROM EMP
+             WHERE SAL = 1500);
+             
+SELECT E.ENAME
+FROM EMP E
+WHERE E.SAL = 1500;
+
+/* 급여가 1000미만인 직원이 근무하는 부서의 직원이름, 급여 부서번호 조회 */
+SELECT ENAME, SAL, DEPTNO
+FROM EMP
+WHERE DEPTNO IN (SELECT DEPTNO
+                 FROM EMP
+                 WHERE SAL < 1000);
+                 
+/* 급여가 1000미만인 직원이 근무하는 부서의 부서번호 및 부서별 인원수 조회 */
+SELECT DEPTNO, COUNT(*)
+FROM EMP
+WHERE DEPTNO IN (SELECT DEPTNO
+                 FROM EMP
+                 WHERE SAL < 1000)
+GROUP BY DEPTNO;
+
+/* 평균 급여가 2000이상인 부서의 부서이름, 위치 조회 */
+SELECT DNAME, LOC
+FROM DEPT
+WHERE DEPTNO IN (SELECT DEPTNO
+                 FROM EMP
+                 GROUP BY DEPTNO
+                 HAVING AVG(SAL) >= 2000);                   
+
+/* 급여를 3000이상 받는 직원과 같은 부서에서 근무하는 직원이름, 급여, 부서이름 조회 */
+SELECT E.ENAME, E.SAL, D.DNAME
+FROM EMP E
+INNER JOIN DEPT D ON E.DEPTNO = D.DEPTNO
+WHERE E.DEPTNO IN (SELECT DEPTNO
+                   FROM EMP
+                   WHERE SAL >= 3000);
