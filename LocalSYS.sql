@@ -1353,3 +1353,265 @@ INNER JOIN DEPT D ON E.DEPTNO = D.DEPTNO
 WHERE E.DEPTNO IN (SELECT DEPTNO
                    FROM EMP
                    WHERE SAL >= 3000);
+                   
+/* 2022-09-14 */
+
+/* UPDATE: 데이터 수정 */
+SELECT * FROM EMP;
+INSERT INTO EMP VALUES(8000, '이승원', 'SALESMAN', '7698', SYSDATE, 2000, 100, 30);
+COMMIT;
+
+/*
+UPDATE 테이블명
+SET 컬럼명1 = 수정한 값, 컬럼명2 = 수정할 값
+WHERE 수정할 레코드를 지정하기위한 조건
+*/
+
+UPDATE EMP
+SET SAL = 5000; -- 13개 행 이(가) 업데이트되었습니다.
+SELECT * FROM EMP;
+ROLLBACK;
+
+-- 이름이 'FORD'인 직원의 급여를 3500으로 수정
+UPDATE EMP
+SET SAL = 3500
+WHERE ENAME = 'FORD';
+
+
+-- COMM이 있는 직원들의 COMM 값을 1000으로 수정
+UPDATE EMP
+SET COMM = 1000
+WHERE COMM IS NOT NULL;
+SELECT * FROM EMP;
+
+-- 직무가 'MANAGER' 직원의 급여를 500 증가
+UPDATE EMP
+SET SAL = SAL + 500
+WHERE JOB = 'MANAGER';
+
+-- 이름이 'FORD'인 직원과 같은 부서에서 근무하는 직원들의 급여를 1200 인상
+UPDATE EMP
+SET SAL = SAL + 1200
+WHERE DEPTNO = (SELECT DEPTNO
+                FROM EMP
+                WHERE ENAME = 'FORD');
+SELECT * FROM EMP;
+                
+/* DELETE : 데이터 삭제 */
+/*
+DELETE FROM 테이블명
+WHERE 삭제할 레코드를 지정하기 위한 조건
+    > 조건이 없을 시 테이블 자체를 삭제
+*/
+
+-- 부서번호가 30인 직원들의 정보 삭제
+DELETE FROM EMP
+WHERE DEPTNO = 30;
+
+SELECT * FROM DEPT;
+-- 부서번호 10을 부서번호 50으로 수정
+UPDATE DEPT
+SET DEPTNO = 50
+WHERE DEPTNO = 10;  -- ORA-02292: 무결성 제약조건(LSW_DBA.FK_DEPTNO)이 위배되었습니다- 자식 레코드가 발견되었습니다
+
+DELETE FROM DEPT
+WHERE DEPTNO = 10;  -- ORA-02292: 무결성 제약조건(LSW_DBA.FK_DEPTNO)이 위배되었습니다- 자식 레코드가 발견되었습니다
+
+DELETE FROM DEPT
+WHERE DEPTNO = 40;  -- 1 행 이(가) 삭제되었습니다.
+
+SELECT * FROM DEPT;
+
+-- 전체 직원의 평균 급여보다 적은 급여를 받는 직원들의 정보를 삭제
+
+DELETE FROM EMP
+WHERE SAL < (SELECT AVG(SAL)
+             FROM EMP);
+SELECT * FROM EMP;
+
+ROLLBACK;
+SELECT * FROM EMP;
+SELECT * FROM DEPT;
+
+
+/* 계좌 정보 테이블 */
+
+CREATE TABLE BANKINFO(
+    ACCOUNTNUMBER NVARCHAR2(10),    -- 계좌번호
+    CLIENTNAME NVARCHAR2(5),        -- 이름
+    BALANCE NUMBER                  -- 금액
+);
+ALTER TABLE BANKINFO
+ADD CONSTRAINT PK_ACCOUNTNUMBER PRIMARY KEY(ACCOUNTNUMBER);
+ALTER TABLE BANKINFO
+MODIFY CLIENTNAME NOT NULL;
+SELECT * FROM BANKINFO;
+
+/* [1] 계좌생성 - BANKINFO 테이블에 INSERT */
+-- 계좌번호 중복 확인
+-- 1. 사용자로부터 계좌번호 입력 받기.
+-- 계좌번호: '11-11'
+
+/* 중복확인 처리 SQL문 */
+SELECT * FROM BANKINFO
+WHERE ACCOUNTNUMBER = '11-11';
+-- 조회되는 레코드가 있는 경우 >> 계좌번호 중복
+-- 조회되는 레코드가 없는 경우 >> 사용가능한 계좌번호
+
+-- 2. 사용자로부터 이름과 초기금액을 입력 받는다.
+-- 이름: 'ABC', 초기금액: 10000원
+
+-- 3. 계좌정보를 INSERT
+INSERT INTO BANKINFO(ACCOUNTNUMBER, CLIENTNAME, BALANCE)
+VALUES ('11-11', 'ABC', 10000);
+COMMIT;
+
+/* [2] 입금 - UPDATE문 */
+-- 1. 사용자로부터 입금할 계좌번호를 입력 받는다. >> '11-11'
+
+-- 2. 등록된 계좌번호인지 확인 처리
+SELECT * FROM BANKINFO
+WHERE ACCOUNTNUMBER = '11-11';
+-- 조회되는 레코드가 있을 경우 >> 입금처리 진행
+-- 조회되는 레코드가 없는 경우 >> '없는 계좌입니다.' / 입금처리 중단
+
+-- 3. 계좌번호가 확인되면 사용자로부터 입금금액을 입력 받음 >> 20000원
+
+-- 4. 해당 계좌에 입금 처리
+UPDATE BANKINFO
+SET BALANCE = BALANCE + 20000
+WHERE ACCOUNTNUMBER = '11-11';
+COMMIT;
+
+-- 5. 입금처리 후 잔액 확인
+SELECT BALANCE
+FROM BANKINFO
+WHERE ACCOUNTNUMBER = '11-11';
+
+/* [3]출금 - UPDATE */
+-- 1. 사용자로부터 출금할 계좌번호를 입력 받음 >> '11-11'
+
+-- 2. 등록된 계좌번호인지 확인 처리
+SELECT * FROM BANKINFO
+WHERE ACCOUNTNUMBER = '11-11';
+-- 조회되는 레코드가 있을 경우 >> 입금처리 진행
+-- 조회되는 레코드가 없는 경우 >> '없는 계좌입니다.' / 입금처리 중단
+
+-- 3. 계좌번호가 확인 되면 사용자로 부터 출금할 금액을 입력 받음 >> 50000원
+
+-- 4. 현재 잔액와 출금액을 비교
+
+UPDATE BANKINFO
+SET BALANCE = BALANCE - 20000
+WHERE ACCOUNTNUMBER = '11-11' AND BALANCE >= 20000;
+COMMIT;
+-- 1개 행이 업데이트 >> 출금처리
+-- 0개 행이 업데이트 >> 잔액부족
+
+-- 5. 출금 후 잔액 조회
+SELECT BALANCE FROM BANKINFO;
+
+/* [4]잔액조회 - SELECT */
+-- 1. 사용자로부터 잔액조회할 계좌번호를 입력 받음 >> '11-11'
+-- 2. 등록된 계좌번호인지 확인 처리
+SELECT * FROM BANKINFO
+WHERE ACCOUNTNUMBER = '11-11';
+/*
+조회되는 레코드가 있을 경우 >>  BALANCE 컬럼 값 출력
+조회되는 레코드가 없을 경우 >> '없는 계좌입니다' / 중단 
+*/
+
+/* 회원제 쇼핑몰 */
+
+/* 상품정보 테이블 - PRODUCT */
+CREATE TABLE PRODUCT(
+    PDCODE NCHAR(5),        -- 상품코드
+    PDNAME NVARCHAR2(30),   -- 상품이름
+    PDPRICE NUMBER,         -- 상품가격
+    PDAMOUNT NUMBER,        -- 상품수량
+    PDTYPE NVARCHAR2(10)    -- 상품종류
+);
+
+/* PRIMARY KEY - 상품코드 */
+ALTER TABLE PRODUCT
+ADD CONSTRAINT PK_PDCODE PRIMARY KEY (PDCODE);
+
+/* 제약조건 - CHECK :  PDCODE컬럼의 첫 글자는 'P'를 사용 */
+ALTER TABLE PRODUCT
+ADD CONSTRAINT CK_PDCODE CHECK(SUBSTR(PDCODE,0,1) = 'P');
+/* 
+SUBSTR(COLUMN NAME, NUMBER1, NUMBER2)
+: 컬럼명의 데이터 값중 NUMBER1의 위치에서부터 NUMBER2개의 값을 읽는다.
+*/
+-- 상품코드:'P0001', 상품이름: 펩시제로콜라, 1500, 50개, 탄산음료
+-- 상품코드:'P0002', 상품이름: 제로사이다, 1300, 30개, 탄산음료
+
+INSERT INTO PRODUCT(PDCODE) VALUES('P0001');    -- 1 행 이(가) 삽입되었습니다.
+INSERT INTO PRODUCT(PDCODE) VALUES('A0001');    -- ORA-02290: 체크 제약조건(LSW_DBA.CK_PDCODE)이 위배되었습니다
+INSERT INTO PRODUCT(PDCODE) VALUES('P0001');    -- ORA-00001: 무결성 제약 조건(LSW_DBA.PK_PDCODE)에 위배됩니다
+
+ALTER TABLE PRODUCT
+MODIFY PDNAME NOT NULL;
+ALTER TABLE PRODUCT
+MODIFY PDPRICE NOT NULL;
+ALTER TABLE PRODUCT
+MODIFY PDAMOUNT NOT NULL;
+ALTER TABLE PRODUCT
+MODIFY PDTYPE NOT NULL;
+
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1234','제로사이다',2000,123,'음료');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0012','샌드위치',2300,10,'식품');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P3030','행복복권',5000,100,'복권');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P8001','ATmega128',20604,5,'MCU');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P5001','대형우산',40000,10,'우산');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1414','아이폰 14 PRO MAX',2500000,1000,'휴대폰');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P7006','노트북가방',30000,5,'가방');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P8801','RTX 3080 Ti',1434960,1,'GPU');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1052','독립일기',12000,30,'웹툰');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1053','내남편과결혼해줘',15000,30,'웹툰');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1054','외모지상주의',15000,40,'웹툰');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P5959','오구오구',59595959,59,'59');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P9002','복근 롤러',50000,20,'운동기구');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P9999','송도더샵퍼스트월드(주상복합)',1200000000,1,'매매');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0000','무형검',0,0,'LEGENDARY');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0001','테스트상품1',1,1,'테스트');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1003','제로 후르츠 젤리',1500,1,'젤리');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1004','아임리얼 딸기',3300,1,'음료');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0831','BTS',500000,7,'아이돌');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1232','초코파이',10,1000,'과자');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1233','빅파이',4950,50,'과자');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0710','민트맛파인애플',12000,10,'과일');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1005','쿨피스',600,12,'음료');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P8282','아이폰14PRO MAX',1500000,1,'전자기기');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P8202','김민지',20,1,'인간');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0711','조빵매',1200,1,'장난감');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1001','아이스티레몬',1200,20,'음료');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1002','아이스티복숭아',1200,30,'음료');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P2301','모두의 아두이노',15000,5,'책');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1014','오감자',2500,40,'과자');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0921','상품',21,1,'테스트');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1015','스윙칩',2000,20,'과자');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P1016','빈츠',1500,23,'과자');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P4352','일보치킨',8000,10,'식품');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P6034','일보탄산수',1000,30,'음료');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0123','칙촉',1,1,'과자');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P9318','일보피자',9000,20,'식품');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0201','먹자마자 효과좋은 변비약',10,25,'약품');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0200','서율',10000000,1,'환혼');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0010','슬리퍼',3000,1,'신발');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0011','코카콜라제로',1500,5,'탄산음료');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0009','아메리카노',1,1,'테스트');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0904','한진민',10,100,'과자');
+Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0905','한진민1',10,100,'장난감');
+COMMIT;
+SELECT * FROM PRODUCT;
+
+
+
+
+
+
+
+
+
+
