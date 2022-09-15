@@ -1606,12 +1606,138 @@ Insert into PRODUCT (PDCODE,PDNAME,PDPRICE,PDAMOUNT,PDTYPE) values ('P0905','한
 COMMIT;
 SELECT * FROM PRODUCT;
 
+/* 2022-09-15 */
+
+/* 회원정보 테이블 생성 */
+
+-- 회원정보 테이블
+CREATE TABLE MEMBERS( 
+    MID NVARCHAR2(20),      -- 아이디 :: PK
+    MPW NVARCHAR2(20),      -- 비밀번호 :: NOT NULL
+    MNAME NVARCHAR2(5),     -- 이름 :: NOT NULL
+    MGENDER NUMBER(1),      -- 성별(1, 3: 남자 | 2, 4: 여자)
+    MBIRTH DATE,            -- 생년월일
+    MEMAIL NVARCHAR2(50)    -- 이메일
+);
+
+-- 회원 아이디 PRIMARY KEY 부여 
+ALTER TABLE MEMBERS
+ADD CONSTRAINT PK_MID PRIMARY KEY(MID);
+
+-- 비밀번호, 이름 NOT NULL
+ALTER TABLE MEMBERS
+MODIFY MPW NOT NULL
+MODIFY MNAME NOT NULL;
+DESC MEMBERS;
+
+/* 주문정보 테이블 생성 */
+CREATE TABLE ORDERLIST(
+    ODNUM NUMBER,           -- 주문번호 PK      
+    ODMID NVARCHAR2(20),    -- 주문자 아이디 FK(MEMBERS-MID)
+    ODDATE DATE,            -- 주문일 
+    ODPDCODE NCHAR(5),      -- 주문한 상품코드 FK(PRODUCT-PDCODE)
+    ODQTY NUMBER            -- 주문 수량
+);
+
+-- 주문번호컬럼에 PRIMARY KEY 부여
+ALTER TABLE ORDERLIST
+ADD CONSTRAINT PK_ODNUM PRIMARY KEY(ODNUM);
+
+-- 주문자 아이디 컬럼에 FOREIGN KEY 부여
+ALTER TABLE ORDERLIST
+ADD CONSTRAINT FK_ODMID FOREIGN KEY(ODMID) REFERENCES MEMBERS(MID);
+
+-- 주문한 상품코드(ODPDCODE) 컬럼에 FOREIGN KEY 부여
+ALTER TABLE ORDERLIST
+ADD CONSTRAINT FK_ODPDCODE FOREIGN KEY(ODPDCODE) REFERENCES PRODUCT(PDCODE);
+
+/*
+# 페이지가 만들어져 있다고 가정
+
+[상품주문과정]
+1. 회원가입 >> 2. 로그인 >> 3. 상품목록 조회 >> 4. 상품상세페이지 >> 5. 주문요청 >> 6. 주문정보 저장
+
+*/
+
+/* [1] 회원가입 */
+-- 사용자로부터 회원정보를 입력 받는다 >> MEMBERS 테이블에 INSERT
+-- 1. 아이디 중복 체크
+SELECT *
+FROM MEMBERS
+WHERE MID = '사용자가 입력한 아이디';
+-- 2. 사용가능 아이디로 확인되면 회원정보를 INSERT
+INSERT INTO MEMBERS(MID,MPW,MNAME,MGENDER,MBIRTH,MEMAIL)
+VALUES('YYYY', 1111, '이승원', 1, TO_DATE('1997-10-11','YYYY-MM-DD'),'tmddnjs1122@naver.com');
+-- 1행 삽입
+COMMIT;
+SELECT *
+FROM MEMBERS;
+-- 3. 회원가입 완료
+
+/*[2] 로그인 */
+-- 1. 사용자로부터 아이디, 비밀번호를 입력 받는다.
+-- 2. 아이디, 비밀번호가 일치하는 회원정보 있는지 확인
+SELECT *
+FROM MEMBERS
+WHERE MID = 'tmddnjs1122' AND MPW = 1111;
+-- 3. 회원정보가 확인되면 '로그인' 처리
+
+/* [3] 상품목록 조회 */
+-- PRODUCT 테이블에서 상품의 정보를 조회 >> 출력
+SELECT PDCODE, PDNAME, PDPRICE
+FROM PRODUCT;
 
 
+/* [4] 상품 상세페이지 */
+-- 제로사이다 선택 >> 제로사이다의 상품코드 'P1234' >>제로사이다의 상세 페이지 이동
+SELECT *
+FROM PRODUCT
+WHERE PDCODE = 'P1234';
+/*
+상품이름 : 제로사이다
+상품가격 : 2000원
+재고 : 123개 남음
+*/
+-- 사용자는 수량 선택 >> 구매하기 버튼 클릭 >> 주문 요청 >> 주문정보 테이블에 주문 정보를 INSERT
 
+-- 주문번호 주문자 아이디, 주문일, 주문한 상품코드 ,주문수량
+-- 주문번호 : 자동 생성
+SELECT NVL(MAX(ODNUM),0)
+FROM ORDERLIST; -- 현재 주문번호의 최대값
+-- 새 주문번호 = 최대값 + 1
+/* 
+   주문자 아이디 : 로그인된 회원의 아이디
+   주문일 : SYSDATE
+   주문한 상품코드 : 선택한 상품코드
+   주문수량 : 사용자가 입력한 수량
+*/
 
+/* 로그인된 아이디 : 'YYYY', 상품코드 : 'P1234', 주문수량 : 3개 */
+INSERT INTO ORDERLIST(ODNUM, ODMID, ODDATE, ODPDCODE, ODQTY)
+VALUES (1, 'YYYY', SYSDATE, 'P1234', 3);
+INSERT INTO ORDERLIST(ODNUM, ODMID, ODDATE, ODPDCODE, ODQTY)
+VALUES (2, 'YYYY', SYSDATE, 'P1014', 5);
 
+/* 구매된 상품의 재고 수정 */
+SELECT *
+FROM PRODUCT;
 
+UPDATE PRODUCT
+SET PDAMOUNT = PDAMOUNT - 3
+WHERE PDCODE = 'P1234';
+UPDATE PRODUCT
+SET PDAMOUNT = PDAMOUNT - 5
+WHERE PDCODE = 'P1014';
+COMMIT;
+SELECT * FROM ORDERLIST;
 
+/* 주문종료 */
 
-
+/* 주문내역 확인 */
+SELECT MEMBERS.MNAME AS 주문자, PRODUCT.PDNAME AS 상품명, PRODUCT.PDPRICE AS 가격, ORDERLIST.ODQTY AS 주문수,
+(ORDERLIST.ODQTY * PRODUCT.PDPRICE) AS 결제금액, TO_CHAR(ORDERLIST.ODDATE,'YYYY-MM-DD') AS 주문일
+FROM ORDERLIST
+INNER JOIN MEMBERS ON MEMBERS.MID = ORDERLIST.ODMID
+INNER JOIN PRODUCT ON PRODUCT.PDCODE = ORDERLIST.ODPDCODE
+-- 검색조건 : 아이디 - YYYY, 주문일 - 2022-09-15 인 주문 내역
+WHERE MEMBERS.MID = 'YYYY' AND TO_CHAR(ORDERLIST.ODDATE, 'YYYY-MM-DD') = '2022-09-15';
