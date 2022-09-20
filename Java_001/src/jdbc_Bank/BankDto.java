@@ -28,7 +28,4 @@ public class BankDto {
   public void setBalance(int balance) {
     this.balance = balance;
   }
-
-  
-  
 }

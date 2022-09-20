@@ -107,4 +107,78 @@ public class BankDao {
   }
 
 
+  // DAO - 계좌 확인 메소드
+  public BankDto selectAccount(String accountNumber) {
+    // 1. 실행할 쿼리문 작성
+    String sql = "SELECT * FROM BANKINFO WHERE ACCOUNTNUMBER = ?";
+
+    // 2. 리턴 변수 선언
+    BankDto bank = null;
+
+    try {
+      // 3. 쿼리문 전송 준비
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, accountNumber);
+
+      // 4. 쿼리문 실행 결과값 리턴
+      ResultSet rs = pstmt.executeQuery();
+
+      // 5. 리턴받은 결과값을 변환
+      while (rs.next()) {
+        bank = new BankDto();
+
+        bank.setAccountNumber(rs.getString(1));
+        bank.setClientName(rs.getString(2));
+        bank.setBalance(rs.getInt(3));
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return bank;
+  }
+
+
+  public int updateBalance(String accountNumber, int deposit) {
+    // 1. 실행할 쿼리문 작성
+    String sql = "UPDATE BANKINFO SET BALANCE = BALANCE + ? WHERE ACCOUNTNUMBER = ?";
+    // 2. 리턴 변수 선언
+    int updateResult = 0;
+
+    // 3. 쿼리문 전송 준비
+    try {
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, deposit);
+      pstmt.setString(2, accountNumber);
+
+      updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    // 4. 쿼리문 실행 결과값 리턴
+    return updateResult;
+  }
+
+  public int commitTest() {
+    String sql = "INSERT INTO BANKINFO VALUES('TEST0001', '테스트01', 10000')";
+
+    int insertResult = 0;
+
+    try {
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      insertResult = pstmt.executeUpdate();
+      if(insertResult == 1) {
+        con.commit();
+      } else {
+        con.rollback();
+      }
+      con.setAutoCommit(true);
+      
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return insertResult;
+  }
 }

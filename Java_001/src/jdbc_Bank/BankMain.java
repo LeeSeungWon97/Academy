@@ -20,7 +20,27 @@ public class BankMain {
         case 1:
           manager.createAccount();
           break;
-
+         
+        // 2. 입금
+        case 2:
+          manager.deposit();
+          break;
+          
+        // 3. 출금
+        case 3:
+          manager.withdraw();
+          break;
+          
+        // 4. 잔액조회
+        case 4:
+          manager.balanceCheck();
+          break;
+        
+        // 5. 이체         
+        case 5:
+          manager.transferAccout();
+          break;
+          
         // 6. 고객리스트
         case 6:
           manager.clientList();
