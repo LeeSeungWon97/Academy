@@ -45,6 +45,15 @@ public class OrderMain {
             manager.memberLogout();
             break;
 
+          // 상품주문 기능 메소드 호출
+          case 3:
+            manager.productOrder();
+            break;
+
+          // 주문내역 기능 메소드 호출
+          case 4:
+            manager.myOrderList();
+            break;
           case 0:
             run = false;
             break;

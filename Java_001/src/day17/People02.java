@@ -16,7 +16,4 @@ public class People02 {
     this.tel = tel;
     this.age = age;
   }
-  
-  
-  
 }

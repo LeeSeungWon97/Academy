@@ -8,7 +8,7 @@ public class PhoneMain {
 		ph1.color = "black";
 		ph1.telecom = "sk";
 		
-		Phone lgPhone = new Phone("LG");
+//		Phone lgPhone = new Phone("LG");
 		
 		Phone myPhone = new Phone("블랙","SK");
 		System.out.println("색상 : " + myPhone.color);

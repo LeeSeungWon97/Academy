@@ -1,11 +1,13 @@
 package jdbc_Order;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OrderManager {
 
   private Scanner scan = new Scanner(System.in);
   private MemberDao mdao = new MemberDao();
+  private ProductDao pdao = new ProductDao();
   private String loginId = null;
 
   public String getLoginId() {
@@ -20,9 +22,9 @@ public class OrderManager {
       System.out.println("============================");
     } else {
       System.out.println("\n[로그인한 아이디: " + loginId + "]");
-      System.out.println("\n============================");
-      System.out.println("[1]내정보확인 | [2]로그아웃 | [0]종료");
-      System.out.println("============================");
+      System.out.println("\n=======================================================");
+      System.out.println("[1]내정보확인 | [2]로그아웃 | [3]상품주문 | [4]주문내역 | [0]종료");
+      System.out.println("=======================================================");
     }
     System.out.print("메뉴선택>>");
 
@@ -103,17 +105,90 @@ public class OrderManager {
   // 내정보확인 기능 메소드
   public void memberInfo() {
     System.out.println("[1]내정보확인");
-    
+
     MemberDto memberInfo = mdao.selectMemberInfo(loginId);
-    
+
     System.out.println("[아이디]" + memberInfo.getMid());
     System.out.println("[비밀번호]" + memberInfo.getMpw());
     System.out.println("[이름]" + memberInfo.getMname());
     System.out.println("[성별]" + memberInfo.getMgender());
     System.out.println("[생년월일]" + memberInfo.getMbirth());
     System.out.println("[이메일]" + memberInfo.getMemail());
-    
-    
+
+
   }
+
+  // 상품주문 기능 메소드
+  public void productOrder() {
+    System.out.println("[3]상품주문");
+    System.out.println("\n--------------------[상품목록]--------------------");
+
+    // 1. 상품목록 출력 - PRODUCT 테이블
+    ArrayList<ProductDto> productList = pdao.selectProductList();
+
+    if (productList.size() == 0) {
+      System.out.println("등록된 상품이 없습니다.");
+      return;
+    }
+
+    for (int i = 0; i < productList.size(); i++) {
+      System.out.print("[" + i + "]" + productList.get(i).getPdName());
+      System.out.println(" " + productList.get(i).getPdPrice() + "원");
+    }
+
+    // 2. 주문할 상품번호 입력
+    System.out.print("\n상품선택 >> ");
+    int selectProduct = scan.nextInt();
+
+    if (selectProduct >= 0 && selectProduct < productList.size()) {
+      System.out.println("[" + productList.get(selectProduct).getPdName() + " "
+          + productList.get(selectProduct).getPdPrice() + "원] 선택");
+      System.out.print("주문수량 >> ");
+      int odqty = scan.nextInt();
+
+
+      // 3. 주문번호 생성
+
+      // (1) ORDERLIST 테이블의 주문번호(ODNUM) 컬럼의 최대값 조회
+      int maxOrderNum = pdao.selectMaxOdnum();
+      // (2) 새 주문번호 생성: 최대값 + 1
+      int odnum = maxOrderNum + 1;
+
+      String odmid = loginId;
+      String odpdcode = productList.get(selectProduct).getPdCode();
+
+      // 4. ORDERLIST 테이블에 INSERT
+      int insertResult = pdao.insertOrder(odnum, odmid, odpdcode, odqty);
+
+      if (insertResult > 0) {
+        System.out.println("\n주문 성공");
+      } else {
+        System.out.println("\n주문 실패");
+      }
+
+
+    }
+  }
+
+  // 주문내역 조회 기능 메소드
+  public void myOrderList() {
+    System.out.println("[4]주문내역");
+    ArrayList<OrderListDto> orderList = pdao.selectOrderList(loginId);
+
+    if (orderList.size() == 0) {
+      System.out.println("주문내역이 없습니다.");
+      return;
+    }
+
+    for (int i = 0; i < orderList.size(); i++) {
+      System.out.print("\n[" + i + "]");
+      System.out.print(" [주문자]" + orderList.get(i).getOdmid());
+      System.out.print(" [주문 날짜]" + orderList.get(i).getOddate());
+      System.out.println(" [주문 수량]" + orderList.get(i).getOdqty());
+    }
+
+  }
+
+
 
 }
