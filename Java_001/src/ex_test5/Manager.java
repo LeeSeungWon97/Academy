@@ -7,11 +7,8 @@ public class Manager {
 
   ArrayList<Score> stu = new ArrayList<Score>();
   Scanner scan = new Scanner(System.in);
-  
-  public static void abc() { 
-    System.out.println("static");
-  }
 
+  // 메뉴 출력 메소드
   public int showMenu(boolean flag) {
 
     while (true) {
@@ -33,14 +30,11 @@ public class Manager {
 
   }
 
-
-
   // 성적등록 메소드
   public void insertScore() {
     Score stuScore = new Score();
 
-    System.out.print("이름: ");
-    String name = scan.next();
+    String name = enterName();
 
     int score1 = enterScore("국어");
     int score2 = enterScore("영어");
@@ -50,9 +44,7 @@ public class Manager {
     stuScore.setKorean(score1);
     stuScore.setEnglish(score2);
     stuScore.setMath(score3);
-    stuScore.setTotal();
-    stuScore.setAverage();
-    stuScore.setGrade();
+    stuScore.cal();
 
     stu.add(stuScore);
 
@@ -70,7 +62,6 @@ public class Manager {
     }
 
   }
-
 
   // 조회 메소드
   public void searchStu() {
@@ -111,7 +102,7 @@ public class Manager {
     return stuIdx;
   }
 
-  // 점수수정 메소드
+  // 점수 수정 메소드
   public void changeScore() {
 
     System.out.print("학생이름: ");
@@ -137,6 +128,7 @@ public class Manager {
 
   }
 
+  // 학생 점수정보 삭제 메소드
   public void delete() {
     System.out.print("삭제시킬 학생이름: ");
     String name = scan.next();
@@ -166,6 +158,21 @@ public class Manager {
         } else {
           return score;
         }
+      }
+    }
+  }
+
+  // 이름입력 메소드
+  public String enterName() {
+
+    while (true) {
+      System.out.print("이름: ");
+      String name = scan.next();
+
+      if (name.length() < 2) {
+        System.out.println("이름은 2글자 이상입니다.");
+      } else {
+        return name;
       }
     }
   }

@@ -1,4 +1,4 @@
-package ex_test5;
+package ex_test6;
 
 public class Score {
 
