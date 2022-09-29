@@ -1,11 +1,12 @@
 package ex_test6;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Manager {
 
   ScoreDaoSql sql = new ScoreDaoSql();
-//  ScoreDao dao = new ScoreDao();
+
   Scanner scan = new Scanner(System.in);
 
   // 메뉴 출력 메소드
@@ -22,7 +23,7 @@ public class Manager {
 
       if (!scan.hasNextInt()) {
         System.out.println("숫자를 입력해주세요.");
-        scan.nextLine();
+        scan.next();
       } else {
         return scan.nextInt();
       }
@@ -40,6 +41,7 @@ public class Manager {
     int score2 = sql.enterScore("영어");
     int score3 = sql.enterScore("수학");
 
+    stuScore.setNo(sql.selectMaxNo() + 1);
     stuScore.setStuName(name);
     stuScore.setKorean(score1);
     stuScore.setEnglish(score2);
@@ -53,61 +55,54 @@ public class Manager {
 
   // 리스트출력 메소드
   public void showList() {
-    sql.showList();
+    ArrayList<Score> slist = new ArrayList<Score>();
+    
+    slist = sql.showList();
+    for(int i = 0; i < slist.size();i++) {
+      System.out.println(slist.get(i).toString());
+    }
   }
 
   // 조회 메소드
   public void searchStu() {
-
     System.out.print("조회할 학생이름: ");
     String name = scan.next();
+    Score s = sql.showList(name);
 
-    int check = studentCheck(name);
-
-    if (check != -1) {
-      sql.showList(check);
+    if (s == null) {
+      System.out.println("등록된 학생이 아닙니다");
+    } else {
+      System.out.println(s.toString());
     }
-  }
-
-  // 학생찾기 메소드
-  private int studentCheck(String name) {
-
-    int idx = sql.findIdx(name);
-
-    if (idx == -1) {
-      System.out.println("등록되지 않은 학생입니다.");
-    }
-
-    return idx;
   }
 
   // 점수 수정 메소드
   public void changeScore() {
-
-    System.out.print("학생이름: ");
-    String name = scan.next();
-
-    int check = studentCheck(name);
-
-    if (check != -1) {
-      sql.updateScore(check);
-      System.out.println("수정완료");
-
+    showList();
+    System.out.print("수정번호: ");
+    int num = scan.nextInt();
+    int updateResult = sql.updateScore(num);
+    if (updateResult == 1) {
+      System.out.println("업데이트 완료");
+    } else {
+      System.out.println("업데이트 실패");
     }
 
   }
 
   // 학생 점수정보 삭제 메소드
   public void delete() {
-    System.out.print("삭제시킬 학생이름: ");
-    String name = scan.next();
-    int check = studentCheck(name);
+    showList();
+    System.out.print("삭제시킬 학생번호: ");
+    int num = scan.nextInt();
 
-    if (check != -1) {
-      sql.removeScore(check);
-      System.out.println(name + "님 삭제완료");
+    int check = sql.removeScore(num);
+
+    if (check == 1) {
+      System.out.println("삭제 완료");
+    } else {
+      System.out.println("삭제 실패");
     }
-
   }
 
 }

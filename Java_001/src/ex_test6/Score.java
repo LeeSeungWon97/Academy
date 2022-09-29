@@ -2,6 +2,7 @@ package ex_test6;
 
 public class Score {
 
+  private int no;
   private String stuName;
   private int korean;
   private int english;
@@ -9,6 +10,16 @@ public class Score {
   private int total;
   private double average;
   private String grade;
+
+
+
+  public int getNo() {
+    return no;
+  }
+
+  public void setNo(int no) {
+    this.no = no;
+  }
 
   public String getStuName() {
     return stuName;
@@ -80,8 +91,8 @@ public class Score {
 
   @Override
   public String toString() {
-    return stuName + "\t" + korean + "\t" + english + "\t" + math + "\t" + total + "\t" + average
-        + "\t" + grade;
+    return no + "\t" + stuName + "\t" + korean + "\t" + english + "\t" + math + "\t" + total + "\t"
+        + average + "\t" + grade;
   }
 
   public void cal() {

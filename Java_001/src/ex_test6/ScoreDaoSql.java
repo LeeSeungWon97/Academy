@@ -10,7 +10,6 @@ import java.util.Scanner;
 
 public class ScoreDaoSql {
   Scanner scan = new Scanner(System.in);
-  private ArrayList<Score> stuList = new ArrayList<Score>();
 
   private Connection con = null;
 
@@ -32,8 +31,8 @@ public class ScoreDaoSql {
       System.out.println("DB연결 실패!");
     }
   }
-    
-  public int selectMaxOdnum() {
+
+  public int selectMaxNo() {
     String sql = "SELECT NVL(MAX(NO),0) AS max FROM SCORE";
     int maxnum = 0;
     try {
@@ -50,7 +49,7 @@ public class ScoreDaoSql {
 
     return maxnum;
   }
-  
+
   // 데이터 insert
   public void insert(Score stuScore) throws Exception {
     String sql = "INSERT INTO SCORE(NO,STUNAME,KOREAN,ENGLISH,MATH,TOTAL,AVERAGE,GRADE)"
@@ -61,7 +60,7 @@ public class ScoreDaoSql {
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setInt(1, selectMaxOdnum()+1);
+      pstmt.setInt(1, stuScore.getNo());
       pstmt.setString(2, stuScore.getStuName());
       pstmt.setInt(3, stuScore.getKorean());
       pstmt.setInt(4, stuScore.getEnglish());
@@ -69,7 +68,7 @@ public class ScoreDaoSql {
       pstmt.setInt(6, stuScore.getTotal());
       pstmt.setDouble(7, stuScore.getAverage());
       pstmt.setString(8, stuScore.getGrade());
-      
+
       insertResult = pstmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -82,11 +81,12 @@ public class ScoreDaoSql {
   }
 
   // 리스트 출력
-  public void showList() {
-    System.out.println("[이름]\t[국어]\t[영어]\t[수학]\t[총점]\t[평균]\t[학점]");
+  public ArrayList<Score> showList() {
+    System.out.println("[No]\t[이름]\t[국어]\t[영어]\t[수학]\t[총점]\t[평균]\t[학점]");
     System.out.println("---------------------------------------------------");
-    String sql = "SELECT * FROM SCORE";
+    String sql = "SELECT * FROM SCORE ORDER BY NO";
 
+    ArrayList<Score> sList = new ArrayList<Score>();
     try {
       // 작성된 쿼리문을 전송하기 위한 용도
       PreparedStatement pstmt = con.prepareStatement(sql);
@@ -94,60 +94,127 @@ public class ScoreDaoSql {
       // 실행결과를 담아둠 (SELECT문인 경우)
       ResultSet rs = pstmt.executeQuery();
       while (rs.next()) {
-        System.out.print(rs.getString(2));
-        System.out.print("\t" + rs.getInt(3));
-        System.out.print("\t" + rs.getInt(4));
-        System.out.print("\t" + rs.getInt(5));
-        System.out.print("\t" + rs.getInt(6));
-        System.out.print("\t" + rs.getInt(7));
-        System.out.println("\t" + rs.getString(8));
+        Score s = new Score();
+        s.setNo(rs.getInt(1));
+        s.setStuName(rs.getString(2));
+        s.setKorean(rs.getInt(3));
+        s.setEnglish(rs.getInt(4));
+        s.setMath(rs.getInt(5));
+        s.cal();
+        
+        sList.add(s);
       }
-      
+
     } catch (SQLException e) {
       e.printStackTrace();
     }
+    return sList;
   }
 
-  public void showList(int check) {
-    System.out.println("[이름]\t[국어]\t[영어]\t[수학]\t[총점]\t[평균]\t[학점]");
+  public Score showList(String name) {
+    System.out.println("[No]\t[이름]\t[국어]\t[영어]\t[수학]\t[총점]\t[평균]\t[학점]");
     System.out.println("---------------------------------------------------");
-    System.out.print(stuList.get(check).getStuName() + "\t");
-    System.out.print(stuList.get(check).getKorean() + "\t");
-    System.out.print(stuList.get(check).getEnglish() + "\t");
-    System.out.print(stuList.get(check).getMath() + "\t");
-    System.out.print(stuList.get(check).getTotal() + "\t");
-    System.out.print(stuList.get(check).getAverage() + "\t");
-    System.out.println(stuList.get(check).getGrade());
+
+    String sql = "SELECT * FROM SCORE WHERE STUNAME = ?";
+
+    Score s = null;
+
+    try {
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, name);
+      ResultSet rs = pstmt.executeQuery();
+      while (rs.next()) {
+        s = new Score();
+        
+        s.setNo(rs.getInt(1));
+        s.setStuName(rs.getString(2));
+        s.setKorean(rs.getInt(3));
+        s.setEnglish(rs.getInt(4));
+        s.setMath(rs.getInt(5));
+        
+        s.cal();
+      }
+
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return s;
   }
 
-  public int findIdx(String name) {
-    int stuIdx = -1;
 
-    for (int i = 0; i < stuList.size(); i++) {
-      if (stuList.get(i).getStuName().equals(name)) {
-        stuIdx = i;
-      }
+  public int updateScore(int num) {
+
+    String sql =
+        "UPDATE SCORE SET KOREAN = ?, ENGLISH = ?, MATH = ?, TOTAL = ?, AVERAGE = ?, GRADE = ? WHERE NO = ?";
+
+
+    int updateResult = 0;
+
+    try {
+      Score s = searchNo(num);
+
+      s.setKorean(enterScore("국어"));
+      s.setEnglish(enterScore("영어"));
+      s.setMath(enterScore("수학"));
+      s.cal();
+
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, s.getKorean());
+      pstmt.setInt(2, s.getEnglish());
+      pstmt.setInt(3, s.getMath());
+      pstmt.setInt(4, s.getTotal());
+      pstmt.setDouble(5, s.getAverage());
+      pstmt.setString(6, s.getGrade());
+      pstmt.setInt(7, num);
+
+      updateResult = pstmt.executeUpdate();
+
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    return stuIdx;
+    return updateResult;
   }
 
-  public void updateScore(int check) {
-    int score1 = enterScore("국어");
-    int score2 = enterScore("영어");
-    int score3 = enterScore("수학");
-    stuList.get(check).setKorean(score1);
-    stuList.get(check).setEnglish(score2);
-    stuList.get(check).setMath(score3);
-
-    stuList.get(check).cal();
 
 
+  private Score searchNo(int num) throws SQLException {
+    String sql = "SELECT * FROM SCORE WHERE NO = ?";
+    Score s = null;
+
+    PreparedStatement pstmt = con.prepareStatement(sql);
+    pstmt.setInt(1, num);
+    ResultSet rs = pstmt.executeQuery();
+    while (rs.next()) {
+      s = new Score();
+      s.setNo(rs.getInt("NO"));
+      s.setStuName(rs.getString(2));
+      s.setKorean(rs.getInt(3));
+      s.setEnglish(rs.getInt(4));
+      s.setMath(rs.getInt(5));
+      s.cal();
+    }
+    return s;
   }
+
 
   // 학생 리스트 삭제 메소드
-  public void removeScore(int idx) {
-    stuList.remove(idx);
+  public int removeScore(int idx) {
+    String sql = "DELETE FROM SCORE WHERE NO = ?";
+
+    int deleteResult = 0;
+
+    try {
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, idx);
+      deleteResult = pstmt.executeUpdate();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return deleteResult;
   }
 
   // 이름입력 메소드
@@ -185,5 +252,5 @@ public class ScoreDaoSql {
       }
     }
   }
-  
+
 }
