@@ -44,8 +44,30 @@ public class ProductDto {
     return pdType;
   }
 
-  public void setPdType(String pdType) {
-    this.pdType = pdType;
+  public void setPdType(String pCode) {
+    String code = "";
+    
+    for (int i = 0; i < 2; i++) {
+      code += pCode.charAt(i);
+    }
+
+
+    switch (code) {
+      case "PO":
+        this.pdType = "아우터";
+        break;
+
+      case "PT":
+        this.pdType = "상의";
+        break;
+
+      case "PP":
+        this.pdType = "바지";
+        break;
+
+      case "PS":
+        this.pdType = "신발";
+    }
   }
 
 

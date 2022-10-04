@@ -4,11 +4,14 @@ public class Main {
 
   public static void main(String[] args) {
 
+    MemberDto loginMem = new MemberDto();
     Manager manager = new Manager();
 
     boolean run = true;
     boolean flag = false;
     boolean adminCheck = false;
+ 
+    
     while (run) {
       int selectMenu;
 
@@ -21,20 +24,36 @@ public class Main {
 
 
       switch (selectMenu) {
+        // 0. 종료
         case 0:
           run = false;
           break;
 
+        // 9. 로그아웃
         case 9:
           if (flag) {
             flag = false;
+            adminCheck = false;
           }
           break;
 
         case 1:
+          // 로그인
           if (!flag) {
-            adminCheck = manager.login();
-            flag = true;
+            if (manager.login()) {
+              loginMem = manager.currentMem;
+              if (loginMem.getmId().equals("admin")) {
+                adminCheck = true;
+              }
+              flag = true;
+            }
+          } else {
+            // 관리자 - 상품등록
+            if (adminCheck) {
+              manager.addProduct();
+            } else {
+              // 고객 - 계좌관리
+            }
           }
           break;
         case 2:

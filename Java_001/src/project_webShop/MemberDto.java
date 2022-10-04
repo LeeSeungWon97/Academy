@@ -8,6 +8,7 @@ public class MemberDto {
   private int mGender;
   private String mBirth;
   private String mEmail;
+  private int mCash;
 
   public String getmId() {
     return mId;
@@ -57,4 +58,11 @@ public class MemberDto {
     this.mEmail = mEmail;
   }
 
+  public int getmCash() {
+    return mCash;
+  }
+
+  public void setmCash(int mCash) {
+    this.mCash = mCash;
+  }
 }
