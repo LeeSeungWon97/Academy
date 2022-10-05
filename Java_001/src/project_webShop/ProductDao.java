@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Scanner;
+import oracle.jdbc.proxy.annotation.Pre;
 
 public class ProductDao {
 
@@ -48,21 +50,138 @@ public class ProductDao {
 
   // 상품추가 - pdCode 구하기
   public int setCodeNum(String pdType) {
-    int codeNum = 0;
-    
+    int count = 0;
+
     String sql = "SELECT COUNT(*) FROM PRODUCT WHERE PDTYPE = ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, pdType);
+
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        count += rs.getInt("COUNT(*)");
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return count + 1;
+  }
+
+
+  // 상품검색 - 이름
+  public ArrayList<ProductDto> searchName(String pName) {
+
+    ArrayList<ProductDto> searchResult = new ArrayList<ProductDto>();
+
+    String sql = "SELECT * FROM PRODUCT WHERE PDNAME LIKE ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, "%" + pName + "%");
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        ProductDto dto = new ProductDto();
+        dto.setPdCode(rs.getString("PDCODE"));
+        dto.setPdName(rs.getString("PDNAME"));
+        dto.setPdPrice(rs.getInt("PDPRICE"));
+        dto.setPdAmount(rs.getInt("PDAMOUNT"));
+        dto.setPdType(rs.getString("PDTYPE"));
+
+        searchResult.add(dto);
+      }
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return searchResult;
+  }
+
+
+  // 상품수정
+  public int pdUpdate(String pName, int selectNum, int change) {
+    String sql;
+    int updateResult = 0;
+
+    if (selectNum == 1) {
+      sql = "UPDATE PRODUCT SET PDPRICE = ? WHERE PDNAME = ?";
+    } else {
+      sql = "UPDATE PRODUCT SET PDAMOUNT = ? WHERE PDNAME = ?";
+    }
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, change);
+      pstmt.setString(2, pName);
+
+      updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return updateResult;
+  }
+
+
+  // 상품목록
+  public ArrayList<ProductDto> pdList(int selectNum) {
+    
+    ArrayList<ProductDto> list = new ArrayList<ProductDto>();
+    
+    String pdType = "";
+    
+    switch (selectNum) {
+      case 1:
+        pdType = "아우터";
+        break;
+      case 2:
+        pdType = "상의";
+        break;
+      case 3:
+        pdType = "하의";
+        break;
+      case 4:
+        pdType = "신발";
+        break;
+    }
+    
+    String sql = "SELECT * FROM PRODUCT WHERE PDTYPE = ?";
     
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setString(1, pdType);
+      ResultSet rs = pstmt.executeQuery();
+      
+      while(rs.next()) {
+        ProductDto dto = new ProductDto();
+        
+        dto.setPdCode(rs.getString("PDCODE"));
+        dto.setPdName(rs.getString("PDNAME"));
+        dto.setPdPrice(rs.getInt("PDPRICE"));
+        dto.setPdAmount(rs.getInt("PDAMOUNT"));
+        dto.setPdType(rs.getString("PDTYPE"));
+        
+        list.add(dto);
+      }
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     
-    return codeNum + 1;
+    return list;
   }
-  
-  
+
+
+
 }

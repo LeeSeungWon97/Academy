@@ -46,7 +46,7 @@ public class ProductDto {
 
   public void setPdType(String pCode) {
     String code = "";
-    
+
     for (int i = 0; i < 2; i++) {
       code += pCode.charAt(i);
     }
@@ -68,6 +68,11 @@ public class ProductDto {
       case "PS":
         this.pdType = "신발";
     }
+  }
+
+  @Override
+  public String toString() {
+    return "[" + pdName + "] [" + pdPrice + "] [" + pdAmount + "]";
   }
 
 

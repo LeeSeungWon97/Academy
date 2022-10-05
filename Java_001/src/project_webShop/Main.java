@@ -10,8 +10,8 @@ public class Main {
     boolean run = true;
     boolean flag = false;
     boolean adminCheck = false;
- 
-    
+
+
     while (run) {
       int selectMenu;
 
@@ -42,22 +42,68 @@ public class Main {
           if (!flag) {
             if (manager.login()) {
               loginMem = manager.currentMem;
-              if (loginMem.getmId().equals("admin")) {
+
+              if (loginMem.getmCheck().equals("Y")) {
                 adminCheck = true;
               }
+
               flag = true;
             }
+
           } else {
             // 관리자 - 상품등록
             if (adminCheck) {
               manager.addProduct();
             } else {
-              // 고객 - 계좌관리
+              // 고객 - 충전
+              manager.chargeCash();
             }
           }
           break;
+
         case 2:
-          manager.memberJoin();
+          // 회원가입
+          if (!flag) {
+            manager.memberJoin();
+          } else {
+            // 관리자 - 상품수정
+            if (adminCheck) {
+              manager.updateProduct();
+            } else {
+              // 회원 - 상품목록
+              manager.showPdList();
+            }
+          }
+          break;
+
+        case 3:
+          if (!flag) {
+          } else {
+            // 관리자 - 회원관리
+            if (adminCheck) {
+              manager.management();
+            } else {
+              // 회원 - 상품검색
+              manager.productsearch();
+            }
+          }
+          break;
+
+        case 4:
+          break;
+
+        case 5:
+          break;
+
+        case 6:
+          if (!flag) {
+          } else {
+            if (adminCheck) {
+            } else {
+              // 회원 - 내정보
+              manager.showMyInfo();
+            }
+          }
           break;
       }
     }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MemberDao {
@@ -42,8 +43,9 @@ public class MemberDao {
 
   // 회원가입 sql
   public int memberJoin(MemberDto memDto) {
-    String sql = "INSERT INTO MEMBERS(MID, MPW, MNAME, MGENDER, MBIRTH, MEMAIL, MCASH) "
-        + "VALUES(?,?,?,?,?,?,?)";
+    String sql =
+        "INSERT INTO MEMBERS(MID, MPW, MNAME, MGENDER, MBIRTH, MEMAIL, MCASH, MGRADE, MCHECK) "
+            + "VALUES(?,?,?,?,?,?,?,?,?)";
 
     int insertResult = 0;
     try {
@@ -56,6 +58,9 @@ public class MemberDao {
       pstmt.setString(5, memDto.getmBirth());
       pstmt.setString(6, memDto.getmEmail());
       pstmt.setInt(7, 0);
+      pstmt.setString(8, "B");
+      pstmt.setString(9, "N");
+
       insertResult = pstmt.executeUpdate();
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -87,6 +92,8 @@ public class MemberDao {
         mem.setmBirth(rs.getString("MBIRTH"));
         mem.setmEmail(rs.getString("MEMAIL"));
         mem.setmCash(rs.getInt("MCASH"));
+        mem.setmGrade();
+        mem.setmCheck(rs.getString("MCHECK"));
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -119,6 +126,156 @@ public class MemberDao {
     }
 
     return check;
+  }
+
+  
+  // 회원목록
+  public ArrayList<MemberDto> memListShow() {
+
+    ArrayList<MemberDto> list = new ArrayList<MemberDto>();
+
+    String sql = "SELECT * FROM MEMBERS";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        MemberDto dto = new MemberDto();
+        dto.setmId(rs.getString("MID"));
+        dto.setmPw(rs.getString("MPW"));
+        dto.setmName(rs.getString("MNAME"));
+        dto.setmGender(rs.getInt("MGENDER"));
+        dto.setmBirth(rs.getString("MBIRTH"));
+        dto.setmEmail(rs.getString("MEMAIL"));
+        dto.setmCash(rs.getInt("MCASH"));
+        dto.setmGrade();
+        dto.setmCheck(rs.getString("MCHECK"));
+
+        list.add(dto);
+      }
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return list;
+  }
+
+  // 회원조회
+  public void searchMem(String mId) {
+    String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, mId);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        System.out.print(rs.getString("MNAME") + " ");
+        System.out.print(rs.getInt("MGENDER") + " ");
+        System.out.print(rs.getString("MBIRTH") + " ");
+        System.out.print(rs.getString("MEMAIL") + " ");
+        System.out.print(rs.getInt("MCASH") + " ");
+        System.out.print(rs.getString("MGRADE") + " ");
+        System.out.println(rs.getString("MCHECK"));
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+
+  }
+
+  
+  // 관리자&블랙리스트 부여
+  public int changeCheck(int menu, String id) {
+
+    int updateResult = 0;
+    String check = "";
+
+    if (menu == 1) {
+      check = "Y";
+    } else {
+      check = "B";
+    }
+
+    String sql = "UPDATE MEMBERS SET MCHECK = ? WHERE MID = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, check);
+      pstmt.setString(2, id);
+
+      updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return updateResult;
+  }
+
+  // 금액 충전
+  public int charge(int add, MemberDto currentMem) {
+    int updateResult = 0;
+
+    String sql = "UPDATE MEMBERS SET MCASH = ? WHERE MID = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, currentMem.getmCash() + add);
+      pstmt.setString(2, currentMem.getmId());
+      updateResult = pstmt.executeUpdate();
+   
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return updateResult;
+  }
+
+  
+  // 회원 충전금액 업데이트
+  public MemberDto updateMemCash(MemberDto currentMem) {
+    String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
+    
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, currentMem.getmId());
+      ResultSet rs = pstmt.executeQuery();
+      
+      if(rs.next()) {
+        currentMem.setmCash(rs.getInt("MCASH"));
+        currentMem.setmGrade();
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    return currentMem;
+  }
+
+ 
+  // 회원 등급 업데이트
+  public void gradeUpdate(MemberDto currentMem) {
+
+    String sql = "UPDATE MEMBERS SET MGRADE = ? WHERE MID = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, currentMem.getmGrade());
+      pstmt.setString(2, currentMem.getmId());
+      int updateResult = pstmt.executeUpdate();
+   
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
   }
 
 }
