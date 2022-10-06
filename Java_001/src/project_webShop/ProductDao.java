@@ -73,7 +73,7 @@ public class ProductDao {
   }
 
 
-  // 상품검색 - 이름
+  // 상품검색 - 키워드
   public ArrayList<ProductDto> searchName(String pName) {
 
     ArrayList<ProductDto> searchResult = new ArrayList<ProductDto>();
@@ -103,6 +103,62 @@ public class ProductDao {
     }
 
     return searchResult;
+  }
+
+  // 상품검색 - 정확한 이름
+  public ProductDto searchProduct(String pName) {
+
+    ProductDto dto = new ProductDto();
+    String sql = "SELECT * FROM PRODUCT WHERE PDNAME = ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, pName);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        dto.setPdCode(rs.getString("PDCODE"));
+        dto.setPdName(rs.getString("PDNAME"));
+        dto.setPdPrice(rs.getInt("PDPRICE"));
+        dto.setPdAmount(rs.getInt("PDAMOUNT"));
+        dto.setPdType(rs.getString("PDTYPE"));
+      }
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return dto;
+  }
+
+//상품검색 - 상품코드
+  public ProductDto searchPdName(String pdCode) {
+
+    ProductDto dto = new ProductDto();
+    String sql = "SELECT * FROM PRODUCT WHERE PDCODE = ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, pdCode);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        dto.setPdCode(rs.getString("PDCODE"));
+        dto.setPdName(rs.getString("PDNAME"));
+        dto.setPdPrice(rs.getInt("PDPRICE"));
+        dto.setPdAmount(rs.getInt("PDAMOUNT"));
+        dto.setPdType(rs.getString("PDTYPE"));
+      }
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return dto;
   }
 
 
@@ -135,11 +191,11 @@ public class ProductDao {
 
   // 상품목록
   public ArrayList<ProductDto> pdList(int selectNum) {
-    
+
     ArrayList<ProductDto> list = new ArrayList<ProductDto>();
-    
+
     String pdType = "";
-    
+
     switch (selectNum) {
       case 1:
         pdType = "아우터";
@@ -154,32 +210,70 @@ public class ProductDao {
         pdType = "신발";
         break;
     }
-    
+
     String sql = "SELECT * FROM PRODUCT WHERE PDTYPE = ?";
-    
+
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setString(1, pdType);
       ResultSet rs = pstmt.executeQuery();
-      
-      while(rs.next()) {
+
+      while (rs.next()) {
         ProductDto dto = new ProductDto();
-        
+
         dto.setPdCode(rs.getString("PDCODE"));
         dto.setPdName(rs.getString("PDNAME"));
         dto.setPdPrice(rs.getInt("PDPRICE"));
         dto.setPdAmount(rs.getInt("PDAMOUNT"));
         dto.setPdType(rs.getString("PDTYPE"));
-        
+
         list.add(dto);
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
+
     return list;
+  }
+
+
+  // 상품판매
+  public void sellProduct(ProductDto pdto, int pAmount) {
+    String sql = "UPDATE PRODUCT SET PDAMOUNT = ? WHERE PDCODE = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, pdto.getPdAmount() - pAmount);
+      pstmt.setString(2, pdto.getPdCode());
+      int updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+  }
+
+
+  public int buyCancle(ProductDto pdto, int pdamount) {
+    int updateResult = 0;
+
+
+    String sql = "UPDATE PRODUCT SET PDAMOUNT = ? WHERE PDCODE = ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, pdto.getPdAmount() + pdamount);
+      pstmt.setString(1, pdto.getPdCode());
+      updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return updateResult;
   }
 
 

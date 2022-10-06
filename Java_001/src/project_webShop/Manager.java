@@ -7,6 +7,7 @@ public class Manager {
 
   MemberDao memdao = new MemberDao();
   ProductDao pdao = new ProductDao();
+  OrderDao odao = new OrderDao();
 
   Scanner scan = new Scanner(System.in);
 
@@ -26,9 +27,9 @@ public class Manager {
   public int loginMenu(boolean adminCheck) {
     System.out.println("============================");
     if (!adminCheck) {
-      System.out.println("1.충전 | 2.상품목록 | 3.상품검색 | 4.주문하기 | 5.장바구니 | 6.내정보 | 9.로그아웃 | 0.종료");
+      System.out.println("1.충전 | 2.상품목록 | 3.상품검색 | 4.주문하기 | 5.장바구니내역 | 6.내정보 | 9.로그아웃 | 0.종료");
     } else {
-      System.out.println("1.상품등록 | 2.상품수정 | 3.회원관리 | 9.로그아웃 | 0.종료");
+      System.out.println("1.상품등록 | 2.상품수정 | 3.회원관리 | 4.인기상품 | 5.회원등급 | 9.로그아웃 | 0.종료");
     }
     System.out.println("============================");
     return scan.nextInt();
@@ -272,7 +273,7 @@ public class Manager {
           System.out.print("회원아이디: ");
           memdao.searchMem(scan.next());
           break;
-          
+
         case 3:
           System.out.println("=======================");
           System.out.println("1.관리자추가 | 2.블랙리스트추가");
@@ -281,15 +282,15 @@ public class Manager {
           int menu = scan.nextInt();
           System.out.print("회원아이디: ");
           String id = scan.next();
-          int result = memdao.changeCheck(menu,id);
-          if(result == 1) {
+          int result = memdao.changeCheck(menu, id);
+          if (result == 1) {
             System.out.println("업데이트 완료");
           } else {
             System.out.println("업데이트 실패");
           }
           break;
-          
-          
+
+
       }
 
     }
@@ -299,21 +300,181 @@ public class Manager {
 
   // 회원 - 잔액충전
   public void chargeCash() {
-    
+
     System.out.println("충전할 금액 입력: ");
-    int result = memdao.charge(scan.nextInt(),currentMem);
-    if(result == 1) {
+    int result = memdao.charge(scan.nextInt(), currentMem);
+    if (result == 1) {
       currentMem = memdao.updateMemCash(currentMem);
-      memdao.gradeUpdate(currentMem);
+      System.out.println("충전완료");
+    } else {
+      System.out.println("충전실패");
+    }
+  }
+
+
+  // 회원 - 내정보
+  public void showMyInfo() {
+    System.out.println("====================");
+    System.out.println("1.내정보 | 2.구매 내역");
+    System.out.println("==================");
+    System.out.print("선택: ");
+    int select = scan.nextInt();
+    switch(select) {
+      case 1:
+        memdao.searchMem(currentMem.getmId());
+        break;
+      case 2:
+        ArrayList<OrderListDto> buyList = odao.showBuyList(currentMem.getmId());
+        if(buyList.size()>0) {
+          myBuyList(buyList);
+          
+          selectCancle(buyList);
+        } else {
+          System.out.println("구매한 내역이 없습니다.");
+        }
+        break;
+    }
+  }
+
+
+  private void myBuyList(ArrayList<OrderListDto> buyList) {
+    for(int i = 0; i < buyList.size();i++) {
+      ProductDto dto = pdao.searchPdName(buyList.get(i).getOdPdCode());
+      System.out.print(buyList.get(i).getOdNum());
+      System.out.print(dto.getPdName());
+      System.out.print(dto.getPdPrice());
+      System.out.print(buyList.get(i).getOdAmount());
+    }
+    
+  }
+
+  // 구매취소
+  private void selectCancle(ArrayList<OrderListDto> buyList) {
+    System.out.println("====================");
+    System.out.println("1.구매취소 | 2. 종료");
+    System.out.println("====================");
+    System.out.print("선택: ");
+    int selectNum = scan.nextInt();
+    if(selectNum == 1) {
+      System.out.print("취소할 상품번호: ");
+      int odnum = scan.nextInt();
+      
+      String pdcode = odao.findPdCode(odnum);
+      int pdamount = odao.findPdAmount(odnum);
+      odao.buyCancle(odnum);
+      
+      ProductDto pdto = new ProductDto();
+      pdto = pdao.searchPdName(pdcode);
+      int result = pdao.buyCancle(pdto,pdamount);
+      
+      if(result == 1) {
+        System.out.println("구매취소 완료");
+      } else {
+        System.out.println("구매취소 실패");
+      }
+      
       
     }
     
   }
 
-  public void showMyInfo() {
-    memdao.searchMem(currentMem.getmId());
-    
+  public int selectPurchase() {
+    System.out.println("===============");
+    System.out.println("1.구매 | 2.장바구니");
+    System.out.println("===============");
+    System.out.print("선택: ");
+    return scan.nextInt();
   }
 
- 
+
+  // 회원 - 상품주문
+  public void order() {
+    ProductDto pdto = new ProductDto();
+
+    System.out.print("구매할 상품: ");
+    String pName = scan.next();
+    pdto = pdao.searchProduct(pName);
+    System.out.print("구매 수량: ");
+    int pAmount = scan.nextInt();
+    int purCash = pdto.getPdPrice() * pAmount;
+    if (currentMem.getmCash() >= purCash) {
+      int updateResult = odao.purchase(pdto, pAmount, currentMem);
+      if (updateResult == 1) {
+        memdao.deposit(purCash, currentMem);
+        memdao.gradeUpdate(currentMem);
+        pdao.sellProduct(pdto, pAmount);
+        System.out.println("구매완료");
+      }
+    } else {
+      System.out.println("포인트가 부족합니다.");
+    }
+  }
+
+  public void cart() {
+    ProductDto pdto = new ProductDto();
+
+    System.out.print("상품 이름: ");
+    String pName = scan.next();
+    pdto = pdao.searchProduct(pName);
+    System.out.print("수량: ");
+    int pAmount = scan.nextInt();
+    int insertResult = odao.addProduct(pdto, pAmount, currentMem);
+
+    if (insertResult > 0) {
+      System.out.println("장바구니 등록 완료");
+    } else {
+      System.out.println("장바구니 등록 실패");
+    }
+  }
+
+  public void showMyCart() {
+    ArrayList<OrderCartDto> list = odao.showCartList(currentMem);
+    int total = 0;
+    if (list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        System.out.println(list.get(i).toString());
+        total += list.get(i).getpTotal();
+      }
+      System.out.println("총 금액: " + total);
+    } else {
+      System.out.println("장바구니에 상품이 없습니다.");
+    }
+  }
+  
+  public void mprize() {
+    ArrayList<String> m2List = new ArrayList<>();
+    System.out.println(" 회원순위 ");
+    m2List = memdao.mprize();
+    System.out.println("회원명\t\t누적금액");
+    int j = 1;
+    int k = 0;
+    for (int i = 0; i <= 2; i++) {
+        System.out.println("상품명\t\t판매수량");
+        System.out.println(i+1 + "위");
+        System.out.println(m2List.get(k)+"\t\t"+m2List.get(j));
+        System.out.println("=================================");
+        j += 2;
+        k += 2;
+    }
+}
+  
+  public void pprize() {
+    ArrayList<String> cList = new ArrayList<>();
+    System.out.println(" 인기순위 ");
+    cList = memdao.pprize();
+    int j = 1;
+    int k = 0;
+    for (int i = 0; i <= 2; i++) {
+        System.out.println("상품명\t\t판매수량");
+        System.out.println(i+1 + "위");
+        System.out.println(cList.get(k)+"\t\t"+cList.get(j));
+        System.out.println("=================================");
+        j += 2;
+        k += 2;
+    }
+}
+
+
+  
+
 }

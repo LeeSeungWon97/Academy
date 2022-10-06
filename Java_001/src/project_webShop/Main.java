@@ -77,8 +77,7 @@ public class Main {
           break;
 
         case 3:
-          if (!flag) {
-          } else {
+          if (flag) {
             // 관리자 - 회원관리
             if (adminCheck) {
               manager.management();
@@ -90,19 +89,39 @@ public class Main {
           break;
 
         case 4:
-          break;
-
-        case 5:
-          break;
-
-        case 6:
-          if (!flag) {
-          } else {
-            if (adminCheck) {
+          if (flag) {
+            if (!adminCheck) {
+              // 주문하기
+              int select = manager.selectPurchase();
+              if (select == 1) {
+                manager.order();
+              } else {
+                manager.cart();
+              }
             } else {
-              // 회원 - 내정보
-              manager.showMyInfo();
+              // 인기상품
+              manager.pprize();
             }
+          }
+          break;
+
+        // 장바구니
+        case 5:
+          if (flag) {
+            if (!adminCheck) {
+              // 장바구니 리스트
+              manager.showMyCart();
+            } else {
+              // 최고 회원
+              manager.mprize();
+            }
+          }
+          break;
+
+        // 6. 내정보
+        case 6:
+          if (flag && !adminCheck) {
+            manager.showMyInfo();
           }
           break;
       }

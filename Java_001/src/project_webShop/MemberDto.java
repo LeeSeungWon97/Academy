@@ -11,6 +11,7 @@ public class MemberDto {
   private int mCash;
   private String mGrade;
   private String mCheck;
+  private int mTotal;
 
   public String getmId() {
     return mId;
@@ -73,13 +74,13 @@ public class MemberDto {
   }
 
   public void setmGrade() {
-    if (this.mCash > 2000000) {
+    if (this.mTotal > 2000000) {
       this.mGrade = "D";
-    } else if (this.mCash > 1000000) {
+    } else if (this.mTotal > 1000000) {
       this.mGrade = "P";
-    } else if (this.mCash > 500000) {
+    } else if (this.mTotal > 500000) {
       this.mGrade = "G";
-    } else if(this.mCash > 200000) {
+    } else if(this.mTotal > 200000) {
       this.mGrade = "S";
     } else {
       this.mGrade = "B";
@@ -93,11 +94,21 @@ public class MemberDto {
   public void setmCheck(String mCheck) {
     this.mCheck = mCheck;
   }
+  
+  
+
+  public int getmTotal() {
+    return mTotal;
+  }
+
+  public void setmTotal(int mTotal) {
+    this.mTotal = mTotal;
+  }
 
   @Override
   public String toString() {
     return "[" + mId + "] [" + mPw + "] [" + mName + "] [" + mGender + "] [" + mBirth + "] ["
-        + mEmail + "] [" + mCash + "] [" + mGrade + "] [" + mCheck + "]";
+        + mEmail + "] [" + mCash + "] [" + mGrade + "] [" + mCheck + "] [" + mTotal + "]";
   }
 
 

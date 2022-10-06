@@ -178,8 +178,8 @@ public class MemberDao {
         System.out.print(rs.getString("MBIRTH") + " ");
         System.out.print(rs.getString("MEMAIL") + " ");
         System.out.print(rs.getInt("MCASH") + " ");
-        System.out.print(rs.getString("MGRADE") + " ");
-        System.out.println(rs.getString("MCHECK"));
+        System.out.println(rs.getString("MGRADE") + " ");
+//        System.out.println(rs.getString("MCHECK"));
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -235,6 +235,26 @@ public class MemberDao {
     }
     return updateResult;
   }
+  
+//비용 지불
+ public int deposit(int price, MemberDto currentMem) {
+   int updateResult = 0;
+
+   String sql = "UPDATE MEMBERS SET MCASH = ?, MTOTAL = ? WHERE MID = ?";
+   try {
+     Connection con = getConnection();
+     PreparedStatement pstmt = con.prepareStatement(sql);
+     pstmt.setInt(1, currentMem.getmCash() - price);
+     pstmt.setInt(2, currentMem.getmTotal() + price);
+     pstmt.setString(3, currentMem.getmId());
+     updateResult = pstmt.executeUpdate();
+  
+   } catch (Exception e) {
+     // TODO Auto-generated catch block
+     e.printStackTrace();
+   }
+   return updateResult;
+ }
 
   
   // 회원 충전금액 업데이트
@@ -261,21 +281,66 @@ public class MemberDao {
 
  
   // 회원 등급 업데이트
-  public void gradeUpdate(MemberDto currentMem) {
+  public int gradeUpdate(MemberDto currentMem) {
 
+    int updateResult = 0;
     String sql = "UPDATE MEMBERS SET MGRADE = ? WHERE MID = ?";
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setString(1, currentMem.getmGrade());
       pstmt.setString(2, currentMem.getmId());
-      int updateResult = pstmt.executeUpdate();
+      updateResult = pstmt.executeUpdate();
    
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
+   return updateResult; 
+  }
+  
+  public ArrayList<String> pprize() {
+    ArrayList<String> clist = new ArrayList<>();
+
+    String sql = " SELECT PRODUCT.PDNAME, SUM(ODAMOUNT) FROM PRODUCT, ORDERLIST "
+            + " WHERE (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) "
+            + " GROUP BY PRODUCT.PDNAME "
+            + " ORDER BY SUM(ODAMOUNT) DESC ";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      ResultSet rs = pstmt.executeQuery();
+      while (rs.next()) {
+        clist.add(rs.getString(1));
+        clist.add(String.format("%d",rs.getInt(2)));
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return clist;
+  }
+  
+  public ArrayList<String> mprize() {
+    ArrayList<String> clist = new ArrayList<>();
+        
+    String sql = " SELECT MEMBERS.MID , SUM(ODAMOUNT*PDPRICE) FROM PRODUCT, ORDERLIST,MEMBERS "
+            + " WHERE (MEMBERS.MID = ORDERLIST.ODMID) AND (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) "
+            + " GROUP BY MID "
+            + " ORDER BY SUM(ODAMOUNT*PDPRICE) DESC ";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      ResultSet rs = pstmt.executeQuery();
+      while (rs.next()) {
+        clist.add(rs.getString(1));
+        clist.add(String.format("%d",rs.getInt(2)));
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return clist;
   }
 
 }
