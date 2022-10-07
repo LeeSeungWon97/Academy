@@ -45,9 +45,14 @@ public class Main {
 
               if (loginMem.getmCheck().equals("Y")) {
                 adminCheck = true;
+                flag = true;
+              } else if(loginMem.getmCheck().equals("B")) {
+                System.out.println("사용할 수 없는 계정입니다.");
+                break;
+              } else {
+                flag = true;
               }
 
-              flag = true;
             }
 
           } else {

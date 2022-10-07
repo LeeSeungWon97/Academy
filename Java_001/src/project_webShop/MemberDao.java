@@ -44,8 +44,8 @@ public class MemberDao {
   // 회원가입 sql
   public int memberJoin(MemberDto memDto) {
     String sql =
-        "INSERT INTO MEMBERS(MID, MPW, MNAME, MGENDER, MBIRTH, MEMAIL, MCASH, MGRADE, MCHECK) "
-            + "VALUES(?,?,?,?,?,?,?,?,?)";
+        "INSERT INTO MEMBERS(MID, MPW, MNAME, MGENDER, MBIRTH, MEMAIL, MCASH, MGRADE, MCHECK, MTOTAL) "
+            + "VALUES(?,?,?,?,?,?,?,?,?,?)";
 
     int insertResult = 0;
     try {
@@ -60,6 +60,7 @@ public class MemberDao {
       pstmt.setInt(7, 0);
       pstmt.setString(8, "B");
       pstmt.setString(9, "N");
+      pstmt.setInt(10, 0);
 
       insertResult = pstmt.executeUpdate();
     } catch (Exception e) {
@@ -92,8 +93,9 @@ public class MemberDao {
         mem.setmBirth(rs.getString("MBIRTH"));
         mem.setmEmail(rs.getString("MEMAIL"));
         mem.setmCash(rs.getInt("MCASH"));
-        mem.setmGrade();
+        mem.setmGrade(rs.getString("MGRADE"));
         mem.setmCheck(rs.getString("MCHECK"));
+        mem.setmTotal(rs.getInt("MTOTAL"));
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -128,7 +130,7 @@ public class MemberDao {
     return check;
   }
 
-  
+
   // 회원목록
   public ArrayList<MemberDto> memListShow() {
 
@@ -149,8 +151,9 @@ public class MemberDao {
         dto.setmBirth(rs.getString("MBIRTH"));
         dto.setmEmail(rs.getString("MEMAIL"));
         dto.setmCash(rs.getInt("MCASH"));
-        dto.setmGrade();
+        dto.setmGrade(rs.getString("MGRADE"));
         dto.setmCheck(rs.getString("MCHECK"));
+        dto.setmTotal(rs.getInt("MTOTAL"));
 
         list.add(dto);
       }
@@ -179,7 +182,8 @@ public class MemberDao {
         System.out.print(rs.getString("MEMAIL") + " ");
         System.out.print(rs.getInt("MCASH") + " ");
         System.out.println(rs.getString("MGRADE") + " ");
-//        System.out.println(rs.getString("MCHECK"));
+      } else {
+        System.out.println("등록되지 않은 회원입니다.");
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -189,7 +193,7 @@ public class MemberDao {
 
   }
 
-  
+
   // 관리자&블랙리스트 부여
   public int changeCheck(int menu, String id) {
 
@@ -228,7 +232,27 @@ public class MemberDao {
       pstmt.setInt(1, currentMem.getmCash() + add);
       pstmt.setString(2, currentMem.getmId());
       updateResult = pstmt.executeUpdate();
-   
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return updateResult;
+  }
+
+//비용 지불
+  public int deposit(int price, MemberDto currentMem) {
+    int updateResult = 0;
+
+    String sql = "UPDATE MEMBERS SET MCASH = ?, MTOTAL = ? WHERE MID = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, currentMem.getmCash() - price);
+      pstmt.setInt(2, currentMem.getmTotal() + price);
+      pstmt.setString(3, currentMem.getmId());
+      updateResult = pstmt.executeUpdate();
+
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -237,49 +261,48 @@ public class MemberDao {
   }
   
 //비용 지불
- public int deposit(int price, MemberDto currentMem) {
-   int updateResult = 0;
+  public int recieve(int price, MemberDto currentMem) {
+    int updateResult = 0;
+    int cash = 0;
+    String sql = "UPDATE MEMBERS SET MCASH = ?, MTOTAL = ? WHERE MID = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, currentMem.getmCash() + price);
+      pstmt.setInt(2, currentMem.getmTotal() - price);
+      pstmt.setString(3, currentMem.getmId());
+      updateResult = pstmt.executeUpdate();
+      
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return updateResult;
+  }
 
-   String sql = "UPDATE MEMBERS SET MCASH = ?, MTOTAL = ? WHERE MID = ?";
-   try {
-     Connection con = getConnection();
-     PreparedStatement pstmt = con.prepareStatement(sql);
-     pstmt.setInt(1, currentMem.getmCash() - price);
-     pstmt.setInt(2, currentMem.getmTotal() + price);
-     pstmt.setString(3, currentMem.getmId());
-     updateResult = pstmt.executeUpdate();
-  
-   } catch (Exception e) {
-     // TODO Auto-generated catch block
-     e.printStackTrace();
-   }
-   return updateResult;
- }
 
-  
   // 회원 충전금액 업데이트
   public MemberDto updateMemCash(MemberDto currentMem) {
     String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
-    
+
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setString(1, currentMem.getmId());
       ResultSet rs = pstmt.executeQuery();
-      
-      if(rs.next()) {
+
+      if (rs.next()) {
         currentMem.setmCash(rs.getInt("MCASH"));
-        currentMem.setmGrade();
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
+
     return currentMem;
   }
 
- 
+
   // 회원 등급 업데이트
   public int gradeUpdate(MemberDto currentMem) {
 
@@ -291,56 +314,92 @@ public class MemberDao {
       pstmt.setString(1, currentMem.getmGrade());
       pstmt.setString(2, currentMem.getmId());
       updateResult = pstmt.executeUpdate();
-   
+
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-   return updateResult; 
+    return updateResult;
   }
-  
-  public ArrayList<String> pprize() {
-    ArrayList<String> clist = new ArrayList<>();
 
+  public ArrayList<String[]> pprize() {
+    ArrayList<String[]> cList = new ArrayList<String[]>();
     String sql = " SELECT PRODUCT.PDNAME, SUM(ODAMOUNT) FROM PRODUCT, ORDERLIST "
-            + " WHERE (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) "
-            + " GROUP BY PRODUCT.PDNAME "
-            + " ORDER BY SUM(ODAMOUNT) DESC ";
+        + " WHERE (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) " + " GROUP BY PRODUCT.PDNAME "
+        + " ORDER BY SUM(ODAMOUNT) DESC ";
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       ResultSet rs = pstmt.executeQuery();
       while (rs.next()) {
-        clist.add(rs.getString(1));
-        clist.add(String.format("%d",rs.getInt(2)));
+        if (cList.size() > 4) {
+          break;
+        }
+        String[] arr1 = new String[2];
+        arr1[0] = rs.getString(1);
+        arr1[1] = String.format("%d", rs.getInt(2));
+        cList.add(arr1);
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    return clist;
-  }
-  
-  public ArrayList<String> mprize() {
-    ArrayList<String> clist = new ArrayList<>();
-        
-    String sql = " SELECT MEMBERS.MID , SUM(ODAMOUNT*PDPRICE) FROM PRODUCT, ORDERLIST,MEMBERS "
-            + " WHERE (MEMBERS.MID = ORDERLIST.ODMID) AND (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) "
-            + " GROUP BY MID "
-            + " ORDER BY SUM(ODAMOUNT*PDPRICE) DESC ";
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      ResultSet rs = pstmt.executeQuery();
-      while (rs.next()) {
-        clist.add(rs.getString(1));
-        clist.add(String.format("%d",rs.getInt(2)));
-      }
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return clist;
+    return cList;
   }
 
+  public ArrayList<String[]> mprize() {
+    ArrayList<String[]> m2List = new ArrayList<String[]>();
+
+
+    String sql = " SELECT MEMBERS.MID , SUM(ODAMOUNT*PDPRICE) FROM PRODUCT, ORDERLIST,MEMBERS "
+        + " WHERE (MEMBERS.MID = ORDERLIST.ODMID) AND (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) "
+        + " GROUP BY MID " + " ORDER BY SUM(ODAMOUNT*PDPRICE) DESC ";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      ResultSet rs = pstmt.executeQuery();
+      while (rs.next()) {
+        if (m2List.size() > 4) {
+          break;
+        }
+        String[] arr1 = new String[2];
+        arr1[0] = rs.getString(1);
+        arr1[1] = String.format("%d", rs.getInt(2));
+        m2List.add(arr1);
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return m2List;
+  }
+
+  public MemberDto callCurrentInfo(MemberDto currentMem) {
+    String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
+    
+    MemberDto newInfo = new MemberDto();
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, currentMem.getmId());
+      ResultSet rs = pstmt.executeQuery();
+      
+      if(rs.next()) {
+        newInfo.setmId(rs.getString("MID"));
+        newInfo.setmPw(rs.getString("MPW"));
+        newInfo.setmName(rs.getString("MNAME"));
+        newInfo.setmGender(rs.getInt("MGENDER"));
+        newInfo.setmBirth(rs.getString("MBIRTH"));
+        newInfo.setmEmail(rs.getString("MEMAIL"));
+        newInfo.setmCash(rs.getInt("MCASH"));
+        newInfo.setmGrade(rs.getString("MGRADE"));
+        newInfo.setmCheck(rs.getString("MCHECK"));
+        newInfo.setmTotal(rs.getInt("MTOTAL"));  
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return newInfo;
+  }
 }

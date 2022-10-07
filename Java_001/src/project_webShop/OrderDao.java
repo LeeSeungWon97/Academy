@@ -157,10 +157,6 @@ public class OrderDao {
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setInt(1, odnum);
       int deleteResult = pstmt.executeUpdate();
-      
-      if(deleteResult == 1) {
-        
-      }
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

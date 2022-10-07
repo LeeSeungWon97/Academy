@@ -73,18 +73,8 @@ public class MemberDto {
     return mGrade;
   }
 
-  public void setmGrade() {
-    if (this.mTotal > 2000000) {
-      this.mGrade = "D";
-    } else if (this.mTotal > 1000000) {
-      this.mGrade = "P";
-    } else if (this.mTotal > 500000) {
-      this.mGrade = "G";
-    } else if(this.mTotal > 200000) {
-      this.mGrade = "S";
-    } else {
-      this.mGrade = "B";
-    }
+  public void setmGrade(String mGrade) {
+    this.mGrade = mGrade;
   }
 
   public String getmCheck() {

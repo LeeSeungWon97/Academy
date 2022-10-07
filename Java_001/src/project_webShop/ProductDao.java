@@ -132,6 +132,29 @@ public class ProductDao {
 
     return dto;
   }
+  
+  public boolean ProductCheck(String pName) {
+
+    boolean check = false;
+    String sql = "SELECT * FROM PRODUCT WHERE PDNAME = ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, pName);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        check = true;
+      }
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return check;
+  }
 
 //상품검색 - 상품코드
   public ProductDto searchPdName(String pdCode) {
@@ -266,7 +289,7 @@ public class ProductDao {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setInt(1, pdto.getPdAmount() + pdamount);
-      pstmt.setString(1, pdto.getPdCode());
+      pstmt.setString(2, pdto.getPdCode());
       updateResult = pstmt.executeUpdate();
     } catch (Exception e) {
       // TODO Auto-generated catch block
