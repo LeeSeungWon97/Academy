@@ -1,32 +1,86 @@
-package project_webShop;
+package project_web;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class MemberDao {
 
-  Scanner scan = new Scanner(System.in);
 
+  // DB연결
   public static Connection getConnection() throws Exception {
     Class.forName("oracle.jdbc.OracleDriver");
-    Connection con = DriverManager.getConnection("jdbc:oracle:thin:@//106.243.194.229:5757/xe",
-        "PHS_DBA", "1111");
+    Connection con =
+        DriverManager.getConnection("jdbc:oracle:thin:@//localhost:1521/xe", "P_DBA", "1111");
     return con;
   }
 
-  // ID 확인 sql
-  public boolean idCheck(String id) {
+
+  // 내정보(로그인ID) 불러오기 - SELECT SQL
+  public MemberDto callMyInfo(String id) {
+    MemberDto currentInfo = new MemberDto();
     String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, id);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        currentInfo.setmId(rs.getString("MID"));
+        currentInfo.setmPw(rs.getString("MPW"));
+        currentInfo.setmName(rs.getString("MNAME"));
+        currentInfo.setmGender(rs.getInt("MGENDER"));
+        currentInfo.setmBirth(rs.getString("MBIRTH"));
+        currentInfo.setmEmail(rs.getString("MEMAIL"));
+        currentInfo.setmCash(rs.getInt("MCASH"));
+        currentInfo.setmGrade(rs.getString("MGRADE"));
+        currentInfo.setmCheck(rs.getString("MCHECK"));
+        currentInfo.setmTotal(rs.getInt("MTOTAL"));
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+
+    return currentInfo;
+  }
+
+  // 내정보(로그인ID) 최신화 - UPDATE SQL
+  public int updateMyInfo(MemberDto mdto) {
+    int updateResult = 0;
+    String sql = "UPDATE MEMBERS SET MCASH = ?, MGRADE = ?, MCHECK = ?, MTOTAL = ? WHERE MID = ?";
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, mdto.getmCash());
+      pstmt.setString(2, mdto.getmGrade());
+      pstmt.setString(3, mdto.getmCheck());
+      pstmt.setInt(4, mdto.getmTotal());
+      pstmt.setString(5, mdto.getmId());
+      updateResult = pstmt.executeUpdate();
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return updateResult;
+  }
+
+  // ID&PW확인 - SELECT SQL
+  public boolean loginCheck(String id, String pw) {
     boolean check = false;
+    String sql = "SELECT * FROM MEMBERS WHERE MID = ? AND MPW = ?";
 
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setString(1, id);
+      pstmt.setString(2, pw);
 
       ResultSet rs = pstmt.executeQuery();
 
@@ -41,149 +95,144 @@ public class MemberDao {
     return check;
   }
 
-  // 회원가입 sql
-  public int memberJoin(MemberDto memDto) {
+
+  // ID검색 - SELECT SQL
+  public boolean searchId(String id) {
+    boolean check = false;
+    String sql = "SELECT MID FROM MEMBERS WHERE MID = ?";
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, id);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        check = true;
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return check;
+  }
+
+
+  // 회원가입 - INSERT SQL
+  public int join(MemberDto mdto) {
+    int insertResult = 0;
+
     String sql =
         "INSERT INTO MEMBERS(MID, MPW, MNAME, MGENDER, MBIRTH, MEMAIL, MCASH, MGRADE, MCHECK, MTOTAL) "
             + "VALUES(?,?,?,?,?,?,?,?,?,?)";
 
-    int insertResult = 0;
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, memDto.getmId());
-      pstmt.setString(2, memDto.getmPw());
-      pstmt.setString(3, memDto.getmName());
-      pstmt.setInt(4, memDto.getmGender());
-      pstmt.setString(5, memDto.getmBirth());
-      pstmt.setString(6, memDto.getmEmail());
-      pstmt.setInt(7, 0);
-      pstmt.setString(8, "B");
-      pstmt.setString(9, "N");
-      pstmt.setInt(10, 0);
+      pstmt.setString(1, mdto.getmId());
+      pstmt.setString(2, mdto.getmPw());
+      pstmt.setString(3, mdto.getmName());
+      pstmt.setInt(4, mdto.getmGender());
+      pstmt.setString(5, mdto.getmBirth());
+      pstmt.setString(6, mdto.getmEmail());
+      pstmt.setInt(7, mdto.getmCash());
+      pstmt.setString(8, mdto.getmGrade());
+      pstmt.setString(9, mdto.getmCheck());
+      pstmt.setInt(10, mdto.getmTotal());
 
       insertResult = pstmt.executeUpdate();
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
-
     return insertResult;
   }
 
-  // 로그인 sql
-  public MemberDto login(String id, String pw) {
-    MemberDto mem = new MemberDto();
 
-    String sql = "SELECT * FROM MEMBERS WHERE MID = ? AND MPW = ?";
+  // MEMBERS 리스트 불러오기 - SELECT SQL
+  public void showMembers(String mCheck) {
+    ArrayList<MemberDto> memList = new ArrayList<MemberDto>();
+
+    String sql = "SELECT * FROM MEMBERS WHERE MCHECK = ?";
 
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, id);
-      pstmt.setString(2, pw);
+      pstmt.setString(1, mCheck);
       ResultSet rs = pstmt.executeQuery();
 
-      if (rs.next()) {
-        mem.setmId(rs.getString("MID"));
-        mem.setmPw(rs.getString("MPW"));
-        mem.setmName(rs.getString("MNAME"));
-        mem.setmGender(rs.getInt("MGENDER"));
-        mem.setmBirth(rs.getString("MBIRTH"));
-        mem.setmEmail(rs.getString("MEMAIL"));
-        mem.setmCash(rs.getInt("MCASH"));
-        mem.setmGrade(rs.getString("MGRADE"));
-        mem.setmCheck(rs.getString("MCHECK"));
-        mem.setmTotal(rs.getInt("MTOTAL"));
+      while (rs.next()) {
+        MemberDto mdto = new MemberDto();
+        mdto.setmId(rs.getString("MID"));
+        mdto.setmPw(rs.getString("MPW"));
+        mdto.setmName(rs.getString("MNAME"));
+        mdto.setmGender(rs.getInt("MGENDER"));
+        mdto.setmBirth(rs.getString("MBIRTH"));
+        mdto.setmEmail(rs.getString("MEMAIL"));
+        mdto.setmCash(rs.getInt("MCASH"));
+        mdto.setmGrade(rs.getString("MGRADE"));
+        mdto.setmCheck(rs.getString("MCHECK"));
+        mdto.setmTotal(rs.getInt("MTOTAL"));
+
+        memList.add(mdto);
       }
+
+      for (int i = 0; i < memList.size(); i++) {
+        System.out.println(memList.get(i).toString());
+      }
+
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
-    return mem;
   }
 
-  // 로그인 체크 sql
-  public boolean loginCheck(String id, String pw) {
-    boolean check = false;
-    String sql = "SELECT * FROM MEMBERS WHERE MID = ? AND MPW = ?";
+
+  // MEMBERS의 MCHECK 변경 - UPDATE SQL
+  public int changeMcheck(String mCheck, String id) {
+    String sql = "UPDATE MEMBERS SET MCHECK = ? WHERE MID = ?";
+    int updateResult = 0;
+
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, id);
-      pstmt.setString(2, pw);
-      ResultSet rs = pstmt.executeQuery();
-
-      if (!rs.next()) {
-        System.out.println("아이디 / 비밀번호가 틀렸습니다.");
-      } else {
-        System.out.println("로그인 성공!");
-        check = true;
-      }
+      pstmt.setString(1, mCheck);
+      pstmt.setString(2, id);
+      updateResult = pstmt.executeUpdate();
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
-    return check;
+    return updateResult;
   }
 
 
-  // 회원목록
-  public ArrayList<MemberDto> memListShow() {
+  // 최고회원리스트 - SELECT SQL
+  public ArrayList<String[]> showBestMember() {
+    ArrayList<String[]> memList = new ArrayList<String[]>();
 
-    ArrayList<MemberDto> list = new ArrayList<MemberDto>();
+    String sql =
+        " SELECT MEMBERS.MID AS 회원아이디 , SUM(ODAMOUNT*PDPRICE) AS 총구매가격 FROM PRODUCT, ORDERLIST,MEMBERS "
+            + " WHERE (MEMBERS.MID = ORDERLIST.ODMID) AND (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) "
+            + " GROUP BY MID " + " ORDER BY SUM(ODAMOUNT*PDPRICE) DESC ";
 
-    String sql = "SELECT * FROM MEMBERS";
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       ResultSet rs = pstmt.executeQuery();
 
       while (rs.next()) {
-        MemberDto dto = new MemberDto();
-        dto.setmId(rs.getString("MID"));
-        dto.setmPw(rs.getString("MPW"));
-        dto.setmName(rs.getString("MNAME"));
-        dto.setmGender(rs.getInt("MGENDER"));
-        dto.setmBirth(rs.getString("MBIRTH"));
-        dto.setmEmail(rs.getString("MEMAIL"));
-        dto.setmCash(rs.getInt("MCASH"));
-        dto.setmGrade(rs.getString("MGRADE"));
-        dto.setmCheck(rs.getString("MCHECK"));
-        dto.setmTotal(rs.getInt("MTOTAL"));
+        if (memList.size() > 3) {
+          break;
+        }
 
-        list.add(dto);
-      }
+        String[] arr1 = new String[2];
+        arr1[0] = rs.getString("회원아이디");
+        arr1[1] = String.format("%d", rs.getInt("총구매가격"));
 
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return list;
-  }
-
-  // 회원조회
-  public void searchMem(String mId) {
-    String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
-
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, mId);
-      ResultSet rs = pstmt.executeQuery();
-
-      if (rs.next()) {
-        System.out.print(rs.getString("MNAME") + " ");
-        System.out.print(rs.getInt("MGENDER") + " ");
-        System.out.print(rs.getString("MBIRTH") + " ");
-        System.out.print(rs.getString("MEMAIL") + " ");
-        System.out.print(rs.getInt("MCASH") + " ");
-        System.out.println(rs.getString("MGRADE") + " ");
-      } else {
-        System.out.println("등록되지 않은 회원입니다.");
+        memList.add(arr1);
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -191,215 +240,50 @@ public class MemberDao {
     }
 
 
+    return memList;
   }
 
 
-  // 관리자&블랙리스트 부여
-  public int changeCheck(int menu, String id) {
 
-    int updateResult = 0;
-    String check = "";
-
-    if (menu == 1) {
-      check = "Y";
-    } else {
-      check = "B";
-    }
-
-    String sql = "UPDATE MEMBERS SET MCHECK = ? WHERE MID = ?";
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, check);
-      pstmt.setString(2, id);
-
-      updateResult = pstmt.executeUpdate();
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return updateResult;
-  }
-
-  // 금액 충전
-  public int charge(int add, MemberDto currentMem) {
+  // 소지금 충전 - UPDATE SQL
+  public int addCash(int balance, MemberDto mdto) {
     int updateResult = 0;
 
     String sql = "UPDATE MEMBERS SET MCASH = ? WHERE MID = ?";
+
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setInt(1, currentMem.getmCash() + add);
-      pstmt.setString(2, currentMem.getmId());
+      pstmt.setInt(1, mdto.getmCash() + balance);
+      pstmt.setString(2, mdto.getmId());
       updateResult = pstmt.executeUpdate();
-
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    return updateResult;
-  }
 
-//비용 지불
-  public int deposit(int price, MemberDto currentMem) {
-    int updateResult = 0;
-
-    String sql = "UPDATE MEMBERS SET MCASH = ?, MTOTAL = ? WHERE MID = ?";
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setInt(1, currentMem.getmCash() - price);
-      pstmt.setInt(2, currentMem.getmTotal() + price);
-      pstmt.setString(3, currentMem.getmId());
-      updateResult = pstmt.executeUpdate();
-
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return updateResult;
-  }
-  
-//비용 지불
-  public int recieve(int price, MemberDto currentMem) {
-    int updateResult = 0;
-    int cash = 0;
-    String sql = "UPDATE MEMBERS SET MCASH = ?, MTOTAL = ? WHERE MID = ?";
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setInt(1, currentMem.getmCash() + price);
-      pstmt.setInt(2, currentMem.getmTotal() - price);
-      pstmt.setString(3, currentMem.getmId());
-      updateResult = pstmt.executeUpdate();
-      
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
     return updateResult;
   }
 
 
-  // 회원 충전금액 업데이트
-  public MemberDto updateMemCash(MemberDto currentMem) {
-    String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
+  // 회원삭제 - DELETE SQL
+  public int deleteMember(String id) {
+    int deleteResult = 0;
+    String sql = "DELETE MEMBERS WHERE MID = ?";
 
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, currentMem.getmId());
-      ResultSet rs = pstmt.executeQuery();
+      pstmt.setString(1, id);
 
-      if (rs.next()) {
-        currentMem.setmCash(rs.getInt("MCASH"));
-      }
+      deleteResult = pstmt.executeUpdate();
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
-    return currentMem;
+    return deleteResult;
   }
 
 
-  // 회원 등급 업데이트
-  public int gradeUpdate(MemberDto currentMem) {
 
-    int updateResult = 0;
-    String sql = "UPDATE MEMBERS SET MGRADE = ? WHERE MID = ?";
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, currentMem.getmGrade());
-      pstmt.setString(2, currentMem.getmId());
-      updateResult = pstmt.executeUpdate();
-
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return updateResult;
-  }
-
-  public ArrayList<String[]> pprize() {
-    ArrayList<String[]> cList = new ArrayList<String[]>();
-    String sql = " SELECT PRODUCT.PDNAME, SUM(ODAMOUNT) FROM PRODUCT, ORDERLIST "
-        + " WHERE (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) " + " GROUP BY PRODUCT.PDNAME "
-        + " ORDER BY SUM(ODAMOUNT) DESC ";
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      ResultSet rs = pstmt.executeQuery();
-      while (rs.next()) {
-        if (cList.size() > 4) {
-          break;
-        }
-        String[] arr1 = new String[2];
-        arr1[0] = rs.getString(1);
-        arr1[1] = String.format("%d", rs.getInt(2));
-        cList.add(arr1);
-      }
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return cList;
-  }
-
-  public ArrayList<String[]> mprize() {
-    ArrayList<String[]> m2List = new ArrayList<String[]>();
-
-
-    String sql = " SELECT MEMBERS.MID , SUM(ODAMOUNT*PDPRICE) FROM PRODUCT, ORDERLIST,MEMBERS "
-        + " WHERE (MEMBERS.MID = ORDERLIST.ODMID) AND (PRODUCT.PDCODE = ORDERLIST.ODPDCODE) "
-        + " GROUP BY MID " + " ORDER BY SUM(ODAMOUNT*PDPRICE) DESC ";
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      ResultSet rs = pstmt.executeQuery();
-      while (rs.next()) {
-        if (m2List.size() > 4) {
-          break;
-        }
-        String[] arr1 = new String[2];
-        arr1[0] = rs.getString(1);
-        arr1[1] = String.format("%d", rs.getInt(2));
-        m2List.add(arr1);
-      }
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return m2List;
-  }
-
-  public MemberDto callCurrentInfo(MemberDto currentMem) {
-    String sql = "SELECT * FROM MEMBERS WHERE MID = ?";
-    
-    MemberDto newInfo = new MemberDto();
-    try {
-      Connection con = getConnection();
-      PreparedStatement pstmt = con.prepareStatement(sql);
-      pstmt.setString(1, currentMem.getmId());
-      ResultSet rs = pstmt.executeQuery();
-      
-      if(rs.next()) {
-        newInfo.setmId(rs.getString("MID"));
-        newInfo.setmPw(rs.getString("MPW"));
-        newInfo.setmName(rs.getString("MNAME"));
-        newInfo.setmGender(rs.getInt("MGENDER"));
-        newInfo.setmBirth(rs.getString("MBIRTH"));
-        newInfo.setmEmail(rs.getString("MEMAIL"));
-        newInfo.setmCash(rs.getInt("MCASH"));
-        newInfo.setmGrade(rs.getString("MGRADE"));
-        newInfo.setmCheck(rs.getString("MCHECK"));
-        newInfo.setmTotal(rs.getInt("MTOTAL"));  
-      }
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return newInfo;
-  }
 }

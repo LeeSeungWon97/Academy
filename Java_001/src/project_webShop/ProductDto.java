@@ -1,4 +1,4 @@
-package project_webShop;
+package project_web;
 
 public class ProductDto {
 
@@ -67,14 +67,13 @@ public class ProductDto {
 
       case "PS":
         this.pdType = "신발";
+        break;
     }
   }
-
+  
   @Override
   public String toString() {
     return "[" + pdName + "] [" + pdPrice + "] [" + pdAmount + "]";
   }
-
-
 
 }

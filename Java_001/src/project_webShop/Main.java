@@ -1,138 +1,151 @@
-package project_webShop;
+package project_web;
 
 public class Main {
 
   public static void main(String[] args) {
 
-    MemberDto loginMem = new MemberDto();
     Manager manager = new Manager();
 
     boolean run = true;
-    boolean flag = false;
-    boolean adminCheck = false;
-
+    boolean loginFlag = false; // 로그인 상태 확인
+    int memberFlag = 0; // 회원종류 구분 (1.일반회원 2.관리자 3.블랙리스트)
 
     while (run) {
-      int selectMenu;
-
-      // 메뉴 출력
-      if (!flag) {
-        selectMenu = manager.initialMenu();
-      } else {
-        selectMenu = manager.loginMenu(adminCheck);
-      }
 
 
-      switch (selectMenu) {
-        // 0. 종료
-        case 0:
-          run = false;
-          break;
+      // 로그인이 안된경우
+      if (!loginFlag) {
+        int selectNum = manager.initalMenu();
 
-        // 9. 로그아웃
-        case 9:
-          if (flag) {
-            flag = false;
-            adminCheck = false;
-          }
-          break;
+        switch (selectNum) {
+          // 0.종료
+          case 0:
+            run = false;
+            break;
 
-        case 1:
-          // 로그인
-          if (!flag) {
-            if (manager.login()) {
-              loginMem = manager.currentMem;
+          // 1.로그인
+          case 1:
+            // 로그인 상태 확인
+            loginFlag = manager.login();
 
-              if (loginMem.getmCheck().equals("Y")) {
-                adminCheck = true;
-                flag = true;
-              } else if(loginMem.getmCheck().equals("B")) {
-                System.out.println("사용할 수 없는 계정입니다.");
-                break;
+            if (loginFlag) {
+              memberFlag = manager.mCheck();
+
+              if (memberFlag == 3) { // 블랙리스트 회원인 경우 - 로그아웃
+
+                loginFlag = false;
+                System.out.println("이용할 수 없는 아이디입니다.");
+
               } else {
-                flag = true;
+                System.out.println("로그인 성공");
               }
 
-            }
-
-          } else {
-            // 관리자 - 상품등록
-            if (adminCheck) {
-              manager.addProduct();
             } else {
-              // 고객 - 충전
-              manager.chargeCash();
+              System.out.println("아이디/비밀번호가 틀렸습니다.");
             }
-          }
-          break;
+            break;
 
-        case 2:
-          // 회원가입
-          if (!flag) {
+          // 2. 회원가입
+          case 2:
             manager.memberJoin();
-          } else {
-            // 관리자 - 상품수정
-            if (adminCheck) {
-              manager.updateProduct();
-            } else {
-              // 회원 - 상품목록
-              manager.showPdList();
-            }
-          }
-          break;
+            break;
+        }
+      } else { // 로그인 된경우
 
-        case 3:
-          if (flag) {
-            // 관리자 - 회원관리
-            if (adminCheck) {
-              manager.management();
-            } else {
-              // 회원 - 상품검색
-              manager.productsearch();
-            }
-          }
-          break;
+        // 일반회원인 경우
+        if (memberFlag == 1) {
+          int selectNum = manager.memberMenu();
 
-        case 4:
-          if (flag) {
-            if (!adminCheck) {
-              // 주문하기
-              int select = manager.selectPurchase();
-              if (select == 1) {
-                manager.order();
-              } else {
-                manager.cart();
-              }
-            } else {
-              // 인기상품
-              manager.pprize();
-            }
-          }
-          break;
+          switch (selectNum) {
 
-        // 장바구니
-        case 5:
-          if (flag) {
-            if (!adminCheck) {
-              // 장바구니 리스트
-              manager.showMyCart();
-            } else {
-              // 최고 회원
-              manager.mprize();
-            }
-          }
-          break;
+            // 0.종료
+            case 0:
+              run = false;
+              break;
 
-        // 6. 내정보
-        case 6:
-          if (flag && !adminCheck) {
-            manager.showMyInfo();
+            // 9.로그아웃
+            case 9:
+              loginFlag = false;
+              break;
+
+            // 1. 충전
+            case 1:
+              manager.chargeCash();
+              break;
+
+            // 2. 상품목록
+            case 2:
+              manager.showProductList();
+              break;
+
+            // 3. 상품검색
+            case 3:
+              manager.searchProduct();
+              break;
+
+            // 4. 주문하기
+            case 4:
+              manager.order();
+              break;
+
+            // 5. 장바구니내역
+            case 5:
+              manager.showCart();
+              break;
+
+            // 6. 내정보
+            case 6:
+              manager.showMyInfo();
+              break;
+
           }
-          break;
+
+        } else { // 관리자인 경우
+          int selectNum = manager.adminMenu();
+
+          switch (selectNum) {
+
+            // 0.종료
+            case 0:
+              run = false;
+              break;
+
+            // 9.로그아웃
+            case 9:
+              loginFlag = false;
+              break;
+
+            // 1.상품등록
+            case 1:
+              manager.addProduct();
+              break;
+
+            // 2. 상품정보수정
+            case 2:
+              manager.reviseProduct();
+              break;
+
+            // 3. 회원관리
+            case 3:
+              manager.memberManagement();
+              break;
+
+            // 4.인기상품
+            case 4:
+              manager.bestProduct();
+              break;
+
+            // 5.최고회원
+            case 5:
+              manager.bestMember();
+              break;
+          }
+
+        }
+
       }
     }
-
-    System.out.println("[종료]");
+    System.out.println("\n종료");
 
   }
 

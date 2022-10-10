@@ -1,4 +1,4 @@
-package project_webShop;
+package project_web;
 
 public class MemberDto {
 
@@ -84,8 +84,6 @@ public class MemberDto {
   public void setmCheck(String mCheck) {
     this.mCheck = mCheck;
   }
-  
-  
 
   public int getmTotal() {
     return mTotal;
@@ -100,7 +98,5 @@ public class MemberDto {
     return "[" + mId + "] [" + mPw + "] [" + mName + "] [" + mGender + "] [" + mBirth + "] ["
         + mEmail + "] [" + mCash + "] [" + mGrade + "] [" + mCheck + "] [" + mTotal + "]";
   }
-
-
 
 }

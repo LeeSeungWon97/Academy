@@ -1,4 +1,4 @@
-package project_webShop;
+package project_web;
 
 public class OrderListDto {
 
@@ -47,6 +47,5 @@ public class OrderListDto {
   public void setOdAmount(int odAmount) {
     this.odAmount = odAmount;
   }
-
 
 }
