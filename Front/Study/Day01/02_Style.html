@@ -1,0 +1,38 @@
+<!-- 02_style.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02_style</title>
+    <link rel="stylesheet" href="style02.css">
+    <link rel="stylesheet" href="color01.css">
+</head>
+
+<body>
+    <h1>02_style.html</h1>
+    <p>본문내용1</p>
+    <p>본문내용2</p>
+    <hr>
+    <a href="03_style.html">03_style.html</a>
+
+    <h3 style="color: yellow;" class="color_red">제목태그3</h3>
+    <h3 class="color_blue">제목태그3</h3>
+    <h3>제목태그3</h3>
+    <h3>제목태그3</h3>
+    <hr>
+    <h4 id="h4_tag"></h4>
+    <button onclick="testFunction()">버튼</button>
+
+</body>
+
+<script>
+    function testFunction() {
+        document.getElementById('h4_tag').innerText = "h4태그입니다."
+    }
+</script>
+
+</html>

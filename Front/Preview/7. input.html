@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- form atction: 데이터를 전송시킬 목적지 URL를 지정 -->
+    <!-- 
+        method
+        get방식: 보안에 취약. input box의 내용이 url에 노출.
+        post방식: input box의 내용이 url에 노출되지 않음.
+     -->
+
+     <fieldset>
+        <form action="acess" method="post">
+            <!-- input box 만들기. name: 텍스트 박스의 값을 저장하는 변수와 같은 역할. required: 필수 입력 값으로 설정.-->
+            <!-- value: 입력 값. readonly: 읽기만 가능. disable: 비활성화 -->
+            ID: <input type="text" name="id" required> <br>
+
+            <!-- password: 입력 문자가 비공개(*)로 처리 -->
+            PW: <input type="password" name="pw" required> <br>
+            
+            <!-- 순수 버튼의 역할. value: 버튼 캡션 -->
+            <input type="button" value="로그인">
+
+            <!-- 서버로 데이터를 넘길 수 있는 버튼 생성 -->
+            <input type="submit" value="로그인">
+            <button>로그인2</button>
+        </form>
+     </fieldset>
+
+     <fieldset>
+        <!-- checkbox와 radio는 category가 같으면 name을 중복해서 설정 -->
+        <!-- 서버에서 확인하기 편하게 하기 위해서 -->
+        <form action="join">
+            <input type="checkbox" name="hobby" value="music"> 음악
+            <input type="checkbox" name="hobby" value="movie"> 영화
+            <input type="checkbox" name="hobby" value="walking"> 걷기
+
+            <!-- checked="checked": 항목의 초기 체크 설정 -->
+            <input type="radio" name="gender" value="male" checked> 남자
+            <input type="radio" name="gender" value="female"> 여자
+
+            <button>회원가입</button>
+        </form>
+     </fieldset>
+
+     <fieldset>
+        <form action="info" method="post">
+            <input type="text" name="name" value="이승원"> <br>
+
+            <!-- hidden: 사용자에게 보이지 않는 숨겨진 입력 필드 생성 -->
+            <input type="hidden" name="pid" value="971011-1234567">
+
+            <input type="submit" value="전송">
+
+        </form>
+     </fieldset>
+
+     <fieldset>
+        <form action="upload" method="post">
+            첨부파일 : <input type="file" name="file" multiple> <!-- multiple: 여러개의 파일 첨부 가능 -->
+            <button>업로드</button>
+        </form>
+     </fieldset>
+
+     <fieldset>
+        <form action="select">
+            <select name="car">
+                <option value="Benz">벤츠</option>
+                <option value="Audi">아우디</option>
+                <option value="Kia">기아</option>
+            </select>
+            <button>전송</button>
+        </form>
+     </fieldset>
+
+     <fieldset>
+        <form action="etc">
+            email: <input type="email"> <br>
+            url: <input type="url"> <br>
+            time: <input type="time"> <br>
+            dateTime: <input type="datetime-local"> <br>
+            <button>전송</button>
+        </form>
+     </fieldset>
+</body>
+</html>

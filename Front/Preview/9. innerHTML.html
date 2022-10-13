@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    입력창: <input type="text" id="inBox"> <br>
+    <input type="button" value="Click" onclick="print()">
+    <hr>
+    출력: <h2 id="result">TEST</h2>
+
+    <script>
+        // console.dir : 객체의 데이터를 보고 싶을 때 사용.
+        console.dir(document.getElementById("result"));
+
+        function print() {
+            let inBoxData = document.getElementById("inBox").value;
+            console.log(inBoxData);
+            // alert(inBoxData);   // alert(): 경고창 띄우기.
+
+            // innerHTML : HTML 요소의 내용을 변경할 때 사용. HTML요소에 id를 부여해야 함.
+            document.getElementById("result").innerHTML = inBoxData;
+
+        }
+    </script>
+</body>
+</html>
