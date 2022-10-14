@@ -1,0 +1,81 @@
+<!-- 02_inputType.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02_inputType.html</title>
+</head>
+
+<body>
+    <h1>02_inputType.html</h1>
+    <hr>
+    <form action="radioTest" method="get">
+        <!-- 
+            - radio: 같은 name중 하나만 체크를 할때 사용 
+            - name / value 필요
+        -->
+        <h3> type = "radio" </h3>
+        <h4>경품선택</h4>
+        모니터 <input type="radio" name="goods" value="monitor"> <br>
+        키보드 <input type="radio" name="goods" value="keyboard"> <br>
+        마우스 <input type="radio" name="goods" value="mouse"> <br>
+        <input type="submit">
+    </form>
+
+    <br>
+    <hr>
+    <!-- 
+        - checkbox: 여러 개를 선택해야 할 경우 사용 
+        - name / valus 필요
+        - 변수명이 하나이고 여러 개의 데이터를 넘김 >> 배열형태로 전달
+    -->
+    <form action="checkboxTest" method="get">
+        <h3>type = "checkbox"</h3>
+        <h4>관심분야</h4>
+        액션: <input type="checkbox" name="interest" value="action"> <br>
+        코미디: <input type="checkbox" name="interest" value="comedy"> <br>
+        스릴러: <input type="checkbox" name="interest" value="thriller"> <br>
+        로맨스: <input type="checkbox" name="interest" value="romance"> <br>
+        <input type="submit">
+    </form>
+
+    <br>
+    <hr>
+
+    <!-- 
+        - select: 주어진 옵션중 하나를 고를때 사용
+     -->
+    <form action="selectTest" method="get" onsubmit="submitLogin()">
+        <h3>type = "select"</h3>
+        이메일 <br>
+        <input type="text" name="emailId">@
+        <input type="text" name="domain" id="domain">
+
+        <!-- 
+            onchange: 값이 바뀌는경우 이벤트 발생
+            this: 함수를 호출한 태그를 의미
+         -->
+        <select onchange="domainSelect(this)">
+            <option value="">직접입력</option>
+            <option value="daum.com">다음</option>
+            <option value="naver.com">네이버</option>
+            <option value="gmail.com">구글</option>
+            <option value="kakao.com">카카오</option>
+        </select>
+
+        <input type="submit">
+    </form>
+
+    <script>
+        function domainSelect(obj) {
+            document.getElementById('domain').value = obj.value;
+        }
+    </script>
+
+</body>
+
+</html>

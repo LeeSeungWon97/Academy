@@ -1,0 +1,113 @@
+<!-- 01_JoinPage.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01_JoinPage.html</title>
+    <style>
+        table,
+        td,
+        th {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            padding: 10px;
+        }
+
+        td {
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>01_JoinPage.html</h1>
+    <h3>form태그</h3>
+
+    <!-- action: 어디로 보내줄지(주소지) / method: 어떤방식으로 보내줄지(전송방법) -->
+    <!--
+        get: ~~ Day03/loginTest?userId=yyyy&userPw=11111
+        post: ~~ Day03/loginTest 
+     -->
+    <form action="loginTest" method="get">
+        아이디: <input type="text" name="userId"> <!-- 문자입력 -->
+        <button type="button">중복체크</button> <br> <!-- button type 기본값: submit -->
+        비밀번호: <input type="password" name="userPw"> <br> <!-- 문자입력+입력값 가리기-->
+        <input type="submit" value="로그인"> <!-- form태그 실행. 입력 데이터를 action주소로 넘기기 -->
+    </form>
+    <br>
+
+    <hr> <br>
+
+
+    <!-- onsubmit: submit시도가 일어났을때 "~~"을 해라 -->
+    <form action="loginTest" method="get" onsubmit="return joinCheck()">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th colspan="3">회원가입</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <th rowspan="3">필수정보</th>
+                    <td>아이디</td>
+                    <td><input type="text" id="inputMid" name="mId"></td>
+                </tr>
+                <tr>
+                    <td>비밀번호</td>
+                    <td><input type="password" name="mPw"></td>
+                </tr>
+                <tr>
+                    <td>이름</td>
+                    <td><input type="text" name="mName"></td>
+                </tr>
+                <tr>
+                    <th rowspan="2">선택정보</th>
+                    <td>주소</td>
+                    <td><input type="text" name="mAdrress"></td>
+                </tr>
+                <tr>
+                    <td>이메일</td>
+                    <td><input type="email" name="mEmail"></td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td colspan="3">
+                        <input type="submit" value="회원가입">
+                    </td>
+                </tr>
+            </tfoot>
+
+        </table>
+
+    </form>
+
+    <script>
+        function joinCheck(){
+            // alert('joinCheck() 호출');
+            // 아이디 입력값을 확인
+            var idVal = document.getElementById('inputMid').value;
+
+            if(idVal.length <= 0){
+                alert('아이디는 필수정보입니다.');
+                return false;
+            }
+        }
+    </script>
+</body>
+
+</html>
