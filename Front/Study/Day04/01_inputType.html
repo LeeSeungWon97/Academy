@@ -1,0 +1,43 @@
+<!-- 01_inputType.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01_inputType.html</title>
+</head>
+
+<body>
+    <h1>01_inputType.html</h1>
+    <h3>type="date"</h3>
+    <input type="date" id="inputDate">
+    <button onclick="btnFunc()">버튼</button>
+    <p id="outputDate"></p>
+    <hr>
+    <h3>type="file"</h3>
+    <input type="file" onchange="inputFile(this)">
+
+    <hr>
+
+    <script>
+        function inputFile(obj){
+            console.log(obj.value);
+        }
+
+        function btnFunc() {
+            var dateObj = document.getElementById('inputDate');
+            if (dateObj.value == "") {
+                alert('날짜를 선택해주세요')
+            } else {
+                document.getElementById('outputDate').innerText = dateObj.value;
+            }
+
+            dateObj.value = "";
+        }
+    </script>
+</body>
+
+</html>

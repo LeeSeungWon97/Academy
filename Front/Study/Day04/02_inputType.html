@@ -1,0 +1,44 @@
+<!-- 02_inputType.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02_inputType.html</title>
+</head>
+
+<body>
+    <h1>02_inputType.html</h1>
+    <select name="" id="selectId01">
+        <option value="title">제목</option>
+        <option value="contents">내용</option>
+        <option value="writer">작성자</option>
+    </select>
+    <input type="color" id="inputColor">
+    <button onclick="colorChange()">변경</button>
+    <hr>
+
+    <h3 id="title">제목</h3>
+    <h3 id="contents">내용</h3>
+    <h3 id="writer">작성자</h3>
+
+    <hr>
+    <a href="" id="aTag1"> a태그1 입니다.</a>
+    <a href="" id="aTag2"> a태그2 입니다.</a>
+    <script>
+        document.getElementById('aTag1').innerText = '<h3>a태그1 입니다.</h3>';
+        document.getElementById('aTag2').innerHTML = '<h3>a태그2 입니다.</h3>';
+
+        function colorChange() {
+            var selectObj = document.getElementById('selectId01');
+            var colorObj = document.getElementById('inputColor');
+
+            document.getElementById(selectObj.value).style.color = colorObj.value;
+        }
+    </script>
+</body>
+
+</html>
