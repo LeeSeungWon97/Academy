@@ -1,0 +1,84 @@
+<!-- 01_tag.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        h1 {
+            background-color: red;
+        }
+
+        p {
+            background-color: blue;
+        }
+
+        span {
+            background-color: greenyellow;
+            margin: 5px;
+            padding: 5px;
+        }
+
+        #div1 {
+            background-color: coral;
+            border: 3px solid black;
+            margin: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<!-- 
+    block tag >> 출력되는 내용이 별로 없어도 한줄 전부 자신 영역
+    
+    inline tag >> 자신이 출력하는 만큼만 자신의 영역
+
+    &nbsp; >> whitespace 1칸
+
+    margin  >> 경계선(border) 바깥여백 (inline인 경우 margin-top & bottom적용 X)
+    padding >> 경계선(border) 안쪽여백
+
+    display >> 해당 요소의 범위를 설정 
+
+ -->
+
+<body>
+    <h1>01_html</h1>
+    <p>p태그 &nbsp;&nbsp;&nbsp;&nbsp;입니다.</p>
+
+    <hr>
+
+    <span>span태그 입니다.</span>
+    <a href="">a태그</a>
+    <span>span태그 입니다.</span>
+
+    <hr>
+
+    <div id="div1">
+        div태그 입니다.
+    </div>
+    <div id="div1">
+        div태그 입니다.
+    </div>
+
+    <div style="background-color: brown; padding:5px; border: 5px solid black">
+        <h2>mainBox</h2>
+
+        <div
+            style="padding: 5px; background-color: beige; width: 100px; display: inline-block; border: 5px solid black;">
+            subBox
+        </div>
+
+        <div
+            style="padding: 5px; background-color: beige; width: 100px; display: inline-block; border: 5px solid black;">
+            subBox
+        </div>
+    </div>
+
+</body>
+
+</html>

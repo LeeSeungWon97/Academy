@@ -1,0 +1,60 @@
+<!-- 02_boxsizing.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div.mainBox {
+            box-sizing: content-box;
+            font-size: 0px;
+            width: 300px;
+            /* height: 200px; */
+            background-color: brown;
+            border: 5px solid black;
+        }
+
+        div.box1 {
+            box-sizing: border-box;
+            background-color: bisque;
+            height: 100px;
+            width: 50px;
+            border: 2px solid green;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>02_boxsizing.html</h1>
+
+    <div class="mainBox">
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+        <div class="box1"></div>
+    </div>
+
+</body>
+
+</html>
