@@ -1,0 +1,74 @@
+<!-- 01_display.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01_display.html</title>
+    <style>
+        div.mainBox {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        .d_none {
+            display: none;
+        }
+
+        div.clickBox {
+            border: 1px solid black;
+            width: 200px;
+            height: 100px;
+        }
+
+        div.clickBox:hover{
+            background-color: aqua;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>01_display.html</h1>
+    <button onclick="showHide(this)">보이기/숨기기</button>
+    <hr>
+
+    <div class="mainBox" id="mainBox">
+        <h2>div.mainBox</h2>
+    </div>
+
+    <hr>
+
+    <div class="clickBox" onclick="clickBox(this)">
+
+    </div>
+
+    <script>
+        function clickBox(clickObj) {
+            console.log(clickObj);
+        }
+    </script>
+
+    <script>
+        function showHide(btnObj) {
+            console.log("showHide()호출");
+
+            // div선택
+            var divObj = document.getElementById('mainBox');
+
+            var objClassList = divObj.classList;
+
+            if (objClassList.contains('d_none')) {
+                objClassList.remove('d_none');
+            } else {
+                objClassList.add('d_none');
+            }
+
+        }
+    </script>
+</body>
+
+</html>
