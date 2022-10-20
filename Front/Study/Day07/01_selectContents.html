@@ -1,0 +1,107 @@
+<!-- 01_selectContents.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01_selectContents.html</title>
+    <style>
+        button:hover {
+            background-color: black;
+            color: white;
+            cursor: pointer;
+        }
+
+        div {
+            padding: 10px;
+            border: 1px solid black;
+        }
+
+        .d_none {
+            display: none;
+        }
+
+        .selectBtn {
+            background-color: black;
+            color: white;
+        }
+
+        td {
+            width: 100px;
+        }
+
+        table {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: auto;
+            margin-left: auto ;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>01_selectContents.html</h1>
+    <button class="selectBtn" onclick="btnClick(this,'0')">메뉴1</button>
+    <button onclick="btnClick(this,'1')">메뉴2</button>
+    <button onclick="btnClick(this,'2')">메뉴3</button>
+
+    <script>
+        function btnClick(btnObj, number) {
+            // 모든 button에서 selectBtn 클래스 값을 제거
+            var btnTag = document.getElementsByTagName('button');
+
+            for (var i = 0; i < btnTag.length; i++) {
+                btnTag[i].classList.remove('selectBtn');
+            }
+
+            // btnObj에 selectBtn 클래스 값을 추가
+            btnObj.classList.add('selectBtn');
+
+            // 클래스가 contentsBox인 모든 태그에 d_none 클래스 부여
+            var contentsObj = document.getElementsByClassName('contentsBox');
+
+            for (var i = 0; i < contentsObj.length; i++) {
+                contentsObj[i].classList.add('d_none');
+            }
+
+            // 선택한 버튼의 contentsBox를 표시
+            contentsObj[number].classList.remove('d_none');
+
+
+        }
+    </script>
+    <hr>
+    <div class="mainBox">
+        <h3>mainBox</h3>
+        <div class="contentsBox">
+            <h4>contentsBox - 1</h4>
+            <table border="1">
+                <tr>
+                    <td>1</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>4</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="contentsBox d_none">
+            <h4>contentsBox - 2</h4>
+            <p style="text-align: center;">가운데 정렬</p>
+            <p style="text-align: left;">왼쪽 정렬</p>
+            <p style="text-align: right;">오른쪽 정렬</p>
+        </div>
+
+        <div class="contentsBox d_none" style="text-align: center;">
+            <h4>contentsBox - 3</h4>
+        </div>
+    </div>
+
+</body>
+
+</html>
