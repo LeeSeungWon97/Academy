@@ -1,0 +1,123 @@
+<!-- mainPage.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="mainStyle.css">
+    <style>
+        div.contents>div {
+            margin: auto;
+            width: 500px;
+            height: auto;
+        }
+
+        div.contents>div>form {
+            border: 2px solid black;
+            background-color: white;
+            padding: 10px;
+        }
+
+        div.contents>div>form>table {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        th,
+        td {
+            padding: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>loginPage</h1>
+    </div>
+
+    <div class="menu">
+        <ul>
+            <li>
+                <a href="mainPage.html">메인페이지</a>
+            </li>
+            <li>
+                <a href="loginPage.html">로그인</a>
+            </li>
+            <li>
+                <a href="joinPage.html">회원가입</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="contents">
+        <h2>컨텐츠영역</h2>
+        <h3>loginPage.html</h3>
+
+        <div>
+            <form action="" onsubmit="return loginFormCheck()">
+                <table>
+                    <tr>
+                        <th colspan="2">로그인</th>
+                    </tr>
+                    <tr>
+                        <th>아이디</th>
+                        <td>
+                            <input type="text" id="inputId">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>비밀번호</th>
+                        <td>
+                            <input type="text" id="inputPw">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            <p id="checkMsg"></p>
+                            <button type="submit">로그인</button>
+                        </th>
+                    </tr>
+                </table>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <h2>하단영역</h2>
+    </div>
+
+
+    <script>
+        function loginFormCheck() {
+            var msgObj = document.getElementById('checkMsg');
+   
+            // 1. 아이디 입력 테그의 value.length > 0 확인
+            var idObj = document.getElementById('inputId');
+            var idLength = idObj.value.length;
+            if (idLength == 0) {
+                msgObj.innerText = '아이디를 입력해주세요';
+                msgObj.style.color = 'red';
+                idObj.focus();
+                return false;
+            }
+
+            // 2. 비밀번호 입력 테그의 value.length > 0 확인
+            var pwObj = document.getElementById('inputPw');
+            var pwLength = pwObj.value.length;
+
+            if (pwLength == 0) {
+                msgObj.innerText = '비밀번호를 입력해주세요';
+                msgObj.style.color = 'red';
+                pwObj.focus();
+                return false;
+            }
+
+        }
+    </script>
+</body>
+
+</html>

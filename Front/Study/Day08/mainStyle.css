@@ -1,0 +1,41 @@
+/* mainStyle.css */
+
+div {
+    border: 3px solid black;
+    margin-bottom: 5px;
+}
+
+div.header {
+    text-align: center;
+    background-color: lightskyblue;
+}
+
+div.menu {
+    background-color: black;
+}
+
+div.menu>ul {
+    padding: 10px;
+}
+
+div.menu>ul>li {
+    list-style: none;
+    display: inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+div.menu>ul>li>a{
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+div.contents{
+    padding: 10px;
+    background-color: beige;
+}
+
+div.footer{
+    text-align: center;
+    background-color: cornflowerblue;
+}
