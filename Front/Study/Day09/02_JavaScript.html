@@ -1,0 +1,102 @@
+<!-- 02_Java Script.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick="testFunc01()">버튼</button>
+    <hr>
+    <button onclick="btnClick01()">테스트01</button>
+    <button onclick="btnClick02()">테스트02</button>
+
+    <script>
+        var btn01Check = false;
+
+        function btnClick01() {
+            btn01Check = true;
+        }
+
+        function btnClick02() {
+            if (btn01Check) {
+                console.log('테스트2 버튼입니다.');
+            } else {
+                alert('테스트1 버튼을 눌러주세요.');
+            }
+        }
+
+        function testFunc01() {
+            console.log('testFunc01 호출');
+        }
+
+        function testFunc02() {
+            console.log('testFunc02 호출');
+            return 100;
+        }
+
+        var val1 = testFunc01();
+        var val2 = testFunc02();
+
+        console.log(val1);
+        console.log(val2);
+
+        // 조건문 if, switch
+        // 반복문 for, while
+        let number = 10;
+        if (number < 20) {
+            console.log("number는 20보다 작다.");
+        } else if (number < 25) {
+            console.log("number는 20보다 크고 25보다 작다.");
+        } else {
+            console.log("number는 25보다 크다.")
+        }
+
+        var checkVal = 10;
+        switch (checkVal) {
+            case 10:
+                console.log('case 10');
+                break;
+            case 20:
+                console.log('case 20');
+                break;
+        }
+
+        var i = 10;
+        console.log('for문 시작 전: ' + i);
+        for (var i = 0; i < 5; i++) {
+            console.log("i = " + i);
+        }
+        console.log('for문 종료 후: ' + i);
+
+
+        let j = 10;
+        console.log('for문 시작 전: ' + j);
+        for (let j = 0; j < 5; j++) {
+            console.log("j = " + j);
+        }
+        console.log('for문 종료 후: ' + j);
+
+        let whileVal = 10;
+        while (whileVal > 0) {
+            whileVal--;
+            if (whileVal == 5) {
+                break;
+            }
+            console.log(whileVal);
+        }
+
+        var btnObj = document.getElementsByTagName('button');
+        console.log(btnObj.length);
+        for (var i = 0; i < btnObj.length; i++) {
+            console.log(btnObj[i]);
+        }
+    </script>
+</body>
+
+</html>

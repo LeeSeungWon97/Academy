@@ -1,0 +1,90 @@
+<!-- 01_Java Script -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <h1 id="h1Id"> Java Script </h1>
+
+
+
+    <script>
+        document.getElementById('h1Id').innerText = '자바스크립트';
+
+        var number = 10;
+        let number2 = 20;
+        const number3 = 30;
+
+        console.log(number);
+        console.log(number2);
+        console.log(number3);
+
+        number = 100;
+        number2 = 200;
+        console.log(number);
+        console.log(number2);
+
+        // const 변수: 한번 저장을 하면 값을 바꿀수 없음.
+        // number3 = 300;
+        // console.log(number3);
+
+
+        // let: 블록을 기준으로 사용가능한 변수
+        var varVal1 = 100;
+        let letVal1 = 200;
+
+        if (true) {
+            console.log('if안쪽 varVal1 : ' + varVal1);
+            console.log('if안쪽 letVal1 : ' + letVal1);
+            var varVal2 = 1000;
+            let letVal2 = 2000;
+            console.log('if안쪽 varVal2 : ' + varVal2);
+            console.log('if안쪽 letVal1 : ' + letVal2);
+        }
+        console.log('if바깥쪽 varVal1 : ' + varVal1);
+        console.log('if바깥쪽 letVal1 : ' + letVal1);
+
+        console.log('if바깥쪽 varVal2 : ' + varVal2);
+        // console.log('if바깥쪽 letVal2 : ' + letVal2);
+
+
+
+        // var: 함수를 기준으로 사용가능한 변수
+
+        function testFunc1() {
+            var funcVal1 = 10;
+            console.log(funcVal1);
+        }
+
+        function testFunc2() {
+            console.log(funcVal1);
+        }
+
+        testFunc1();
+        // testFunc2();
+
+
+        let strVal1 = 'abcd';
+        var strVal2 = 'efgh';
+        let numberVal1 = 10;
+        var numberVal2 = 20;
+        var h1Obj = document.getElementById('h1Id');
+
+        console.log('strVal1: ' + strVal1);
+        console.log('numberVal1: ' + numberVal1);
+        console.log('h1Obj: ' + h1Obj);
+        console.log(typeof strVal1);
+        console.log(typeof numberVal1);
+        console.log(typeof h1Obj);
+    </script>
+</body>
+
+</html>
