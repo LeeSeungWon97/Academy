@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>성적계산</h1>
+    점수입력 : <input type="text" id="score">
+    <br><br>
+    <button onclick="inputScore()">입력</button>
+    <button onclick="outputScore()">출력</button>
+    <button onclick="totalScore()">총점</button>
+    <button onclick="averageScore()">평균</button>
+    <hr>
+    <h2 id="output">
+
+    </h2>
+
+    <script>
+        var scores = new Array;
+        var outputObj = document.getElementById('output');
+        var total = 0;
+
+        function inputScore() {
+            var inputObj = document.getElementById('score');
+            var inputData = Number(inputObj.value);
+
+            // NaN: not a number.
+            if (!isNaN(inputData) && inputObj.value.length != 0) {
+                scores.push(inputData);
+                outputObj.innerText = inputData + " 입력";
+            } else {
+                outputObj.innerText = "숫자를 입력해주세요";
+            }
+            inputObj.value = '';
+        }
+
+        function outputScore() {
+            outputObj.innerText = "입력된 점수는 " + scores + "입니다.";
+        }
+
+        function totalScore() {
+            for (var i = 0; i < scores.length; i++) {
+                total += scores[i];
+            }
+
+            outputObj.innerText = "점수의 총합은 " + total + "점 입니다.";
+        }
+
+        function averageScore() {
+            var avg = total / scores.length;
+            outputObj.innerText = "평균: " + avg + "점";
+        }
+    </script>
+</body>
+
+</html>

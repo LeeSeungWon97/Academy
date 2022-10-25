@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // array - index
+        // object - key & value
+        var student = new Object();
+        
+        // student[key] = value; ||  student.key = value;
+        student['name'] = '이승원';
+        student.age = 26;
+
+        console.log(student['name']);
+        console.log(student.age);
+
+        var member = {
+            mid: 'yyyy',
+            mpw: '1111'
+        };
+        console.log(member.mid);
+        console.log(member['mpw']);
+
+        var memberList = [];
+        var member01 = {};
+        member01.mid = 'id01';
+        member01.mpw = 'pw01';
+        memberList.push(member01);
+
+        var member02 = {};
+        member02.mid = 'id02';
+        member02.mpw = 'pw02';
+        memberList.push(member02);
+
+        console.log(memberList);
+        console.log(memberList[0].mid);
+        console.log(memberList[0].mpw);
+
+        var scoreList = {};
+        scoreList.학생1 = {'자바' : 100, '오라클': 80};
+
+        console.log(scoreList.학생1.자바);
+        console.log(scoreList.학생1.오라클);
+
+        scoreList['testFucn'] = function(){
+            console.log('testFunc() 호출');
+        }
+
+        scoreList.testFucn();
+
+        for(var key in scoreList){
+            console.log(key);
+            console.log(scoreList[key]);
+        }
+    </script>
+</body>
+
+</html>

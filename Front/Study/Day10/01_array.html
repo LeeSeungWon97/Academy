@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <h1 id="id01">h1태그</h1>
+
+    <script>
+        // array
+        var profile = new Array();
+        profile[0] = '2022-10-25';
+        profile[1] = '화요일';
+        profile[2] = 1000;
+        profile[3] = true;
+        profile[4] = document.getElementById('id01');
+        console.log('profile[0]: ' + profile[0]);
+        console.log('profile[1]: ' + profile[1]);
+        console.log('profile[2]: ' + profile[2]);
+        console.log('profile[3]: ' + profile[3]);
+        console.log('profile[4]: ' + profile[4]);
+        console.log(profile.length);
+        console.log(typeof profile);
+        console.log(profile);
+
+
+        // push: 배열 마지막에 새로운 값을 추가하는 기능
+        profile.push('자바스크립트');
+        console.log(profile.length);
+        console.log(profile);
+
+        // pop: return을 받을 수 있음. 마지막 인덱스의 데이터를 꺼내는 기능
+        var profileVal = profile.pop();
+        console.log(profileVal);
+        console.log(profile.length);
+        console.log(profile);
+
+        // reverse: array index의 순서를 반대로 바꿔주는 기능
+        profile.reverse();
+        console.log(profile);
+
+        // sort: 오름차순정렬
+        profile.sort();
+        console.log(profile);
+
+        // includes: 해당하는 값이 존재하는지 확인하는 기능
+        // indexOf: 해당하는 값이 존재하는 index번호을 알아내는 기능
+        console.log(profile.includes('화요일'));
+        console.log(profile.indexOf('화요일'));
+        console.log(profile.indexOf(1222));
+    </script>
+</body>
+
+</html>
