@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div {
+            padding: 10px;
+            border: 2px solid black;
+            margin-bottom: 10px;
+        }
+
+        div.header {
+            text-align: center;
+            background-color: beige;
+        }
+
+        div.menu {
+            background-color: black;
+        }
+
+        div.menu>ul {
+            padding: 0;
+        }
+
+        div.menu>ul>li {
+            display: inline-block;
+            font-weight: bold;
+            color: white;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .menuLi:hover {
+            cursor: pointer;
+            color: gray;
+        }
+
+        .menuSelect {
+            color: coral;
+        }
+
+        .d_none {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Bank</h1>
+    </div>
+
+    <div class="menu">
+        <ul>
+            <li><span class="menuLi" onclick="menuClick(this,'createAccount')">계좌생성</span></li>
+            <li><span class="menuLi" onclick="menuClick(this,'deposit')">입금</span></li>
+            <li><span class="menuLi" onclick="menuClick(this,'withdraw')">출금</span></li>
+            <li><span class="menuLi" onclick="menuClick(this,'balanceCheck')">잔액조회</span></li>
+            <li><span class="menuLi" onclick="menuClick(this,'clientList')">고객리스트</span></li>
+        </ul>
+    </div>
+
+    <div class="contents">
+
+        <div class="contentBox d_none" id="createAccount">
+            <h4>계좌생성</h4>
+            <form action="" onsubmit="return createAccount(this)">
+                <table>
+
+                    <tr>
+                        <th>계좌번호</th>
+                        <td>
+                            <input type="text" id="accountNumber" onkeyup="accountCheck(this.value)">
+                            <span id="checkMsg"></span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>이름</th>
+                        <td><input type="text" id="clientName"></td>
+                    </tr>
+
+                    <tr>
+                        <th>입금액</th>
+                        <td><input type="text" id="balance"></td>
+                    </tr>
+
+                    <tr>
+                        <th colspan="2"><input type="submit" value="계좌생성"></th>
+                    </tr>
+
+                </table>
+            </form>
+        </div>
+
+        <div class="contentBox d_none" id="deposit">
+            <h4>입금</h4>
+        </div>
+
+        <div class="contentBox d_none" id="withdraw">
+            <h4>출금</h4>
+        </div>
+
+        <div class="contentBox d_none" id="balanceCheck">
+            <h4>잔액조회</h4>
+        </div>
+
+        <div class="contentBox d_none" id="clientList">
+            <h4>고객리스트</h4>
+        </div>
+
+    </div>
+
+    <script>
+        // 고객 계좌정보 목록
+        var accountList = {};
+
+        function createAccount(formObj) {
+
+            var accountNum = formObj.accountNumber;
+            var clientName = formObj.clientName;
+            var balance = formObj.balance;
+
+            var checkResult = Object.keys(accountList).includes(accountNum.value);
+
+            if (checkResult) {
+
+                alert('계좌생성 실패');
+
+            } else {
+
+                accountList[accountNum.value] = {
+                    clientName: clientName.value,
+                    balance: Number(balance.value)
+                };
+
+                alert('계좌가 생성 되었습니다.');
+            }
+
+            accountNum.value = '';
+            clientName.value = '';
+            balance.value = '';
+
+            console.log(accountList);
+
+            return false;
+        }
+
+        function accountCheck(checkNum) {
+            var checkResult = Object.keys(accountList).includes(checkNum);
+            var msgObj = document.getElementById('checkMsg');
+
+            if (checkResult) {
+                msgObj.innerText = '중복된 계좌번호';
+                msgObj.style.color = 'red';
+            } else {
+                msgObj.innerText = '사용가능한 계좌번호';
+                msgObj.style.color = 'green';
+            }
+
+        }
+
+        function menuClick(menuObj, contentId) {
+
+            // 메뉴 클릭시 글자색 변경
+            var menuList = document.getElementsByClassName('menuLi');
+            for (var i = 0; i < menuList.length; i++) {
+                menuList[i].classList.remove('menuSelect');
+            }
+            menuObj.classList.add('menuSelect');
+
+
+            // 메뉴 클릭시 해당 content창 띄우기
+            var contentList = document.getElementsByClassName('contentBox');
+            for (var i = 0; i < contentList.length; i++) {
+                contentList[i].classList.add('d_none');
+            }
+            document.getElementById(contentId).classList.remove('d_none');
+        }
+    </script>
+
+</body>
+
+</html>
