@@ -46,6 +46,14 @@
         .d_none {
             display: none;
         }
+
+        div.contents>table>tr,
+        th,
+        td {
+            padding: 5px;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
     </style>
 </head>
 
@@ -99,6 +107,35 @@
 
         <div class="contentBox d_none" id="deposit">
             <h4>입금</h4>
+            <form onsubmit="return serviceForm(this)">
+                <table>
+                    <tr>
+                        <th>처리방식</th>
+                        <td>
+                            <label>
+                                입금<input type="radio" id="depositRadio" name="serviceType" value=deposit>
+                            </label>
+                            <label>
+                                출금<input type="radio" id="withdrawRadio" name="serviceType" value=withdraw>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="inputAccNum">계좌번호</label></th>
+                        <td><input type="text" id="inputAccNum" name="accountNum"></td>
+                    </tr>
+                    <tr>
+                        <th>금액</th>
+                        <td><input type="text" name="balance"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2"><input type="submit"></th>
+                    </tr>
+                </table>
+                <p id="serviceMsg"></p>
+
+            </form>
+
         </div>
 
         <div class="contentBox d_none" id="withdraw">
@@ -107,39 +144,100 @@
 
         <div class="contentBox d_none" id="balanceCheck">
             <h4>잔액조회</h4>
+            <input type="text" id="inputAccount" placeholder="계좌번호"> <button onclick="checkAccount()">확인</button>
+            <h3>결과출력</h3>
+            <p id="outputBalance"></p>
         </div>
 
         <div class="contentBox d_none" id="clientList">
             <h4>고객리스트</h4>
+            <button onclick="clientList()">고객리스트</button>
+            <p id="list"></p>
         </div>
 
     </div>
+
+
 
     <script>
         // 고객 계좌정보 목록
         var accountList = {};
 
+
+        function serviceForm(formObj) {
+            var svcType = formObj.serviceType.value;
+            var accountNum = formObj.accountNum.value;
+            var money = Number(formObj.balance.value);
+            var msgObj = document.getElementById('serviceMsg');
+            var output = '';
+
+            if (Object.keys(accountList).includes(accountNum)) {
+                if (svcType == 'deposit') {
+                    accountList[accountNum].balance += money;
+                    output = '현재잔액: ' + accountList[accountNum].balance + '원';
+                } else{
+                    if(accountList[accountNum].balance >= money){
+                        accountList[accountNum].balance -= money;
+                        output = '현재잔액: ' + accountList[accountNum].balance + '원';
+                    } else{
+                        output = '잔액이 부족합니다.';
+                    }
+                }
+            } else{
+                output += "계좌번호를 확인해 주세요!";
+                formObj.accountNum.focus();
+            }
+
+            msgObj.innerHTML = output;
+            return false;
+        }
+
+        // 고객리스트 출력 함수
+        function clientList() {
+            var outputMsg = "";
+            for (var key in accountList) {
+                outputMsg += '계좌번호: ' + key + ' | 고객이름: ' + accountList[key].clientName + ' | 잔액: ' + accountList[key]
+                    .balance + '<br>';
+            }
+            document.getElementById('list').innerHTML = outputMsg;
+        }
+
+        // 잔액조회 함수
+        function checkAccount() {
+            var input = document.getElementById('inputAccount');
+            var outputMsg = document.getElementById('outputBalance');
+            var checkResult = Object.keys(accountList).includes(input.value);
+
+            if (checkResult) {
+                outputMsg.innerText = '잔액: ' + accountList[input.value]['balance'];
+            } else {
+                outputMsg.innerText = '존재하지 않는 계좌번호입니다.';
+            }
+
+            input.value = '';
+
+        }
+
+
+        // 계좌생성 함수
         function createAccount(formObj) {
+
+            if (!check) {
+                alert('계좌번호 확인');
+                return false;
+            }
 
             var accountNum = formObj.accountNumber;
             var clientName = formObj.clientName;
             var balance = formObj.balance;
 
-            var checkResult = Object.keys(accountList).includes(accountNum.value);
+            accountList[accountNum.value] = {
+                clientName: clientName.value,
+                balance: Number(balance.value)
+            };
 
-            if (checkResult) {
+            alert('계좌가 생성 되었습니다.');
 
-                alert('계좌생성 실패');
-
-            } else {
-
-                accountList[accountNum.value] = {
-                    clientName: clientName.value,
-                    balance: Number(balance.value)
-                };
-
-                alert('계좌가 생성 되었습니다.');
-            }
 
             accountNum.value = '';
             clientName.value = '';
@@ -150,6 +248,9 @@
             return false;
         }
 
+
+        var check = false;
+        // 중복계좌확인 함수
         function accountCheck(checkNum) {
             var checkResult = Object.keys(accountList).includes(checkNum);
             var msgObj = document.getElementById('checkMsg');
@@ -157,13 +258,16 @@
             if (checkResult) {
                 msgObj.innerText = '중복된 계좌번호';
                 msgObj.style.color = 'red';
+                check = false;
             } else {
                 msgObj.innerText = '사용가능한 계좌번호';
                 msgObj.style.color = 'green';
+                check = true;
             }
 
         }
 
+        // 메뉴클릭 함수
         function menuClick(menuObj, contentId) {
 
             // 메뉴 클릭시 글자색 변경
