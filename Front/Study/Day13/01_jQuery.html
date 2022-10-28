@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../jquery-3.6.1.js"></script>
+
+    <style>
+        #id01 {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 id="id01">id 선택</h2>
+    <h2 class="class01"> class 선택</h2>
+    <hr>
+    <p>p태그</p>
+    <h3 id="id02"> id="id02" </h3>
+    <h3> h3태그 </h3>
+
+    <script>
+        $(function(){
+            $("#id01").text('제이쿼리');
+            $("#id01").css('color','blue');
+            $("#id01").css('background-color','red');
+            // $("#id01").css({'color':'blue', 'background-color' : 'red'});
+
+            $("#id02").next().text('다음요소 선택');
+            $("#id02").prev().text('이전요소 선택');
+        })
+    </script>
+</body>
+
+</html>

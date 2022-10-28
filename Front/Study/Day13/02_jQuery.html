@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../jquery-3.6.1.js"></script>
+</head>
+
+<body>
+    <button onclick="btnFunc()">버튼1</button>
+    <button id="btn02">버튼2</button>
+    <hr>
+    <button id="btn03">버튼3</button>
+
+    <input type="text" onkeyup="inputFunc(this)">
+    <hr>
+    <input type="text" id="input01">
+    <hr>
+    <input type="text" class="class01">
+    <input type="text" class="class01">
+    <input type="text" class="class01">
+    <input type="text" class="class01">
+    <input type="text" class="class01">
+    <hr>
+    <img id="img01"src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fthumb2.gettyimageskorea.com%2Fimage_preview%2F700%2F201709%2FEYM%2F758647637.jpg&type=a340"
+        alt="">
+    <h2 id="id02">h2태그</h2>
+
+    <script>
+        // 속성값 set
+        $('#img01').attr('width','100');
+
+        // 속성값 get
+        console.log($('#img01').attr('width'));
+
+
+
+
+        function inputFunc(inputObj) {
+            // console.log('inputFunc() 호출')
+            // console.log(inputObj);
+            console.log(inputObj.value);
+        }
+
+        $('#input01').keyup(function (e) {
+            // console.log('input01');
+            // console.log(e.target);
+            console.log(e.target.value);
+        });
+
+        $('.class01').keyup(function (e) {
+            // console.log('input01');
+            // console.log(e.target);
+            console.log(e.target.value);
+        });
+
+
+        function btnFunc() {
+            console.log('btnFunc() 호출');
+        }
+
+        document.getElementById('btn02').addEventListener('click', btnFunc);
+
+        $(document).ready(function () {
+            $('#btn03').click(function () {
+                console.log('버튼3 클릭');
+            });
+
+            $('#btn03').mouseover(function () {
+                console.log('버튼3 오버');
+            });
+        });
+    </script>
+</body>
+
+</html>
