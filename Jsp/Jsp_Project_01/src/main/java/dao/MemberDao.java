@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import dto.MemberDto;
 
 public class MemberDao {
@@ -38,7 +39,7 @@ public class MemberDao {
   // 회원가입 - INSERT
   public int insertMember(MemberDto joinMember) {
     String sql =
-        "INSERT INTO TEST_MEMBER(MID,MPW,MNAME,MBIRTH) VALUES(?,?,?,TO_DATE(?,'YYYY-MM-DD')";
+        "INSERT INTO TEST_MEMBER(MID,MPW,MNAME,MBIRTH) VALUES(?,?,?,TO_DATE(?,'YYYY-MM-DD'))";
     int insertResult = 0;
 
     boolean checkId = checkId(joinMember.getMid());
@@ -87,5 +88,55 @@ public class MemberDao {
     return loginId;
   }
 
+  // 회원정보 조회 - SELECT
+  public MemberDto selectMemberInfo(String sessionLoginId) {
+    String sql =
+        "SELECT MID, MPW, MNAME, TO_CHAR(MBIRTH, 'YYYY-MM-DD') AS MBIRTH FROM TEST_MEMBER WHERE MID = ?";
+    MemberDto mInfo = new MemberDto();
 
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, sessionLoginId);
+      ResultSet rs = pstmt.executeQuery();
+      while (rs.next()) {
+        mInfo.setMid(rs.getString("MID"));
+        mInfo.setMpw(rs.getString("MPW"));
+        mInfo.setMname(rs.getString("MNAME"));
+        mInfo.setMbirth(rs.getString("MBIRTH"));
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return mInfo;
+  }
+
+
+  // 회원목록 - SELECT
+  public ArrayList<MemberDto> selectMemberList() {
+    String sql = "SELECT MID, MPW, MNAME, TO_CHAR(MBIRTH, 'YYYY-MM-DD') AS MBIRTH FROM TEST_MEMBER";
+    ArrayList<MemberDto> memberList = new ArrayList<MemberDto>();
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        MemberDto mInfo = new MemberDto();
+
+        mInfo.setMid(rs.getString("MID"));
+        mInfo.setMpw(rs.getString("MPW"));
+        mInfo.setMname(rs.getString("MNAME"));
+        mInfo.setMbirth(rs.getString("MBIRTH"));
+
+        memberList.add(mInfo);
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return memberList;
+  }
 }

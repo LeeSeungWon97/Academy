@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,27 +18,25 @@
 	<h1>MainPage.jsp</h1>
 	<hr>
 	<a href="MainPage.jsp">메인페이지</a>
+	<c:choose>
 
-	<%
-	if (loginId == null) {
-	%>
+		<c:when test="${sessionScope.loginId == null }">
+			<a href="MemberLoginForm.jsp">로그인</a>
+			<a href="MemberJoinForm.jsp">회원가입</a>
+		</c:when>
 
-	<a href="MemberLoginForm.jsp">로그인</a>
-	<a href="MemberJoinForm.jsp">회원가입</a>
+		<c:otherwise>
+			<a href="memberInfo?loginId=<%=loginId%>">내정보확인</a>
+			<a href="">로그아웃</a>
+		</c:otherwise>
 
-	<%
-	} else {
-	%>
+	</c:choose>
 
-	<a href="">내정보확인</a>
-	<a href="">로그아웃</a>
 	<hr>
+
+	<a href="memberList">회원목록</a>
 	<h2><%=loginId%></h2>
 	<h2>${sessionScope.loginid }</h2>
-
-	<%
-	}
-	%>
 
 </body>
 </html>

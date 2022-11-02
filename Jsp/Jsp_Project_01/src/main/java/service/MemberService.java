@@ -1,5 +1,6 @@
 package service;
 
+import java.util.ArrayList;
 import dao.MemberDao;
 import dto.MemberDto;
 
@@ -18,5 +19,18 @@ public class MemberService {
   public String memberLogin(String inputId, String inputPw) {
     String loginMid = dao.login(inputId, inputPw);
     return loginMid;
+  }
+
+
+  // 회원정보조회 기능 메소드
+  public MemberDto memberInfo(String sessionLoginId) {
+    MemberDto mInfo = dao.selectMemberInfo(sessionLoginId);
+    return mInfo;
+  }
+
+  // 회원목록 기능 메소드
+  public ArrayList<MemberDto> memberList() {
+    ArrayList<MemberDto> memberList = dao.selectMemberList();
+    return memberList;
   }
 }

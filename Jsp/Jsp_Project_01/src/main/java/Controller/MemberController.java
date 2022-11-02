@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,7 +15,7 @@ import service.MemberService;
 /**
  * Servlet implementation class MemberController
  */
-@WebServlet({"/memberLogin", "/memberJoin"})
+@WebServlet({"/memberLogin", "/memberJoin", "/memberInfo", "/memberList"})
 public class MemberController extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -40,6 +42,8 @@ public class MemberController extends HttpServlet {
 
 
     System.out.println("url: " + url);
+
+    RequestDispatcher dispatcher = null;
 
     switch (url) {
       case "/memberLogin":
@@ -92,6 +96,41 @@ public class MemberController extends HttpServlet {
           response.getWriter().print("history.back();");
           response.getWriter().print("</script>");
         }
+        break;
+
+      case "/memberInfo":
+        System.out.println("회원정보 확인 요청");
+        // 1. SERVICE 클래스의 회원정보 조회 기능 호출 & 반환
+
+        // 정보 조회할 회원의 아이디 확인방법
+
+        // (1) session
+        String sessionLoginId = (String) session.getAttribute("loginId");
+        System.out.println("로그인 아이디(세션): " + sessionLoginId);
+        // (2) request
+        String requestLoginId = request.getParameter("loginId");
+        System.out.println("로그인 아이디_리퀘스트: " + requestLoginId);
+
+        MemberDto mInfo = msvc.memberInfo(sessionLoginId);
+
+        System.out.println(mInfo.toString());
+
+        // 회원정보 출력 페이지 포워딩
+        request.setAttribute("memberInfo", mInfo);
+        dispatcher = request.getRequestDispatcher("MemberInfo.jsp");
+        dispatcher.forward(request, response);
+
+        break;
+
+      case "/memberList":
+        System.out.println("memberList 호출");
+        // 1. SERVICE 회원목록 조회 기능 호출 & 회원목록 반환
+        ArrayList<MemberDto> memberList = msvc.memberList();
+        System.out.println(memberList.toString());
+        // 2. 회원목록 출력 페이지 포워딩
+        request.setAttribute("memberList", memberList);
+        dispatcher = request.getRequestDispatcher("MemberList.jsp");
+        dispatcher.forward(request, response);
         break;
     }
 

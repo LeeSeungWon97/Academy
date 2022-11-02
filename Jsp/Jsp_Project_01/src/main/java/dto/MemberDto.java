@@ -37,6 +37,12 @@ public class MemberDto {
   public void setMbirth(String mbirth) {
     this.mbirth = mbirth;
   }
+  
+  @Override
+  public String toString() {
+    return "[mid=" + mid + ", mpw=" + mpw + ", mname=" + mname + ", mbirth=" + mbirth
+        + "]";
+  }
 
 
 }
