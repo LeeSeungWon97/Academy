@@ -139,4 +139,44 @@ public class MemberDao {
     }
     return memberList;
   }
+
+  
+  // 회원삭제 - DELETE
+  public int deleteMemberInfo(String delId) {
+    String sql = "DELETE FROM TEST_MEMBER WHERE MID = ?";
+    int deleteResult = 0;
+    
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, delId);
+      deleteResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return deleteResult;
+  }
+
+  // 회원정보수정 - UPDATE
+  public int updateMemberInfo(MemberDto updateMem) {
+    String sql = "UPDATE TEST_MEMBER SET MPW=?, MNAME=?, MBIRTH=TO_DATE(?,'YYYY-MM-DD') WHERE MID = ?";
+    int updateResult = 0;
+    
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, updateMem.getMpw());
+      pstmt.setString(2, updateMem.getMname());
+      pstmt.setString(3, updateMem.getMbirth());
+      pstmt.setString(4, updateMem.getMid());
+      
+      updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    return updateResult;
+  }
 }

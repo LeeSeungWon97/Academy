@@ -29,7 +29,7 @@ th, td {
 
 <body>
 	<h1>MemberInfo.jsp</h1>
-	<form action="" method="post">
+	<form action="memberUpdate" method="post">
 		<table>
 			<tr>
 				<th colspan="2">내정보</th>
@@ -41,17 +41,17 @@ th, td {
 			</tr>
 			<tr>
 				<th>비밀번호</th>
-				<td><input readonly="readonly" type="text" name="mpw"
+				<td><input type="text" name="mpw"
 					value="<%=memberInfo.getMpw()%>"></td>
 			</tr>
 			<tr>
 				<th>이름</th>
-				<td><input readonly="readonly" type="text" name="mname"
+				<td><input type="text" name="mname"
 					value="<%=memberInfo.getMname()%>"></td>
 			</tr>
 			<tr>
 				<th>생년월일</th>
-				<td><input readonly="readonly" type="text" name="mbirth"
+				<td><input type="text" name="mbirth"
 					value="<%=memberInfo.getMbirth()%>"></td>
 			</tr>
 			<tr>

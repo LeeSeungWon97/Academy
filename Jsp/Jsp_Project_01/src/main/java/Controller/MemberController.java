@@ -15,7 +15,8 @@ import service.MemberService;
 /**
  * Servlet implementation class MemberController
  */
-@WebServlet({"/memberLogin", "/memberJoin", "/memberInfo", "/memberList"})
+@WebServlet({"/memberLogin", "/memberJoin", "/memberInfo", "/memberList", "/memberDelete",
+    "/memberUpdate", "/memberLogout"})
 public class MemberController extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -131,6 +132,60 @@ public class MemberController extends HttpServlet {
         request.setAttribute("memberList", memberList);
         dispatcher = request.getRequestDispatcher("MemberList.jsp");
         dispatcher.forward(request, response);
+        break;
+
+      case "/memberDelete":
+        System.out.println("회원 삭제 요청");
+        String delId = request.getParameter("delId");
+        System.out.println("삭제할 아이디: " + delId);
+        int deleteResult = msvc.memberDelete(delId);
+        System.out.println("삭제 처리 결과: " + deleteResult);
+
+        response.sendRedirect("memberList");
+        break;
+
+      case "/memberUpdate":
+        System.out.println("회원 정보 수정 요청");
+
+        // 1. 아이디~회원정보 parameter 확인
+        String updateId = request.getParameter("mid");
+        String updatePw = request.getParameter("mpw");
+        String updateName = request.getParameter("mname");
+        String updateBirth = request.getParameter("mbirth");
+
+        MemberDto updateMem = new MemberDto();
+        updateMem.setMid(updateId);
+        updateMem.setMpw(updatePw);
+        updateMem.setMname(updateName);
+        updateMem.setMbirth(updateBirth);
+        // 2. 회원정보 수정 기능 호출 결과값 반환
+        int updateResult = msvc.updateInfo(updateMem);
+        System.out.println("업데이트 결과: " + updateResult);
+        // 3. 회원정보 확인 페이지 포워딩
+
+        if (updateResult > 0) {
+          response.getWriter().print("<script>");
+          response.getWriter().print("alert('회원정보 수정완료');");
+          response.getWriter().print("location.href='memberInfo'");
+          response.getWriter().print("</script>");
+        } else {
+          response.getWriter().print("<script>");
+          response.getWriter().print("alert('회원정보 수정실패');");
+          response.getWriter().print("history.back();");
+          response.getWriter().print("</script>");
+        }
+        break;
+        
+      case "/memberLogout":
+        System.out.println("로그아웃 요청");
+        
+        // 방법1. loginId Attribute 삭제
+        session.removeAttribute("loginId");
+        
+        // 방법2. session 초기화
+        session.invalidate();
+        
+        response.sendRedirect("MainPage.jsp");
         break;
     }
 

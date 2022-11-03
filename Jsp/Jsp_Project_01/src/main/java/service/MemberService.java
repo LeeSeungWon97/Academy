@@ -33,4 +33,16 @@ public class MemberService {
     ArrayList<MemberDto> memberList = dao.selectMemberList();
     return memberList;
   }
+
+
+  // 회원삭제 기능 메소드
+  public int memberDelete(String delId) {
+    int deleteResult = dao.deleteMemberInfo(delId);
+    return deleteResult;
+  }
+
+  public int updateInfo(MemberDto updateMem) {
+    int updateResult = dao.updateMemberInfo(updateMem);
+    return updateResult;
+  }
 }

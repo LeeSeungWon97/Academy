@@ -27,7 +27,7 @@
 
 		<c:otherwise>
 			<a href="memberInfo?loginId=<%=loginId%>">내정보확인</a>
-			<a href="">로그아웃</a>
+			<a href="memberLogout">로그아웃</a>
 		</c:otherwise>
 
 	</c:choose>

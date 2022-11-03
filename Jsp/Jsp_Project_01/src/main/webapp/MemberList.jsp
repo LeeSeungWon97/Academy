@@ -28,6 +28,7 @@ table, th, td {
 			<th>비밀번호</th>
 			<th>이름</th>
 			<th>생년월일</th>
+			<th></th>
 		</tr>
 
 		<c:forEach items="${memberList }" var="member">
@@ -37,10 +38,18 @@ table, th, td {
 				<td>${member.mpw }</td>
 				<td>${member.mname }</td>
 				<td>${member.mbirth }</td>
+				<td><button onclick="deleteMember('${member.mid }')">삭제</button></td>
 			</tr>
 
 		</c:forEach>
 
 	</table>
+
+	<script type="text/javascript">
+		function deleteMember(delId) {
+			console.log("deleteMember() 호출");
+			location.href = "memberDelete?delId=" + delId;
+		}
+	</script>
 </body>
 </html>
