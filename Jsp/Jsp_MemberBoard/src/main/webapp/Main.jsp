@@ -20,12 +20,21 @@
 
 	<div class="contents">
 		<h2>콘텐츠영역</h2>
+		<h3>로그인 아이디: ${loginId }</h3>
 	</div>
 
 	<div class="footer">
 		<h2>회원게시판</h2>
 	</div>
 
+
+
+	<script type="text/javascript">
+		var msg = '${param.msg}';
+		if (msg.length > 0) {
+			alert(msg);
+		}
+	</script>
 </body>
 
 </html>
