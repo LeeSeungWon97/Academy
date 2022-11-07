@@ -14,7 +14,7 @@ import service.MemberService;
 /**
  * Servlet implementation class MemberController
  */
-@WebServlet({"/memberJoin", "/memberLogin"})
+@WebServlet({"/memberJoin", "/memberLogin", "/memberIdCheck", "/memberLogout"})
 public class MemberController extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -38,9 +38,9 @@ public class MemberController extends HttpServlet {
     response.setContentType("text/html; charset=UTF-8");
 
     String contextPath = request.getContextPath();
-    
+
     MemberService msvc = new MemberService();
-    
+
     HttpSession session = request.getSession();
 
     switch (url) {
@@ -83,22 +83,43 @@ public class MemberController extends HttpServlet {
           response.getWriter().print("</script>");
         }
         break;
-        
+
       case "/memberLogin":
         System.out.println("로그인 요청");
-        String inputId = request.getParameter("mid");
-        String inputPw = request.getParameter("mpw");
-        System.out.println("inputId: " + inputId + "  inputPw: " + inputPw);
-        String loginId = msvc.memberLogin(inputId, inputPw);
-        if(loginId != null) {
+        String userId = request.getParameter("mid");
+        String userPw = request.getParameter("mpw");
+        System.out.println("inputId: " + userId + "  inputPw: " + userPw);
+        String loginId = msvc.memberLogin(userId, userPw);
+        if (loginId != null) {
           session.setAttribute("loginId", loginId);
-          response.sendRedirect(contextPath+"/Main.jsp?msg="+URLEncoder.encode("로그인 되었습니다.","UTF-8"));
+          response.sendRedirect(
+              contextPath + "/Main.jsp?msg=" + URLEncoder.encode("로그인 되었습니다.", "UTF-8"));
         } else {
           response.getWriter().print("<script>");
           response.getWriter().print("alert('아이디 또는 비밀번호가 틀렸습니다.');");
           response.getWriter().print("history.back();");
           response.getWriter().print("</script>");
         }
+        break;
+        
+      case "/memberIdCheck":
+        System.out.println("아이디 중복확인 요청");
+        String inputId = request.getParameter("inputId");
+        System.out.println("중복 확인할 아이디: " + inputId);
+        
+        // 1. service 중복확인 기능 호출 및 결과값 반환
+        String checkResult = msvc.memberIdCheck(inputId);
+        
+        response.getWriter().print(checkResult);
+        
+        break;
+        
+      case "/memberLogout":
+        System.out.println("로그아웃 요청");
+        session.invalidate();
+        response.sendRedirect(
+            contextPath + "/Main.jsp?msg=" + URLEncoder.encode("로그아웃 되었습니다.", "UTF-8"));
+        
         break;
     }
   }

@@ -21,4 +21,19 @@ public class MemberService {
     return loginId;
   }
 
+
+  // 아이디 중복확인 메소드
+  public String memberIdCheck(String inputId) {
+    System.out.println("MemberService memberIdCheck() 호출");
+    String checkResult = "OK";
+    
+    MemberDto memInfo = mdao.selectMemberInfo(inputId);
+    
+    if(memInfo != null) {
+      checkResult = "NO";
+    }
+    
+    return checkResult;
+  }
+
 }

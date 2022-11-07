@@ -8,6 +8,8 @@
 <title>Insert title here</title>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath }/CSS/Main.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 
 <style type="text/css">
 table>caption {
@@ -67,11 +69,11 @@ input[type=submit]:hover {
 			<table>
 				<tr>
 					<th>아이디</th>
-					<td><input type="text" name="mid">
-						<p style="margin-top: 2px; margin-bottom: 0px; font-size: 8px;"></p>
-					</td>
+					<td><input type="text" name="mid" id="inputId" onchange="checkMsgReset()">
+						<p id="idCheckMsg"
+							style="margin-top: 2px; margin-bottom: 0px; font-size: 8px;"></p></td>
 
-					<td><button type="button">중복확인</button></td>
+					<td><button type="button" onclick="idCheck()">중복확인</button></td>
 				</tr>
 				<tr>
 					<th>비밀번호</th>
@@ -115,10 +117,23 @@ input[type=submit]:hover {
 
 
 	<script type="text/javascript">
+	
+		function checkMsgReset() {
+			$("#idCheckMsg").text('');
+			idCheckVal = false;
+		}
+		
+		
 		function joinFormCheck(formObj) {
 			var mid = formObj.mid;
 			if (mid.value.length == 0) {
 				alert('아이디를 입력해주세요!');
+				mid.focus();
+				return false;
+			}
+			
+			if(!idCheckVal){
+				alert('아이디 중복확인을 해주세요!');
 				mid.focus();
 				return false;
 			}
@@ -168,6 +183,42 @@ input[type=submit]:hover {
 
 		function selectDomain(selectVal) {
 			document.getElementById('eDomain').value = selectVal;
+		}
+
+		
+		var idCheckVal = false;
+		
+		function idCheck() {
+			console.log("idCheck() 호출");
+			var idVal = $('#inputId').val();
+			console.log('idVal: ' + idVal);
+			$.ajax({
+				type : "get", // form의 methode 역할. get & post 방식 선택
+				url : "${pageContext.request.contextPath}/memberIdCheck", // controller에 요청할 url
+				data : {
+					"inputId" : idVal
+				}, // 보내줄 parameter. object 타입으로 만들어서 보내줌
+				async : false, // async: false - 위에서부터 코드 진행 , true: ajax코드가 끝나지 않아도 다음 코드부터 실행
+				dataType : "text", // 서버에서 다시 되돌려주는 데이터 타입. html, text, json ... (default: text)
+				success : function(result) {
+					// 요청에 성공하면 실행할 부분
+					console.log("확인 결과 : " + result);
+					if (result == "OK") {
+						console.log("사용가능한 아이디");
+						idCheckVal = true;
+						$("#idCheckMsg").text('사용가능한 아이디')
+								.css('color', 'green');
+					} else {
+						console.log("중복된 아이디");
+						idCheckVal = false;
+						$("#idCheckMsg").text('중복된 아이디').css('color', 'red');
+					}
+				},
+				error : function() {
+					// 요청에 실패하면 실행할 부분
+					console.log('중복확인 요청 실패!');
+				}
+			});
 		}
 	</script>
 </body>
