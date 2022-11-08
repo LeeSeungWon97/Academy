@@ -51,7 +51,8 @@ th, td {
 				<c:forEach items="${boardList }" var="board">
 					<tr>
 						<td>${board.bno }</td>
-						<td><a href="">${board.btitle }</a></td>
+						<td><a
+							href="${pageContext.request.contextPath }/boardView?viewBno=${board.bno }">${board.btitle }</a></td>
 						<td>${board.bwriter }</td>
 						<td>${board.bdate }</td>
 						<td>${board.bhits }</td>
@@ -61,10 +62,20 @@ th, td {
 
 			<tfoot>
 				<tr>
-					<th colspan="5">글검색: <input type="text" placeholder="검색어 입력">
-						<c:if test="${sessionScope.loginId != null }">
-							<button>글작성</button>
-						</c:if>
+					<th colspan="5">
+						<form action="" method="get" style="display: inline-block;">
+							<select>
+								<option value="title">제목</option>
+								<option value="content">내용</option>
+								<option value="titleContent">제목+내용</option>
+								<option value="writer">작성자</option>
+							</select> <input type="text" name="searchText" placeholder="검색어 입력">
+							<input type="submit" value="검색">
+						</form>
+
+
+						<button type="button" onclick="boardWrite()">글작성</button>
+
 					</th>
 				</tr>
 			</tfoot>
@@ -75,6 +86,17 @@ th, td {
 	<div class="footer">
 		<h2>회원게시판</h2>
 	</div>
+
+	<script type="text/javascript">
+		function boardWrite() {
+			location.href = "${pageContext.request.contextPath }/BOARD/BoardWrite.jsp";
+		}
+
+		var msg = '${param.msg}';
+		if (msg.length > 0) {
+			alert(msg);
+		}
+	</script>
 </body>
 
 </html>

@@ -75,5 +75,12 @@ public class BoardDto {
     this.bstate = bstate;
   }
 
+  @Override
+  public String toString() {
+    return "BoardDto [bno=" + bno + ", btitle=" + btitle + ", bwriter=" + bwriter + ", bcontent="
+        + bcontent + ", bdate=" + bdate + ", bhits=" + bhits + ", bfilename=" + bfilename
+        + ", bstate=" + bstate + "]";
+  }
+
 
 }
