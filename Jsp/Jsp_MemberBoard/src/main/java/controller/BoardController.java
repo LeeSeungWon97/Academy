@@ -15,7 +15,8 @@ import service.BoardService;
 /**
  * Servlet implementation class BoardController
  */
-@WebServlet({"/boardList", "/boardWrite", "/boardView"})
+@WebServlet({"/boardList", "/boardWrite", "/boardView", "/boardModifyPage", "/boardModify",
+    "/boardDelete"})
 public class BoardController extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -82,21 +83,67 @@ public class BoardController extends HttpServlet {
           response.getWriter().print("</script>");
         }
         break;
-        
+
       case "/boardView":
         System.out.println("글 상세보기 요청");
         int viewBno = Integer.parseInt(request.getParameter("viewBno"));
         System.out.println("viewBno: " + viewBno);
-        
-        BoardDto boardView = new BoardDto();
-        boardView.setBno(viewBno);
-        
-        boardView = bsvc.boardView(boardView);
-        
+
+        BoardDto boardView = bsvc.boardView(viewBno, true);
+
         request.setAttribute("boardView", boardView);
-        
+
         dispatcher = request.getRequestDispatcher("BOARD/BoardView.jsp");
         dispatcher.forward(request, response);
+        break;
+
+      case "/boardModifyPage":
+        System.out.println("글 수정페이지 이동 요청");
+        int modPageBno = Integer.parseInt(request.getParameter("bno"));
+        System.out.println("수정페이지 글번호: " + modPageBno);
+        BoardDto modPageBoard = bsvc.boardView(modPageBno, false);
+
+        request.setAttribute("boardView", modPageBoard);
+        dispatcher = request.getRequestDispatcher("BOARD/BoardModify.jsp");
+        dispatcher.forward(request, response);
+        break;
+
+      case "/boardModify":
+        System.out.println("글 수정하기 요청");
+        int modBno = Integer.parseInt(request.getParameter("bno"));
+        String modBtitle = request.getParameter("btitle");
+        String modBcontent = request.getParameter("bcontent");
+
+        int ModifyResult = bsvc.boardModify(modBno, modBtitle, modBcontent);
+        System.out.println(ModifyResult);
+        if (ModifyResult > 0) {
+          response.sendRedirect("boardView?viewBno=" + modBno);
+        } else {
+          response.getWriter().print("<script>");
+          response.getWriter().print("alert('게시판 수정 실패')");
+          response.getWriter().print("history.back()");
+          response.getWriter().print("</script>");
+        }
+        break;
+        
+      case "/boardDelete":
+        System.out.println("글 삭제 요청");
+        int deleteBno = Integer.parseInt(request.getParameter("bno"));
+        System.out.println("삭제 요청 번호: " + deleteBno);
+        
+        int deleteResult = bsvc.boardDelete(deleteBno);
+        
+        if(deleteResult > 0) {
+          response.getWriter().print("<script>");
+          response.getWriter().print("alert('게시판 삭제 완료')");
+          response.getWriter().print("</script>");
+          response.sendRedirect("boardList");
+        } else {
+          response.getWriter().print("<script>");
+          response.getWriter().print("alert('게시판 삭제 실패')");
+          response.getWriter().print("history.back()");
+          response.getWriter().print("</script>");
+        }
         break;
     }
   }

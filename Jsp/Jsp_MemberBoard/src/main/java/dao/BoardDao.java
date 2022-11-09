@@ -21,7 +21,7 @@ public class BoardDao {
   // Board 테이블 SELECT
   public ArrayList<BoardDto> selectBoardList() {
     System.out.println("BoardDao selectBoardList()");
-    String sql = "SELECT * FROM BOARDS ORDER BY BNO DESC";
+    String sql = "SELECT * FROM BOARDS WHERE BSTATE=0 ORDER BY BNO DESC";
     ArrayList<BoardDto> boardList = new ArrayList<BoardDto>();
 
     try {
@@ -100,7 +100,7 @@ public class BoardDao {
   }
 
 
-  public BoardDto boardView(int bno) {
+  public BoardDto selectBoardView(int bno) {
     System.out.println("BoardDao boardView() 호출");
 
     String sql = "SELECT * FROM BOARDS WHERE BNO = ?";
@@ -131,19 +131,58 @@ public class BoardDao {
   }
 
 
-  public int boardUpdate(BoardDto board) {
+  public int updateBoardHits(BoardDto board) {
     System.out.println("BoardDao boardUpdate() 호출");
 
-    String sql =
-        "UPDATE BOARDS SET BHITS = ? WHERE BNO = ?";
+    String sql = "UPDATE BOARDS SET BHITS = ? WHERE BNO = ?";
     int updateResult = 0;
-    
+
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setInt(1, board.getBhits());
       pstmt.setInt(2, board.getBno());
-      
+
+
+      updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return updateResult;
+  }
+
+
+  public int updateBoardModify(int modBno, String modBtitle, String modBcontent) {
+    System.out.println("BoardDao updateBoardModify 호출()");
+    String sql = "UPDATE BOARDS SET BTITLE = ? , BCONTENT = ? WHERE BNO = ?";
+    int updateResult = 0;
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, modBtitle);
+      pstmt.setString(2, modBcontent);
+      pstmt.setInt(3, modBno);
+
+      updateResult = pstmt.executeUpdate();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return updateResult;
+  }
+
+
+  public int updateBoardState(int deleteBno) {
+    System.out.println("BoardDao updateBoardState() 호출");
+    String sql = "UPDATE BOARDS SET BSTATE = 1 WHERE BNO=?";
+    int updateResult = 0;
+    
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setInt(1, deleteBno);
       
       updateResult = pstmt.executeUpdate();
     } catch (Exception e) {
