@@ -17,13 +17,13 @@ public class BoardService {
 
   public int boardWrite(BoardDto boardWrite) {
     System.out.println("BoardService boardWrite() 호출");
-    
+
     int bno = bdao.selectMaxBno() + 1;
     System.out.println("bno: " + bno);
     boardWrite.setBno(bno);
-    
+
     int insertResult = bdao.insertBoard(boardWrite);
-    
+
     return insertResult;
   }
 
@@ -31,34 +31,34 @@ public class BoardService {
     System.out.println("BoardService boardView() 호출");
     BoardDto board = bdao.selectBoardView(bno);
     System.out.println(board.toString());
-    
-    if(check) {
+
+    if (check) {
       int updateResult = bdao.updateBoardHits(board);
-      
-      if(updateResult > 0) {
+
+      if (updateResult > 0) {
         System.out.println("최신화 완료");
       } else {
         System.out.println("최신화 실패");
-      }      
+      }
       String bcontent = board.getBcontent();
       System.out.println("변환전: " + bcontent);
-      
+
       bcontent = bcontent.replace(" ", "&nbsp;");
-      
+
       bcontent = bcontent.replace("\r\n", "<br>");
-      
+
       System.out.println("변환후: " + bcontent);
-      
+
       board.setBcontent(bcontent);
     }
     return board;
   }
 
-  
-  
+
+
   public int boardModify(int modBno, String modBtitle, String modBcontent) {
     System.out.println("BoardService boardModify 호출()");
-    int updateResult = bdao.updateBoardModify(modBno,modBtitle,modBcontent);
+    int updateResult = bdao.updateBoardModify(modBno, modBtitle, modBcontent);
     return updateResult;
   }
 
@@ -67,5 +67,26 @@ public class BoardService {
     int updateResult = bdao.updateBoardState(deleteBno);
     return updateResult;
   }
+
+  public ArrayList<BoardDto> boardSearchList(String searchType, String searchText) {
+    System.out.println("BoardService boardSearchList 호출");
+    ArrayList<BoardDto> boardSearchList = bdao.selectBoardSearch(searchType, searchText);
+    return boardSearchList;
+  }
+
+  public int boardCount(String infoId) {
+    System.out.println("BoardService boardCount 호출");
+    int cnt = bdao.selectBoardCount(infoId);
+    System.out.println(cnt);
+    return cnt;
+  }
+
+  public int deleteBoardCount(String infoId) {
+    System.out.println("BoardService deleteBoardCount 호출");
+    int cnt = bdao.selectBoardDeleteCount(infoId);
+    System.out.println(cnt);
+    return cnt;
+  }
+
 
 }

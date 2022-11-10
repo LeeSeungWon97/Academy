@@ -16,7 +16,7 @@ import service.BoardService;
  * Servlet implementation class BoardController
  */
 @WebServlet({"/boardList", "/boardWrite", "/boardView", "/boardModifyPage", "/boardModify",
-    "/boardDelete"})
+    "/boardDelete", "/boardSearch"})
 public class BoardController extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -125,15 +125,15 @@ public class BoardController extends HttpServlet {
           response.getWriter().print("</script>");
         }
         break;
-        
+
       case "/boardDelete":
         System.out.println("글 삭제 요청");
         int deleteBno = Integer.parseInt(request.getParameter("bno"));
         System.out.println("삭제 요청 번호: " + deleteBno);
-        
+
         int deleteResult = bsvc.boardDelete(deleteBno);
-        
-        if(deleteResult > 0) {
+
+        if (deleteResult > 0) {
           response.getWriter().print("<script>");
           response.getWriter().print("alert('게시판 삭제 완료')");
           response.getWriter().print("</script>");
@@ -144,6 +144,18 @@ public class BoardController extends HttpServlet {
           response.getWriter().print("history.back()");
           response.getWriter().print("</script>");
         }
+        break;
+
+      case "/boardSearch":
+        System.out.println("게시글 검색 요청");
+        String searchType = request.getParameter("searchType");
+        String searchText = request.getParameter("searchText");
+
+        ArrayList<BoardDto> boardSearchList = bsvc.boardSearchList(searchType, searchText);
+
+        request.setAttribute("boardList", boardSearchList);
+        dispatcher = request.getRequestDispatcher("BOARD/BoardList.jsp");
+        dispatcher.forward(request, response);
         break;
     }
   }

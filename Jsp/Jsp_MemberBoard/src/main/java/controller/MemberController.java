@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,12 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import dto.MemberDto;
+import service.BoardService;
 import service.MemberService;
 
 /**
  * Servlet implementation class MemberController
  */
-@WebServlet({"/memberJoin", "/memberLogin", "/memberIdCheck", "/memberLogout"})
+@WebServlet({"/memberJoin", "/memberLogin", "/memberIdCheck", "/memberLogout", "/memberInfo"})
 public class MemberController extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -40,8 +42,11 @@ public class MemberController extends HttpServlet {
     String contextPath = request.getContextPath();
 
     MemberService msvc = new MemberService();
+    BoardService bsvc = new BoardService();
 
     HttpSession session = request.getSession();
+
+    RequestDispatcher dispatcher;
 
     switch (url) {
       case "/memberJoin":
@@ -101,25 +106,40 @@ public class MemberController extends HttpServlet {
           response.getWriter().print("</script>");
         }
         break;
-        
+
       case "/memberIdCheck":
         System.out.println("아이디 중복확인 요청");
         String inputId = request.getParameter("inputId");
         System.out.println("중복 확인할 아이디: " + inputId);
-        
+
         // 1. service 중복확인 기능 호출 및 결과값 반환
         String checkResult = msvc.memberIdCheck(inputId);
-        
+
         response.getWriter().print(checkResult);
-        
+
         break;
-        
+
       case "/memberLogout":
         System.out.println("로그아웃 요청");
         session.invalidate();
         response.sendRedirect(
             contextPath + "/Main.jsp?msg=" + URLEncoder.encode("로그아웃 되었습니다.", "UTF-8"));
+
+        break;
+
+      case "/memberInfo":
+        System.out.println("내정보 확인 요청");
+        String infoId = (String) session.getAttribute("loginId");
+        System.out.println(infoId);
+        MemberDto loginMember = msvc.loginMemberInfo(infoId);
+        int boardCount = bsvc.boardCount(infoId);
+        int deleteCount = bsvc.deleteBoardCount(infoId);
         
+        request.setAttribute("loginMember", loginMember);
+        request.setAttribute("boardCount", boardCount);
+        request.setAttribute("deleteCount", deleteCount);
+        dispatcher = request.getRequestDispatcher("/MEMBER/MemberInfo.jsp");
+        dispatcher.forward(request, response);
         break;
     }
   }

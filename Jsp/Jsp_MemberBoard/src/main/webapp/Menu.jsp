@@ -12,7 +12,7 @@
 
 		<c:choose>
 			<c:when test="${sessionScope.loginId != null }">
-				<li><a href="">내정보확인</a></li>
+				<li><a href="${pageContext.request.contextPath }/memberInfo">내정보확인</a></li>
 				<li><a href="${pageContext.request.contextPath }/memberLogout">로그아웃</a>
 				</li>
 			</c:when>

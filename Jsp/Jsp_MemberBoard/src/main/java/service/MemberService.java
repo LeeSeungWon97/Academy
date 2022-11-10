@@ -6,7 +6,7 @@ import dto.MemberDto;
 public class MemberService {
 
   MemberDao mdao = new MemberDao();
-  
+
   // 회원가입 메소드
   public int memberJoin(MemberDto joinMember) {
     System.out.println("MemberService memberJoin()호출");
@@ -14,10 +14,10 @@ public class MemberService {
     return insertResult;
   }
 
-  
+
   // 로그인 메소드
   public String memberLogin(String inputId, String inputPw) {
-    String loginId = mdao.selectMemberLogin(inputId,inputPw);
+    String loginId = mdao.selectMemberLogin(inputId, inputPw);
     return loginId;
   }
 
@@ -26,14 +26,22 @@ public class MemberService {
   public String memberIdCheck(String inputId) {
     System.out.println("MemberService memberIdCheck() 호출");
     String checkResult = "OK";
-    
+
     MemberDto memInfo = mdao.selectMemberInfo(inputId);
-    
-    if(memInfo != null) {
+
+    if (memInfo != null) {
       checkResult = "NO";
     }
-    
+
     return checkResult;
+  }
+
+
+  public MemberDto loginMemberInfo(String id) {
+    System.out.println("MemberService loginMemberInfo() 호출");
+    MemberDto loginInfo = mdao.selectMemberInfo(id);
+    System.out.println(loginInfo.toString());
+    return loginInfo;
   }
 
 }

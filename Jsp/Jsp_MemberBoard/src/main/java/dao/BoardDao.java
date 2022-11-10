@@ -178,18 +178,115 @@ public class BoardDao {
     System.out.println("BoardDao updateBoardState() 호출");
     String sql = "UPDATE BOARDS SET BSTATE = 1 WHERE BNO=?";
     int updateResult = 0;
-    
+
     try {
       Connection con = getConnection();
       PreparedStatement pstmt = con.prepareStatement(sql);
       pstmt.setInt(1, deleteBno);
-      
+
       updateResult = pstmt.executeUpdate();
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return updateResult;
+  }
+
+
+  public ArrayList<BoardDto> selectBoardSearch(String searchType, String searchText) {
+    System.out.println("BoardDao selectBoardSearch()");
+    String sql = "SELECT * FROM BOARDS WHERE BSTATE = '0'";
+
+    switch (searchType) {
+      case "title":
+        sql += " AND BTITLE LIKE '%" + searchText + "%'";
+        break;
+
+      case "content":
+        sql += " AND BCONTENT LIKE '%" + searchText + "%'";
+        break;
+
+      case "titleContent":
+        sql += " AND (BTITLE LIKE '%" + searchText + "%' OR BCONTENT LIKE '%" + searchText + "%')";
+        break;
+
+      case "writer":
+        sql += " AND BWRITER LIKE '%" + searchText + "%'";
+        break;
+    }
+
+    System.out.println(sql);
+    ArrayList<BoardDto> boardList = new ArrayList<BoardDto>();
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        BoardDto bdto = new BoardDto();
+        bdto.setBno(rs.getInt(1));
+        bdto.setBtitle(rs.getString(2));
+        bdto.setBwriter(rs.getString(3));
+        bdto.setBcontent(rs.getString(4));
+        bdto.setBdate(rs.getString(5));
+        bdto.setBhits(rs.getInt(6));
+        bdto.setBfilename(rs.getString(7));
+        bdto.setBstate(rs.getString(8));
+
+        boardList.add(bdto);
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return boardList;
+  }
+
+
+  public int selectBoardCount(String infoId) {
+    System.out.println("BoardDao selectBoardCount() 호출");
+    String sql = "SELECT COUNT(*) FROM BOARDS WHERE BWRITER=?";
+    int count = 0;
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, infoId);
+
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        count = rs.getInt(1);
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return count;
+  }
+
+
+  public int selectBoardDeleteCount(String infoId) {
+    System.out.println("BoardDao selectBoardCount() 호출");
+    String sql = "SELECT COUNT(*) FROM BOARDS WHERE BWRITER=? AND BSTATE=1";
+    int count = 0;
+
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      pstmt.setString(1, infoId);
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        count = rs.getInt(1);
+        
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return count;
   }
 
 }

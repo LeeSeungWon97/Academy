@@ -64,8 +64,8 @@ th, td {
 			<tfoot>
 				<tr>
 					<th colspan="5">
-						<form action="" method="get" style="display: inline-block;">
-							<select>
+						<form action="${pageContext.request.contextPath }/boardSearch" method="get" style="display: inline-block;">
+							<select name="searchType">
 								<option value="title">제목</option>
 								<option value="content">내용</option>
 								<option value="titleContent">제목+내용</option>
