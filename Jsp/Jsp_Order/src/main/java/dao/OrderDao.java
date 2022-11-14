@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import dto.ProductDto;
 
 public class OrderDao {
@@ -84,6 +85,33 @@ public class OrderDao {
       e.printStackTrace();
     }
     return prInfo;
+  }
+
+  public ArrayList<ProductDto> selectProductList() {
+    System.out.println("OrderDao selectProductList()");
+    String sql = "SELECT * FROM PRODUCTS ORDER BY PRCODE ASC";
+    ArrayList<ProductDto> list = new ArrayList<ProductDto>();
+    
+    try {
+      Connection con = getConnection();
+      PreparedStatement pstmt = con.prepareStatement(sql);
+      ResultSet rs = pstmt.executeQuery();
+      
+      while(rs.next()) {
+        ProductDto pdto = new ProductDto();
+        pdto.setPrcode(rs.getString(1));
+        pdto.setPrbrand(rs.getString(2));
+        pdto.setPrname(rs.getString(3));
+        pdto.setPrprice(rs.getInt(4));
+        pdto.setPrimg(rs.getString(5));
+        
+        list.add(pdto);
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return list;
   }
 
 }

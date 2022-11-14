@@ -46,7 +46,7 @@ public class JsoupTest {
 
         // 상품명
         String productName =
-            productList.get(i).select("p.tx_name").get(0).text().replace("] ", "]");
+            productList.get(i).select("p.tx_name").get(0).text().replaceAll("(\\[)(.*?)(\\])","").trim();
         int splitlength = productName.split("]").length;
         productName = productName.split("]")[splitlength - 1];
 
@@ -67,7 +67,7 @@ public class JsoupTest {
         prInfo.setPrprice(productPrice);
         prInfo.setPrimg(productImg);
 
-        prInfo.toString(prInfo);
+        System.out.println("상품이름: " + prInfo.getPrname());
 
         ProductDto checkPrname = odao.searchProduct(productName);
 
