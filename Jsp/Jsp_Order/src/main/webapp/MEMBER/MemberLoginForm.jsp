@@ -62,8 +62,10 @@ input[type=submit]:hover {
 	<div class="contents">
 
 		<h3 style="text-align: center;">로그인</h3>
-		<form action="${pageContext.request.contextPath}/memberLogin"
+		<form
+			action="${pageContext.request.contextPath}/memberLogin?afterUrl=${param.afterUrl }"
 			method="post">
+			<input type="hidden" name="afterUrl" value="${param.afterUrl }">
 
 			<table>
 				<tr>

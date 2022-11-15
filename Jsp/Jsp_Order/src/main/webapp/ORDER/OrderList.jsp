@@ -19,7 +19,7 @@ table {
 	margin: auto;
 }
 
-td {
+th,td {
 	padding: 8px;
 	border: 1px solid black;
 	text-align: center;
@@ -38,22 +38,28 @@ td {
 <body>
 
 	<div class="header">
-		<h1>ProductList.jsp</h1>
+		<h1>OrderList.jsp</h1>
 	</div>
 
 	<%@ include file="/Menu.jsp"%>
 
 	<div class="contents">
-		<h2>상품목록</h2>
+		<h2>주문내역</h2>
 		<table>
-			<c:forEach items="${prList }" var="pr">
+			<tr>
+				<th>주문코드</th>
+				<th>브랜드명</th>
+				<th>상품이름</th>
+				<th>상품가격</th>
+				<th>주문일</th>
+			</tr>
+			<c:forEach items="${orderInfo }" var="orderInfo">
 				<tr>
-					<td><img src="${pr.primg }" alt=""
-						style="width: 100px; height: 100px;"></td>
-					<td><span class="prTitle" title="${pr.prname}">
-							[${pr.prbrand }]&nbsp;${pr.prname } </span></td>
-					<td>${pr.prprice }원</td>
-					<td><button type="button" onclick="order('${pr.prcode}')">주문하기</button></td>
+					<td>${orderInfo.orcode}</td>
+					<td>${orderInfo.prbrand}</td>
+					<td>${orderInfo.prname}</td>
+					<td>${orderInfo.prprice}원</td>
+					<td>${orderInfo.ordate}</td>
 				</tr>
 			</c:forEach>
 		</table>
@@ -62,15 +68,6 @@ td {
 	<div class="footer">
 		<h2>Order</h2>
 	</div>
-
-
-	<script type="text/javascript">
-		function order(prcode) {
-			console.log('주문할 상품코드 : ' + prcode);
-			location.href = "${pageContext.request.contextPath}/productOrder?prcode="
-					+ prcode;
-		}
-	</script>
 </body>
 
 </html>

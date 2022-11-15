@@ -46,11 +46,17 @@ public class MemberController extends HttpServlet {
         System.out.println("로그인 요청");
         String inputId = request.getParameter("mid");
         String inputPw = request.getParameter("mpw");
+        String sendUrl = request.getParameter("afterUrl");
+        System.out.println("받은 URL: " + sendUrl);
         String loginId = msvc.loginCheck(inputId, inputPw);
 
         if (loginId != null) {
           session.setAttribute("loginId", loginId);
-          response.sendRedirect(contextPath + "/Main.jsp");
+          if (sendUrl != "") {
+            response.sendRedirect(contextPath + sendUrl);
+          } else {
+            response.sendRedirect(contextPath + "/Main.jsp");
+          }
         } else {
           response.getWriter().print("<script>");
           response.getWriter().print("alert('아이디 또는 비밀번호가 틀렸습니다.');");

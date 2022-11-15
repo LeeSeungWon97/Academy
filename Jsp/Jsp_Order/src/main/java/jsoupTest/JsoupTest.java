@@ -37,7 +37,7 @@ public class JsoupTest {
 
       for (int i = 0; i < listSize; i++) {
         // 상품코드 생성
-        int prNum = odao.selectMaxNum() + 1;
+        int prNum = odao.selectMaxProductNum() + 1;
 
         String productCode = "P" + String.format("%04d", prNum);
 
