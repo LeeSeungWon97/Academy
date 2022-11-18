@@ -11,6 +11,14 @@
 	<h2>메인페이지</h2>
 	<hr>
 	<a href="${pageContext.request.contextPath}/memberJoinForm">회원가입</a>
+	<a href="${pageContext.request.contextPath}/memberList">회원목록</a>
 	<hr>
+
+	<script type="text/javascript">
+		var msg = '${msg}';
+		if (msg.length > 0) {
+			alert(msg);
+		}
+	</script>
 </body>
 </html>
