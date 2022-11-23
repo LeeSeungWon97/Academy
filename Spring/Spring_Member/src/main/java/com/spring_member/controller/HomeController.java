@@ -62,7 +62,7 @@ public class HomeController {
 		ArrayList<MemberDto> memberList = msvc.memberList();
 		
 		mav.addObject("memberList",memberList);
-		mav.setViewName("회원목록페이지");
+		mav.setViewName("/member/MemberList");
 		return mav;
 	}
 
