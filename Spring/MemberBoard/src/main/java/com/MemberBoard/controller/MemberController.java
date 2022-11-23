@@ -3,6 +3,7 @@ package com.MemberBoard.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.MemberBoard.dto.MemberDto;
@@ -36,6 +37,15 @@ public class MemberController {
 		}
 
 		return mav;
+	}
+
+	@RequestMapping(value = "/memberIdCheck")
+	// ResponseBody >> 데이터 값만 전송
+	public @ResponseBody String memberIdCheck(String inputId) {
+		System.out.println("아이디 중복체크 확인 요청");
+		System.out.println("입력한 아이디: " + inputId);
+		String idCheck = msvc.idCheck(inputId);
+		return idCheck;
 	}
 
 }

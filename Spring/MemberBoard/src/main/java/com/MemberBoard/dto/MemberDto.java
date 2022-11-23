@@ -1,5 +1,7 @@
 package com.MemberBoard.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class MemberDto {
 	private String mid;
 	private String mpw;
@@ -7,7 +9,10 @@ public class MemberDto {
 	private String mbirth;
 	private String maddr;
 	private String memail;
-	private String mfile;
+	private String mprofile;
+	private String mstate;
+
+	private MultipartFile mfile;
 
 	public String getMid() {
 		return mid;
@@ -57,18 +62,34 @@ public class MemberDto {
 		this.memail = memail;
 	}
 
-	public String getMfile() {
+	public String getMprofile() {
+		return mprofile;
+	}
+
+	public void setMprofile(String mprofile) {
+		this.mprofile = mprofile;
+	}
+
+	public String getMstate() {
+		return mstate;
+	}
+
+	public void setMstate(String mstate) {
+		this.mstate = mstate;
+	}
+
+	public MultipartFile getMfile() {
 		return mfile;
 	}
 
-	public void setMfile(String mfile) {
+	public void setMfile(MultipartFile mfile) {
 		this.mfile = mfile;
 	}
 
 	@Override
 	public String toString() {
 		return "MemberDto [mid=" + mid + ", mpw=" + mpw + ", mname=" + mname + ", mbirth=" + mbirth + ", maddr=" + maddr
-				+ ", memail=" + memail + ", mfile=" + mfile + "]";
+				+ ", memail=" + memail + ", mprofile=" + mprofile + ", mstate=" + mstate + ", mfile=" + mfile + "]";
 	}
 
 }
