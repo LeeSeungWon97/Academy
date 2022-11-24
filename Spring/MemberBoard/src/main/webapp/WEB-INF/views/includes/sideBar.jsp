@@ -43,7 +43,7 @@
 				<!-- 로그인이 되어 있지 않을 경우 표시될 메뉴 -->
 				<a class="collapse-item"
 					href="${pageContext.request.contextPath }/memberJoinForm">회원가입</a>
-				<a class="collapse-item" href="">로그인</a>
+				<a class="collapse-item" href="${pageContext.request.contextPath }/memberLoginForm">로그인</a>
 
 				<!-- 로그인이 되어 있을 경우 경우 표시될 메뉴 -->
 				<a class="collapse-item" href="">내정보확인</a> <a class="collapse-item"

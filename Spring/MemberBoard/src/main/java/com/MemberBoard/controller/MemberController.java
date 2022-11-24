@@ -1,5 +1,9 @@
 package com.MemberBoard.controller;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +17,9 @@ import com.MemberBoard.service.MemberService;
 public class MemberController {
 	@Autowired
 	private MemberService msvc;
+	
+	@Autowired
+	HttpSession session;
 
 	@RequestMapping(value = "/memberJoinForm")
 	public ModelAndView memberJoinForm() {
@@ -24,7 +31,7 @@ public class MemberController {
 	}
 
 	@RequestMapping(value = "/memberJoin")
-	public ModelAndView memberJoin(MemberDto member) {
+	public ModelAndView memberJoin(MemberDto member) throws IllegalStateException, IOException {
 		System.out.println("회원가입 요청");
 		ModelAndView mav = new ModelAndView();
 		int insertResult = msvc.memberJoin(member);
@@ -47,5 +54,31 @@ public class MemberController {
 		String idCheck = msvc.idCheck(inputId);
 		return idCheck;
 	}
+	
+	@RequestMapping(value = "/memberLoginForm")
+	public ModelAndView memberLoginForm() {
+		System.out.println("로그인 페이지 이동요청");
+		ModelAndView mav = new ModelAndView();
 
+		mav.setViewName("member/MemberLoginForm");
+		return mav;
+	}
+	
+	@RequestMapping(value = "/memberLogin")
+	public ModelAndView memberLogin(MemberDto member) {
+		System.out.println("로그인 페이지 이동요청");
+		ModelAndView mav = new ModelAndView();
+		
+		MemberDto loginInfo = msvc.memberLogin(member);
+		if(loginInfo == null) {
+			System.out.println("로그인 실패");
+			mav.setViewName("redirect:/memberLoginForm");
+		} else {
+			System.out.println("로그인 성공");
+			session.setAttribute("loginInfo", loginInfo);
+			mav.setViewName("redirect:/");
+		}
+		
+		return mav;
+	}
 }
