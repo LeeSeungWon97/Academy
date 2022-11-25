@@ -64,7 +64,7 @@
 							style="background-color: white;">
 							<div class="p-5">
 								<div class="text-center">
-									<h1 class="h4 text-gray-900 mb-4">회원가입</h1>
+									<h1 class="h4 text-gray-900 mb-4">로그인</h1>
 								</div>
 								<form class="user"
 									action="${pageContext.request.contextPath }/memberLogin"
@@ -82,9 +82,13 @@
 												name="mpw" placeholder="비밀번호">
 										</div>
 									</div>
-
-									<button type="submit"
-										class="btn btn-primary btn-user btn-block">로그인</button>
+									
+									<div class="form-group row">
+										<div class="col-sm-6 mb-3 mb-sm-0">
+											<button type="submit"
+												class="btn btn-primary btn-user btn-block">로그인</button>
+										</div>
+									</div>
 									<hr>
 								</form>
 								<hr>

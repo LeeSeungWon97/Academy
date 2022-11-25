@@ -81,4 +81,13 @@ public class MemberController {
 		
 		return mav;
 	}
+	
+	@RequestMapping(value = "/memberLogout")
+	public ModelAndView memberLogout() {
+		System.out.println("로그아웃 요청");
+		ModelAndView mav = new ModelAndView();
+		session.invalidate();
+		mav.setViewName("redirect:/");
+		return mav;
+	}
 }
