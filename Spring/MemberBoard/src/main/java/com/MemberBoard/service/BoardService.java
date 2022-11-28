@@ -2,6 +2,7 @@ package com.MemberBoard.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
@@ -53,5 +54,19 @@ public class BoardService {
 			System.out.println("글등록 실패");
 		}
 		return insertResult;
+	}
+
+	public ArrayList<BoardDto> callBoardList() {
+		System.out.println("BoardService callBoardList()");
+		ArrayList<BoardDto> boardList = bdao.selectBoardList();
+		return boardList;
+	}
+
+	public BoardDto boardView(int viewbno) {
+		System.out.println("BoardService boardView()");
+		
+		bdao.updateBoardHits(viewbno);
+		BoardDto boardView = bdao.selectBoardView(viewbno);
+		return boardView;
 	}
 }

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,8 +62,7 @@
 									<h1 class="h4 text-gray-900 mb-4">회원가입</h1>
 								</div>
 								<form class="user" action="${pageContext.request.contextPath }/memberJoin"
-									enctype="multipart/form-data" method="post"
-									onsubmit="return joinFormCheck(this)">
+									enctype="multipart/form-data" method="post" onsubmit="return joinFormCheck(this)">
 									<div class="form-group row">
 										<div class="col-sm-6 mb-3 mb-sm-0">
 											<input type="text" class="form-control form-control-user" name="mid"
@@ -99,6 +99,7 @@
 									<button type="submit" class="btn btn-primary btn-user btn-block">회원가입</button>
 									<hr>
 								</form>
+
 								<hr>
 								<div class="text-center">
 									<a class="small" href="forgot-password.html">Forgot
@@ -112,7 +113,7 @@
 						</div>
 					</div>
 					<!-- Content Row -->
-					
+
 
 					<!-- Content Row -->
 

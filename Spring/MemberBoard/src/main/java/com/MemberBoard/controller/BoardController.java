@@ -1,6 +1,7 @@
 package com.MemberBoard.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
 
@@ -27,8 +28,9 @@ public class BoardController {
 		System.out.println("전체글목록 페이지 이동 요청");
 		ModelAndView mav = new ModelAndView();
 		// 1. 글목록 조회
-
+		ArrayList<BoardDto> boardList = bsvc.callBoardList();
 		// 2. 글목록페이지 지정
+		mav.addObject("boardList",boardList);
 		mav.setViewName("board/BoardList");
 
 		return mav;
@@ -64,6 +66,18 @@ public class BoardController {
 			mav.setViewName("redirect:/boardWriteForm");
 		}
 		
+		return mav;
+	}
+	
+	@RequestMapping(value = "/boardView")
+	public ModelAndView boardView(int viewbno) {
+		System.out.println(viewbno);
+		ModelAndView mav = new ModelAndView();
+		
+		BoardDto boardView = bsvc.boardView(viewbno);
+		
+		mav.addObject("boardView", boardView);
+		mav.setViewName("board/BoardView");
 		return mav;
 	}
 	
