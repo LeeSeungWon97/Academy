@@ -8,10 +8,12 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.MemberBoard.dto.BoardDto;
 import com.MemberBoard.dto.MemberDto;
+import com.MemberBoard.dto.ReplyDto;
 import com.MemberBoard.service.BoardService;
 
 @Controller
@@ -81,5 +83,42 @@ public class BoardController {
 		return mav;
 	}
 	
+	
+	@RequestMapping(value = "/boardModify")
+	public ModelAndView boardmodify(BoardDto modBoard) {
+		System.out.println("글수정 요청");
+		ModelAndView mav = new ModelAndView();
+		System.out.println(modBoard);
+		int modifyResult = bsvc.boardModify(modBoard);
+		if(modifyResult >0) {
+			System.out.println("수정성공");
+		} else {
+			System.out.println("수정실패");
+		}
+		mav.setViewName("redirect:/boardView?viewbno="+modBoard.getBno());
+		return mav;
+	}
+	
+	@RequestMapping(value = "/replyWriter")
+	public String replyWrite(ReplyDto reply) {
+		System.out.println("댓글 등록 요청");
+		System.out.println(reply);
+		String result = "";
+		int insertResult = bsvc.replyWrite(reply);
+		if(insertResult > 0) {
+			result = "OK";
+		}else {
+			result = "NO";
+		}
+		return result;
+	}
+	
+	@RequestMapping(value = "/replyList")
+	public @ResponseBody String replyList(int rebno) {
+		System.out.println("댓글 목록 조회 요청");
+		System.out.println("댓글을 조회할 글번호: " + rebno);
+		String replyList = bsvc.replyList(rebno);
+		return replyList;
+	}
 
 }

@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.MemberBoard.dao.BoardDao;
 import com.MemberBoard.dto.BoardDto;
 import com.MemberBoard.dto.MemberDto;
+import com.MemberBoard.dto.ReplyDto;
+import com.google.gson.Gson;
 
 @Service
 public class BoardService {
@@ -68,5 +70,40 @@ public class BoardService {
 		bdao.updateBoardHits(viewbno);
 		BoardDto boardView = bdao.selectBoardView(viewbno);
 		return boardView;
+	}
+
+	public int boardModify(BoardDto modBoard) {
+		System.out.println("BoardService boardModify()");
+		int updateResult = 0;
+		try {
+			updateResult = bdao.updateBoardModify(modBoard);	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return updateResult;
+	}
+
+	public int replyWrite(ReplyDto reply) {
+		System.out.println("BoardService replyWrite()");
+		int renum = bdao.selectMaxRenum()+1;
+		reply.setRenum(renum);
+		
+		int insertResult = 0;
+		try {
+			insertResult = bdao.insertReply(reply);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return insertResult;
+	}
+
+	public String replyList(int rebno) {
+		System.out.println("BoardService replyList()");
+		ArrayList<ReplyDto> reList = bdao.selectReplyList(rebno);
+		System.out.println(reList);
+		Gson gson = new Gson();
+		String reList_json = gson.toJson(reList);
+		System.out.println(reList_json);
+		return reList_json;
 	}
 }

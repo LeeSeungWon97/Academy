@@ -98,13 +98,29 @@
                                             alt="">
                                     </div>
                                     <div class="form-group row">
-                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <div class="col-sm-6 mb-3 mb-sm-0 modifyCol">
                                             <c:if test="${sessionScope.loginInfo.mid == boardView.bwriter }">
                                                 <button id="modifyBtn" type="button"
                                                     class="btn btn-primary btn-user btn-block"
-                                                    onclick="modify(isCheck)">글수정</button>
+                                                    onclick="toggleModForm('open')">글수정</button>
                                             </c:if>
                                         </div>
+
+                                        <c:if test="${sessionScope.loginInfo.mid == boardView.bwriter }">
+                                            <div class="col-sm-3 mb-3 mb-sm-0 modifyCol d-none">
+                                                <button type="submit" class="btn btn-success btn-user btn-bloc">
+                                                    수정
+                                                </button>
+                                            </div>
+                                            <div class="col-sm-3 modifyCol d-none">
+                                                <button type="button" onclick="toggleModForm('close')"
+                                                    class="btn btn-danger btn-user">
+                                                    취소
+                                                </button>
+                                            </div>
+
+                                        </c:if>
+
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <button type="button"
                                                 class="btn btn-primary btn-user btn-block">글목록</button>
@@ -116,10 +132,22 @@
                         </div>
                     </div>
 
+                    <!-- 댓글 출력 -->
                     <div class="row">
                         <div class="col-lg-7 ml-auto mr-auto" style="background-color: white;">
                             <div class="pt-1 px-5 pb-1">
-                                <h2>댓글출력</h2>
+                                <div class="text-center">
+                                    <h2>댓글목록</h2>
+                                </div>
+                            </div>
+
+                            <div id="replyListArea">
+                                <div class="form-group"></div>
+
+                            </div>
+
+                            <div>
+
                             </div>
                         </div>
                     </div>
@@ -130,11 +158,13 @@
                     <c:if test="${sessionScope.loginInfo.mid != null }">
                         <div class="row">
                             <div class="col-lg-7 ml-auto mr-auto" style="background-color: white;">
-                                <div class="p-5">
-                                    <form class="user" action="" method="post">
+                                <div class="pt-1 px-5 pb-1">
+                                    <form class="user" onsubmit="return replyWrite(this)">
+                                        <input type="hidden" name="rebno" value="${boardView.bno}">
+                                        <input type="hidden" name="rewriter" value="${sessionScope.loginInfo.mid}">
                                         <div class="form-group row">
-                                            <label for="#inputComment">댓글내용</label>
-                                            <textarea class="form-control" id="inputContent" name="bcontent"
+                                            <label for="#inputrecontent">댓글내용</label>
+                                            <textarea class="form-control" id="inputrecontent" name="recontent"
                                                 rows="3"></textarea>
                                         </div>
                                         <button type="submit" class="btn btn-primary btn-user btn-block">댓글작성</button>
@@ -186,16 +216,79 @@
     <script src="${pageContext.request.contextPath }/resources/js/sb-admin-2.min.js"></script>
 
     <script type="text/javascript">
-        var isCheck = false;
+        $(document).ready(function () {
+            replyList(viewBno);
+        });
 
-        function modify(isCheck) {
-            if (!isCheck) {
+        function toggleModForm(btnType) {
+            $(".modifyCol").toggleClass("d-none");
+
+            if (btnType == 'open') {
+                titleVal = $("#inputTitle").val();
+                contentVal = $("#inputContent").val();
                 $("#inputTitle").removeAttr("readonly");
                 $("#inputContent").removeAttr("readonly");
-                isCheck = true;
             } else {
-                $("#modifyBtn").attr('type', 'submit');
+                $("#inputTitle").val(titleVal);
+                $("#inputContent").val(contentVal);
+                $("#inputTitle").attr("readonly", "readonly");
+                $("#inputContent").removeAttr("readonly", "readonly");
             }
+        }
+
+        var viewBno = '${boardView.bno}';
+
+        function replyList(rebno) {
+            console.log('댓글 목록 조회 replyList(rebno)호출');
+            $.ajax({
+                type: "get",
+                url: "${pageContext.request.contextPath }/replyList",
+                data: { "rebno": rebno },
+                dataType : "json",
+                async: false,
+                success: function (reList) {
+                    console.log("reList: " + reList);
+                    console.log(reList.length);
+                    var output = "";
+                    for(var i = 0; i<reList.length; i++){
+                    console.log(reList[i].rewriter + ": " + reList[i].recontent);
+                    output += "<h2>"+reList[i].rewriter + " : " + reList[i].recontent+"</h2>"
+                    }
+                    $("#replyListArea").html(output);
+                }
+            });
+        }
+
+        function replyWrite(formObj) {
+            console.log("replyWrite(formObj)호출");
+            var rebno = formObj.rebno;
+            console.log("댓글작성 글번호: " + rebno.value);
+            var rewriter = formObj.rewriter;
+            console.log("댓글작성자: " + rewriter.value);
+            var recontent = formObj.recontent;
+            console.log("댓글내용: " + recontent.value);
+
+            $.ajax({
+                type: "get",
+                url: "${pageContext.request.contextPath }/replyWriter",
+                data: {
+                    "rebno": rebno.value,
+                    "rewriter": rewriter.value,
+                    "recontent": recontent.value
+                },
+                success: function (checkResult) {
+                    console.log(checkResult);
+                    if (checkResult == '1') {
+                        alert("댓글 등록 성공");
+                        replyList(rebno.value);
+                        
+                    } else {
+                        alert("댓글 등록 실패");
+                    }
+                }
+            });
+
+            return false;
         }
     </script>
 </body>
