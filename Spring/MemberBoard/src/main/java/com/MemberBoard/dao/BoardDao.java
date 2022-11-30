@@ -2,6 +2,7 @@ package com.MemberBoard.dao;
 
 import java.util.ArrayList;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -37,5 +38,9 @@ public interface BoardDao {
 
 	@Select("SELECT * FROM REPLYS WHERE REBNO = #{rebno} ORDER BY RENUM")
 	ArrayList<ReplyDto> selectReplyList(int rebno);
+
+	@Delete("DELETE FROM REPLYS WHERE RENUM = #{renum}")
+	int deleteReply(int renum);
+
 
 }

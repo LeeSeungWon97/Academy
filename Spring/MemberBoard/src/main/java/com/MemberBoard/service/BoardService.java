@@ -106,4 +106,10 @@ public class BoardService {
 		System.out.println(reList_json);
 		return reList_json;
 	}
+
+	public int deleteReply(int renum) {
+		System.out.println("BOardService deleteReply()");
+		int deleteResult = bdao.deleteReply(renum);
+		return deleteResult;
+	}
 }

@@ -100,7 +100,7 @@ public class BoardController {
 	}
 	
 	@RequestMapping(value = "/replyWriter")
-	public String replyWrite(ReplyDto reply) {
+	public @ResponseBody String replyWrite(ReplyDto reply) {
 		System.out.println("댓글 등록 요청");
 		System.out.println(reply);
 		String result = "";
@@ -119,6 +119,21 @@ public class BoardController {
 		System.out.println("댓글을 조회할 글번호: " + rebno);
 		String replyList = bsvc.replyList(rebno);
 		return replyList;
+	}
+	
+	@RequestMapping(value = "/replyDelete")
+	public @ResponseBody String replyDelete(int renum) {
+		System.out.println("댓글 삭제 요청");
+		System.out.println("요청할 댓글 번호: " + renum);
+		int deleteResult = bsvc.deleteReply(renum);
+		String result = "NO";
+		if(deleteResult > 0) {
+			System.out.println("삭제성공");
+			result = "OK";
+		} else {
+			System.out.println("삭제실패");
+		}
+		return result;
 	}
 
 }
