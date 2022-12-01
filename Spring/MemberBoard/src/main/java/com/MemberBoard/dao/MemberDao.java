@@ -1,8 +1,11 @@
 package com.MemberBoard.dao;
 
+import java.util.ArrayList;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
+import com.MemberBoard.dto.BoardDto;
 import com.MemberBoard.dto.MemberDto;
 
 public interface MemberDao {
@@ -15,5 +18,11 @@ public interface MemberDao {
 
 	@Select("SELECT * FROM MEMBERS WHERE MID = #{mid} AND MPW = #{mpw}")
 	public MemberDto selectLoginMember(MemberDto member);
+
+	@Select("SELECT * FROM MEMBERS WHERE MID = #{loginId}")
+	public MemberDto selectMemInfo(String loginId);
+
+	@Select("SELECT * FROM BOARDS WHERE BWRITER = #{loginId}")
+	public ArrayList<BoardDto> selectMemberBoardList(String loginId);
 
 }

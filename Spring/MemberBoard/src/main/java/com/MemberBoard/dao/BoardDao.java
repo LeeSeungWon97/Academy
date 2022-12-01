@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.MemberBoard.dto.BoardDto;
+import com.MemberBoard.dto.BoardLike;
 import com.MemberBoard.dto.ReplyDto;
 
 public interface BoardDao {
@@ -41,6 +42,17 @@ public interface BoardDao {
 
 	@Delete("DELETE FROM REPLYS WHERE RENUM = #{renum}")
 	int deleteReply(int renum);
+	
+	@Select("SELECT * FROM BOARDLIKE WHERE LBNO = #{lbno} AND LMID = #{lmid}")
+	BoardLike selectBoardLike(BoardLike blike);
 
+	@Delete("DELETE FROM BOARDLIKE WHERE LBNO = #{lbno} AND LMID = #{lmid}")
+	int deleteLike(BoardLike blike);
+
+	@Insert("INSERT INTO BOARDLIKE(LBNO, LMID, LSTATE) VALUES(#{lbno},#{lmid},'0')")
+	int insertLike(BoardLike blike);
+
+	@Select("SELECT COUNT(*) FROM BOARDLIKE WHERE LBNO=#{lbno}")
+	String selectLikeCount(int lbno);
 
 }

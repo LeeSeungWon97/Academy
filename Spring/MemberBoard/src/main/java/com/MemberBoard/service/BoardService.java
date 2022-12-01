@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.MemberBoard.dao.BoardDao;
 import com.MemberBoard.dto.BoardDto;
+import com.MemberBoard.dto.BoardLike;
 import com.MemberBoard.dto.MemberDto;
 import com.MemberBoard.dto.ReplyDto;
 import com.google.gson.Gson;
@@ -112,4 +113,52 @@ public class BoardService {
 		int deleteResult = bdao.deleteReply(renum);
 		return deleteResult;
 	}
+
+	public BoardLike callBoardLike(BoardLike blike) {
+		System.out.println("BoardService callBoardLike()");
+		BoardLike bolike = new BoardLike();
+		try {
+			bolike = bdao.selectBoardLike(blike);
+			if(bolike == null) {
+				return blike;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(bolike);
+		return bolike;
+	}
+
+	public int cancleLike(BoardLike blike) {
+		System.out.println("BoardService cancleLike()");
+		int deleteResult = 0;
+		try {
+			deleteResult = bdao.deleteLike(blike);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return deleteResult;
+	}
+
+	public int addLike(BoardLike blike) {
+		System.out.println("BoardService addLike()");
+		int insertResult = 0;
+		try {
+			insertResult = bdao.insertLike(blike);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return insertResult;
+	}
+
+	public String likeCount(int lbno) {
+		System.out.println("BoardService likeCount");
+		String count = bdao.selectLikeCount(lbno);
+		System.out.println(count);
+		return count;
+	}
+
+
+
+
 }

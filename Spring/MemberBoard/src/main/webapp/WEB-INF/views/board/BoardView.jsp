@@ -145,6 +145,14 @@
 							</div>
 						</div>
 					</div>
+					
+					<div class="row">
+						<div class="col-lg-7 ml-auto mr-auto align-items-center text-center pb-3" style="background-color: white;">
+							<button class="btn border-primary btn-user text-primary" onclick="boardLike('${boardView.bno }')">
+								<i class="p-0 far fa-thumbs-up">추천</i> <span id="likeCount">${likecount }</span>
+							</button>
+						</div>
+					</div>
 
 					<!-- 댓글 출력 -->
 					<div class="row">
@@ -257,6 +265,29 @@
 
 		var viewBno = '${boardView.bno}';
 		var loginId = '${sessionScope.loginInfo.mid}';
+		
+		function boardLike(bno){
+			if(loginId.length > 0){
+				console.log('추천 버튼 호출');
+				
+				$.ajax({
+					type:"get",
+					url:"${pageContext.request.contextPath }/boardLike",
+					data: {
+						"lbno" : bno,
+						"lmid" : loginId
+					},
+					success : function(result){
+						$('#likeCount').text(result);
+						
+					}
+				});
+					
+				
+			} else{
+				alert('로그인 후 추천 가능합니다.');
+			}
+		}
 		
 		function replyList(rebno) {
 			console.log('댓글 목록 조회 replyList(rebno)호출');

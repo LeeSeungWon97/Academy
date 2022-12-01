@@ -2,6 +2,7 @@ package com.MemberBoard.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.MemberBoard.dao.MemberDao;
+import com.MemberBoard.dto.BoardDto;
 import com.MemberBoard.dto.MemberDto;
 
 @Service
@@ -70,6 +72,18 @@ public class MemberService {
 		System.out.println("MemberService memberLogin()");
 		MemberDto loginInfo = mdao.selectLoginMember(member); 
 		return loginInfo;
+	}
+
+	public MemberDto memberInfo(String loginId) {
+		System.out.println("MemberService memberInfo()");
+		MemberDto memberInfo = mdao.selectMemInfo(loginId);
+		return memberInfo;
+	}
+
+	public ArrayList<BoardDto> memberBoardList(String loginId) {
+		System.out.println("MemberService memberBoardList()");
+		ArrayList<BoardDto> boList = mdao.selectMemberBoardList(loginId);
+		return boList;
 	}
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.MemberBoard.dto.BoardDto;
+import com.MemberBoard.dto.BoardLike;
 import com.MemberBoard.dto.MemberDto;
 import com.MemberBoard.dto.ReplyDto;
 import com.MemberBoard.service.BoardService;
@@ -77,7 +78,9 @@ public class BoardController {
 		ModelAndView mav = new ModelAndView();
 		
 		BoardDto boardView = bsvc.boardView(viewbno);
+		String likecount = bsvc.likeCount(viewbno);
 		
+		mav.addObject("likecount", likecount);
 		mav.addObject("boardView", boardView);
 		mav.setViewName("board/BoardView");
 		return mav;
@@ -133,6 +136,26 @@ public class BoardController {
 		} else {
 			System.out.println("삭제실패");
 		}
+		return result;
+	}
+	
+	@RequestMapping(value = "/boardLike")
+	public @ResponseBody String boardLike(int lbno,String lmid) {
+		System.out.println("추천 요청");
+		System.out.println("요청한 글번호: " + lbno);
+		System.out.println("요청한 아이디: " + lmid);
+		
+		BoardLike blike = new BoardLike();
+		blike.setLbno(lbno);
+		blike.setLmid(lmid);
+		System.out.println(blike);
+		blike = bsvc.callBoardLike(blike);
+		if(blike.getLstate() != null) {
+			bsvc.cancleLike(blike);
+		} else {
+			bsvc.addLike(blike);
+		}
+		String result = bsvc.likeCount(lbno);
 		return result;
 	}
 

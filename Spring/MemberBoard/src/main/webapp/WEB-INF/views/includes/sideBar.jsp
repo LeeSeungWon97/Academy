@@ -43,7 +43,7 @@
 					</c:when>
 
 					<c:otherwise>
-						<a class="collapse-item" href="">내정보확인</a>
+						<a class="collapse-item" href="${pageContext.request.contextPath }/memberInfo">내정보확인</a>
 						<a class="collapse-item" href="${pageContext.request.contextPath }/memberLogout">로그아웃</a>
 					</c:otherwise>
 				</c:choose>

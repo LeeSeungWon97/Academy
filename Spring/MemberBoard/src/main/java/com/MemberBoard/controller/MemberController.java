@@ -1,6 +1,7 @@
 package com.MemberBoard.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
 
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.MemberBoard.dto.BoardDto;
 import com.MemberBoard.dto.MemberDto;
 import com.MemberBoard.service.MemberService;
 
@@ -90,4 +92,21 @@ public class MemberController {
 		mav.setViewName("redirect:/");
 		return mav;
 	}
+	
+	@RequestMapping(value = "/memberInfo")
+	public ModelAndView memberInfo() {
+		System.out.println("내정보확인 페이지 요청");
+		ModelAndView mav = new ModelAndView();
+		MemberDto login = (MemberDto) session.getAttribute("loginInfo");
+		String loginId = login.getMid();
+		MemberDto memberInfo = msvc.memberInfo(loginId);
+		
+		ArrayList<BoardDto> boList = msvc.memberBoardList(loginId);
+		mav.addObject("memberInfo", memberInfo);
+		mav.addObject("boList", boList);
+		mav.setViewName("member/MemberInfoForm");
+		
+		return mav;
+	}
+	
 }
