@@ -26,11 +26,11 @@
 <link
 	href="${pageContext.request.contextPath }/resources/css/sb-admin-2.min.css"
 	rel="stylesheet">
-	
+
 <style>
-    textarea {
-        resize: none;
-    }
+textarea {
+	resize: none;
+}
 </style>
 
 
@@ -145,11 +145,16 @@
 							</div>
 						</div>
 					</div>
-					
+
+					<!-- 게시글 추천 버튼 -->
 					<div class="row">
-						<div class="col-lg-7 ml-auto mr-auto align-items-center text-center pb-3" style="background-color: white;">
-							<button class="btn border-primary btn-user text-primary" onclick="boardLike('${boardView.bno }')">
-								<i class="p-0 far fa-thumbs-up">추천</i> <span id="likeCount">${likecount }</span>
+						<div
+							class="col-lg-7 ml-auto mr-auto align-items-center text-center pb-3"
+							style="background-color: white;">
+							<button id="likeBtn"
+								class="btn border-primary btn-user text-primary"
+								onclick="boardLike('${boardView.bno }')">
+								<i class="p-0 far fa-thumbs-up ">추천</i> <span id="like_count">${blikeCount}</span>
 							</button>
 						</div>
 					</div>
@@ -158,15 +163,7 @@
 					<div class="row">
 						<div class="col-lg-7 ml-auto mr-auto"
 							style="background-color: white;">
-							<div class="pt-1 px-5 pb-1">
-								<div class="text-center">
-									<h2>댓글목록</h2>
-								</div>
-							</div>
-
-							<div id="replyListArea">
-								
-							</div>
+							<div id="replyListArea"></div>
 						</div>
 					</div>
 
@@ -242,9 +239,9 @@
 		src="${pageContext.request.contextPath }/resources/js/sb-admin-2.min.js"></script>
 
 	<script type="text/javascript">
-		
 		$(document).ready(function() {
 			replyList(viewBno);
+			boardLikeCount_ajax(viewBno)
 		});
 
 		function toggleModForm(btnType) {
@@ -265,82 +262,158 @@
 
 		var viewBno = '${boardView.bno}';
 		var loginId = '${sessionScope.loginInfo.mid}';
-		
-		function boardLike(bno){
-			if(loginId.length > 0){
-				console.log('추천 버튼 호출');
-				
+
+		function replyLike(renum, btnObj) {
+			console.log("replyLike()호출");
+			if (loginId.length > 0) {
 				$.ajax({
-					type:"get",
-					url:"${pageContext.request.contextPath }/boardLike",
-					data: {
-						"lbno" : bno,
-						"lmid" : loginId
+					type : "get",
+					url : "${pageContext.request.contextPath }/replyLike",
+					data : {
+						"renum" : renum,
+						"remid" : loginId
 					},
-					success : function(result){
-						$('#likeCount').text(result);
-						
+					async : false,
+					dataType : "json",
+					success : function(result) {
+						console.log(result.reLikeResult);
+						console.log(result.reLikeCount);
+						if (result.reLikeResult == '1') {
+							alert("추천 되었습니다.");
+						} else{
+							alert("추천 취소되었습니다.");
+						}
 					}
 				});
-					
-				
-			} else{
+			} else {
 				alert('로그인 후 추천 가능합니다.');
 			}
 		}
-		
+
+		function boardLike(bno) {
+			if (loginId.length > 0) {
+				$.ajax({
+					type : "get",
+					url : "${pageContext.request.contextPath }/boardLike",
+					data : {
+						"lbno" : bno,
+						"lmid" : loginId
+					},
+					async : false,
+					dataType : "json",
+					success : function(result) {
+						console.log(result.likeResult);
+						if (result.likeResult == '1') {
+							alert("추천 되었습니다.");
+							$("#likeBtn").removeClass("text-primary");
+							$("#likeBtn").addClass("text-white");
+							$("#likeBtn").addClass("bg-primary");
+						} else {
+							alert("추천이 취소되었습니다.");
+							$("#likeBtn").addClass("text-primary");
+							$("#likeBtn").removeClass("text-white");
+							$("#likeBtn").removeClass("bg-primary");
+						}
+
+						$("#like_count").text(result.likeCount);
+					}
+				});
+			} else {
+				alert('로그인 후 추천 가능합니다.');
+			}
+		}
+
+		function boardLikeCount_ajax(bno) {
+			$
+					.ajax({
+						type : "get",
+						url : "${pageContext.request.contextPath }/boardLikeCount_ajax",
+						data : {
+							"lbno" : bno,
+							"lmid" : loginId
+						},
+						async : false,
+						dataType : "json",
+						success : function(result) {
+							console.log(result);
+							if (result.likeCheck != null) {
+								$("#likeBtn").removeClass("text-primary");
+								$("#likeBtn").addClass("text-white");
+								$("#likeBtn").addClass("bg-primary");
+							}
+
+							$("#like_count").text(result.likeCount);
+						}
+					});
+		}
+
 		function replyList(rebno) {
 			console.log('댓글 목록 조회 replyList(rebno)호출');
-			$.ajax({
-				type : "get",
-				url : "${pageContext.request.contextPath }/replyList",
-				data : {
-					"rebno" : rebno
-				},
-				dataType : "json",
-				async : false,
-				success : function(reList) {
-					var output = "";
-					for (var i = 0; i < reList.length; i++) {
-					output += '<div class="card shadow h-100">';
-					output += '<div class="card-body p-3">';
-					output += '<div class="row no-gutters align-items-center">';
-					output += '<div class="col-mr-2">';
-					output += '<div class="text-xs font-weight-bold">';
-					output += '<img alt="" class="mr-2" style="height:25px;" src="${pageContext.request.contextPath }/resources/img/undraw_profile.svg">';
-					output += '<span class="text-primary">'+reList[i].rewriter+'</span>';
-					output += '<span class="text-uppercase pl-2">'+reList[i].redate+'</span>';
-					output += '</div>';
-					output += '<hr class="my-1">';
-					output += '</div>'
-					output += '<textarea readonly="readonly" class="retext mb-2 border-0 font-weight-bold text-gray-800 w-100">'+reList[i].recontent+'</textarea>';
-					output += '</div>';
-					output += '<div class="col-auto">';
-					
-					if(reList[i].rewriter == loginId){
-					output += '<button type="button" onclick="deleteReply('+reList[i].renum+')" class="btn btn-danger btn-user">삭제</button>';						
-					}
-					
-					
-					output += '</div>';
-					output += '</div>';
-					output += '</div>';
-					}
-					$("#replyListArea").html(output);
-				}
-			});
+			$
+					.ajax({
+						type : "get",
+						url : "${pageContext.request.contextPath }/replyList",
+						data : {
+							"rebno" : rebno
+						},
+						dataType : "json",
+						async : false,
+						success : function(reList) {
+							var output = "";
+							for (var i = 0; i < reList.length; i++) {
+								output += '<div class="card shadow">';
+								output += '<div class="card-body p-3">';
+								output += '<div class="row no-gutters align-items-center text-xs font-weight-bold">';
+								output += '<div class="col">';
+								output += '<div class="text-xs font-weight-bold">';
+								output += '<img alt="" class="mr-2" style="height:25px;" src="${pageContext.request.contextPath }/resources/img/undraw_profile.svg">';
+								output += '<span class="text-primary">'
+										+ reList[i].rewriter + '</span>';
+								output += '<span class="text-uppercase pl-2">'
+										+ reList[i].redate + '</span>';
+								output += '<button class="text-xs btn btn-sm border-primary btn-user text-primary" onclick="replyLike('
+										+ "'"
+										+ reList[i].renum
+										+ "'"
+										+ ',this)">';
+								output += '추천 <span>' + reList[i].relikecount
+										+ '</span>';
+								output += '</button>';
+								output += '</div>';
+								output += '<hr class="my-1">';
+								output += '</div>'
+								output += '<textarea readonly="readonly" class="retext mb-2 border-0 font-weight-bold text-gray-800 w-100">'
+										+ reList[i].recontent + '</textarea>';
+								output += '</div>';
+								output += '<div class="col-auto">';
+
+								if (reList[i].rewriter == loginId) {
+									output += '<button type="button" onclick="deleteReply('
+											+ reList[i].renum
+											+ ')" class="btn btn-danger btn-user">삭제</button>';
+								}
+
+								output += '</div>';
+								output += '</div>';
+								output += '</div>';
+							}
+							$("#replyListArea").html(output);
+						}
+					});
 		}
-	
-		function deleteReply(replyObj){
+
+		function deleteReply(replyObj) {
 			console.log("삭제요청");
 			var renum = replyObj;
 			console.log(renum);
-			
+
 			$.ajax({
 				type : "get",
 				url : "${pageContext.request.contextPath }/replyDelete",
-				data : {"renum" : renum},
-				success : function(checkResult){
+				data : {
+					"renum" : renum
+				},
+				success : function(checkResult) {
 					console.log(checkResult);
 					if (checkResult == "OK") {
 						alert("댓글 삭제 성공");
@@ -352,7 +425,7 @@
 				}
 			});
 		}
-		
+
 		function replyWrite(formObj) {
 			console.log("replyWrite(formObj)호출");
 			var rebno = formObj.rebno;

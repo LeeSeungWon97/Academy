@@ -13,39 +13,39 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.MemberBoard.dao.BoardDao;
 import com.MemberBoard.dto.BoardDto;
-import com.MemberBoard.dto.BoardLike;
 import com.MemberBoard.dto.MemberDto;
 import com.MemberBoard.dto.ReplyDto;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @Service
 public class BoardService {
 
 	@Autowired
 	private BoardDao bdao;
-	
+
 	@Autowired
 	private ServletContext context;
 
 	public int boardWrite(MemberDto mdto, BoardDto bdto) throws IllegalStateException, IOException {
 		System.out.println("BoardService boardWrite()");
 		MultipartFile bfile = bdto.getBfile();
-		String bfilename ="";
+		String bfilename = "";
 		if (bfile.isEmpty()) {
 			System.out.println("첨부파일X");
 		} else {
 			System.out.println("첨부파일O");
 			UUID uuid = UUID.randomUUID();
-			
+
 			bfilename = uuid + "_" + bfile.getOriginalFilename();
-			
+
 			String savePath = context.getRealPath("resources/boardUpload");
-			
-			File file = new File(savePath,bfilename);
+
+			File file = new File(savePath, bfilename);
 			bfile.transferTo(file);
 		}
 		bdto.setBfilename(bfilename);
-		
+
 		int bMaxNum = bdao.selectMaxNum() + 1;
 		bdto.setBno(bMaxNum);
 		bdto.setBwriter(mdto.getMid());
@@ -67,7 +67,7 @@ public class BoardService {
 
 	public BoardDto boardView(int viewbno) {
 		System.out.println("BoardService boardView()");
-		
+
 		bdao.updateBoardHits(viewbno);
 		BoardDto boardView = bdao.selectBoardView(viewbno);
 		return boardView;
@@ -77,7 +77,7 @@ public class BoardService {
 		System.out.println("BoardService boardModify()");
 		int updateResult = 0;
 		try {
-			updateResult = bdao.updateBoardModify(modBoard);	
+			updateResult = bdao.updateBoardModify(modBoard);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -86,9 +86,9 @@ public class BoardService {
 
 	public int replyWrite(ReplyDto reply) {
 		System.out.println("BoardService replyWrite()");
-		int renum = bdao.selectMaxRenum()+1;
+		int renum = bdao.selectMaxRenum() + 1;
 		reply.setRenum(renum);
-		
+
 		int insertResult = 0;
 		try {
 			insertResult = bdao.insertReply(reply);
@@ -102,6 +102,11 @@ public class BoardService {
 		System.out.println("BoardService replyList()");
 		ArrayList<ReplyDto> reList = bdao.selectReplyList(rebno);
 		System.out.println(reList);
+		for (int i = 0; i < reList.size(); i++) {
+			int renum = reList.get(i).getRenum();
+			int reLikeCount = bdao.selectReLikeCount(renum);
+			reList.get(i).setRelikecount(reLikeCount);
+		}
 		Gson gson = new Gson();
 		String reList_json = gson.toJson(reList);
 		System.out.println(reList_json);
@@ -114,51 +119,72 @@ public class BoardService {
 		return deleteResult;
 	}
 
-	public BoardLike callBoardLike(BoardLike blike) {
-		System.out.println("BoardService callBoardLike()");
-		BoardLike bolike = new BoardLike();
-		try {
-			bolike = bdao.selectBoardLike(blike);
-			if(bolike == null) {
-				return blike;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	public String boardLike(int lbno, String lmid) {
+		System.out.println("BoardService boardLike()");
+		Gson gson = new Gson();
+		JsonObject boardLike_json = new JsonObject();
+
+		// 1. 추천유무 확인
+		String likeMid = bdao.selectLikeCheck(lbno, lmid);
+
+		if (likeMid == null) {
+			System.out.println("추천 입력");
+			bdao.insertBoardLike(lbno, lmid);
+			boardLike_json.addProperty("likeResult", "1");
+		} else {
+			System.out.println("추천 취소");
+			bdao.deleteBoardLike(lbno, lmid);
+			boardLike_json.addProperty("likeResult", "-1");
 		}
-		System.out.println(bolike);
-		return bolike;
+
+		// 2. 추천 처리 이후 추천수 조회
+		int likeCount = bdao.selectLikeCount(lbno);
+		boardLike_json.addProperty("likeCount", likeCount);
+
+		System.out.println(gson.toJson(boardLike_json));
+		return gson.toJson(boardLike_json);
+
 	}
 
-	public int cancleLike(BoardLike blike) {
-		System.out.println("BoardService cancleLike()");
-		int deleteResult = 0;
-		try {
-			deleteResult = bdao.deleteLike(blike);
-		} catch (Exception e) {
-			e.printStackTrace();
+	public int boardLikeCount(int viewBno) {
+		System.out.println("BoardService boardLike()");
+		int likeCount = bdao.selectLikeCount(viewBno);
+		return likeCount;
+	}
+
+	public String boardLikeInfo(int lbno, String lmid) {
+		System.out.println("BoardService boardLikeInfo()");
+		int likeCount = bdao.selectLikeCount(lbno);
+		String likeMid = bdao.selectLikeCheck(lbno, lmid);
+		Gson gson = new Gson();
+		JsonObject likeInfo_json = new JsonObject();
+		likeInfo_json.addProperty("likeCount", likeCount);
+		likeInfo_json.addProperty("likeCheck", likeMid);
+
+		return gson.toJson(likeInfo_json);
+	}
+
+	public String replyLikeInfo(int renum, String remid) {
+		System.out.println("BoardService replyLikeInfo() ");
+		Gson gson = new Gson();
+		JsonObject reLikeInfo_json = new JsonObject();
+		String reLikeCheck = bdao.selectReLikeCheck(renum, remid);
+		
+		if(reLikeCheck == null) {
+			System.out.println("추천 입력");
+			bdao.insertReplyLike(renum,remid);
+			reLikeInfo_json.addProperty("reLikeResult", "1");
+		} else {
+			System.out.println("추천 취소");
+			bdao.deleteReplyLike(renum,remid);
+			reLikeInfo_json.addProperty("reLikeResult", "-1");
 		}
-		return deleteResult;
+		
+		int reLikeCount = bdao.selectReLikeCount(renum);
+		reLikeInfo_json.addProperty("reLikeCount", reLikeCount);
+		
+		
+		return gson.toJson(reLikeInfo_json);
 	}
-
-	public int addLike(BoardLike blike) {
-		System.out.println("BoardService addLike()");
-		int insertResult = 0;
-		try {
-			insertResult = bdao.insertLike(blike);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return insertResult;
-	}
-
-	public String likeCount(int lbno) {
-		System.out.println("BoardService likeCount");
-		String count = bdao.selectLikeCount(lbno);
-		System.out.println(count);
-		return count;
-	}
-
-
-
 
 }
