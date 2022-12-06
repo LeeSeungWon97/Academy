@@ -161,9 +161,8 @@ public class BoardController {
 	@RequestMapping(value = "/replyLike")
 	public @ResponseBody String replyLike(int renum, String remid) {
 		System.out.println("댓글 추천 요청");
-		String reLikeInfo = bsvc.replyLikeInfo(renum, remid);
+		String reLike = bsvc.replyLike(renum, remid);
 		
-		return reLikeInfo;
+		return reLike;
 	}
-
 }

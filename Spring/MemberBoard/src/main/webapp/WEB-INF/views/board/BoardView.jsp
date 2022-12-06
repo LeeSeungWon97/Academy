@@ -280,14 +280,44 @@ textarea {
 						console.log(result.reLikeCount);
 						if (result.reLikeResult == '1') {
 							alert("추천 되었습니다.");
-						} else{
+							$(btnObj).removeClass("text-primary");
+							$(btnObj).addClass("text-white");
+							$(btnObj).addClass("bg-primary");
+						} else {
 							alert("추천 취소되었습니다.");
+							$(btnObj).addClass("text-primary");
+							$(btnObj).removeClass("text-white");
+							$(btnObj).removeClass("bg-primary");
 						}
+						$(btnObj).text(result.reLikeCount);
 					}
 				});
 			} else {
 				alert('로그인 후 추천 가능합니다.');
 			}
+		}
+		function replyLikeCount_ajax(renum,btnObj) {
+			$
+					.ajax({
+						type : "get",
+						url : "${pageContext.request.contextPath }/replyLikeCount_ajax",
+						data : {
+							"renum" : renum,
+							"remid" : loginId
+						},
+						async : false,
+						dataType : "json",
+						success : function(result) {
+							console.log(result);
+							if (result.likeCheck != null) {
+								$(btnObj).removeClass("text-primary");
+								$(btnObj).addClass("text-white");
+								$(btnObj).addClass("bg-primary");
+							}
+
+							$(btnObj).text(result.likeCount);
+						}
+					});
 		}
 
 		function boardLike(bno) {
@@ -376,8 +406,7 @@ textarea {
 										+ reList[i].renum
 										+ "'"
 										+ ',this)">';
-								output += '추천 <span>' + reList[i].relikecount
-										+ '</span>';
+								output += '추천' + reList[i].relikecount;
 								output += '</button>';
 								output += '</div>';
 								output += '<hr class="my-1">';

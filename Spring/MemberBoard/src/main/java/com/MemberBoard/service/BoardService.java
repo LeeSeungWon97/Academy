@@ -164,7 +164,7 @@ public class BoardService {
 		return gson.toJson(likeInfo_json);
 	}
 
-	public String replyLikeInfo(int renum, String remid) {
+	public String replyLike(int renum, String remid) {
 		System.out.println("BoardService replyLikeInfo() ");
 		Gson gson = new Gson();
 		JsonObject reLikeInfo_json = new JsonObject();
