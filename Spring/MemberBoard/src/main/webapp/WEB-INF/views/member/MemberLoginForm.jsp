@@ -182,6 +182,33 @@
 	</script>
 	
 	<script type="text/javascript">
+		var kakaoAccessToken = '${kakaoAccessToken}';
+		if(kakaoAccessToken.length > 0){
+			console.log(kakaoAccessToken);
+			memberLogin_kakao(kakaoAccessToken);
+		}
+		
+		function memberLogin_kakao(token){
+			console.log("memberLogin_kakao 호출");
+			$.ajax({
+				type :"post",
+				url : "${pageContext.request.contextPath }/memberLogin_kakao",
+				data : {"token" : token},
+				dataType : "json",
+				async : false,
+				success : function(result){
+					if(result.joinCheck == '1'){
+						alert('카카오 계정으로 로그인 되었습니다.');
+						location.href = "${pageContext.request.contextPath}/";
+					} else{
+						
+					}
+				}
+					
+			});
+		}
+	
+	
 		function loginWithKakao(){
 			location.href="https://kauth.kakao.com/oauth/authorize?client_id=fc2f71bf7a40e334fb01ce30ee586a31&redirect_uri=http://localhost:8080/controller/kakaoLoginTest&response_type=code";
 		}
