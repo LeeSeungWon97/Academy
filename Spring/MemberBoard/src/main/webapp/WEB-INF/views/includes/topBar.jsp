@@ -79,15 +79,28 @@
 			<c:otherwise>
 				<!-- Nav Item - User Information -->
 				<li class="nav-item dropdown no-arrow"><a class="nav-link dropdown-toggle" href="#" id="userDropdown"
-						role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span
-							class="mr-2 d-none d-lg-inline text-gray-600 small">${sessionScope.loginInfo.mid }</span>
+						role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+						<span class="mr-2 d-none d-lg-inline text-gray-600 small">
+						<c:if test="${sessionScope.loginInfo.mstate == 'k' }">kakao_</c:if> ${sessionScope.loginInfo.mid }
+						</span>
+				
 
 						<c:choose>
 							<%-- 프로필이 등록되어 있을 경우 --%>
 							<c:when test="${loginInfo.mprofile != null }">
+							<c:choose>
+								<c:when test="${sessionScope.loginInfo.mstate == 'k' }">
+									<img class="img-profile rounded-circle"
+									src="${sessionScope.loginInfo.mprofile}">
+								</c:when>
+								
+								<c:otherwise>
 								<img class="img-profile rounded-circle"
 									src="${pageContext.request.contextPath }/resources/memberProfile/${loginInfo.mprofile}">
+								</c:otherwise>
+							</c:choose>
 							</c:when>
+							
 							<%-- 프로필이 등록되어있지 않을 경우 --%>
 							<c:otherwise>
 								<img class="img-profile rounded-circle"

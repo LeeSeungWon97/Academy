@@ -41,5 +41,16 @@ public class ApiController {
 		String kakaoUserInfo_json = apisvc.memberLogin_kakao(token,session);
 		return kakaoUserInfo_json;
 	}
+	
+	@RequestMapping(value = "/memberJoin_kakao")
+	public @ResponseBody String memberJoin_kakao(String kakaoId, String kakaoNickName, String kakaoProfile, String kakaoEmail) {
+		System.out.println("memberJoin_kakao 요청");
+		System.out.println("kakaoId : "+kakaoId);
+		System.out.println("kakaoNickName : " + kakaoNickName);
+		System.out.println("kakaoProfile : " + kakaoProfile);
+		System.out.println("kakaoEmail : " + kakaoEmail);
+		String kakaoJoinResult = apisvc.memberJoin_kakao(kakaoId, kakaoNickName,kakaoProfile,kakaoEmail);
+		return kakaoJoinResult;
+	}
 
 }

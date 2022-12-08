@@ -3,6 +3,7 @@ package com.MemberBoard.dao;
 import java.util.ArrayList;
 
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.MemberBoard.dto.BoardDto;
@@ -24,5 +25,11 @@ public interface MemberDao {
 
 	@Select("SELECT * FROM BOARDS WHERE BWRITER = #{loginId}")
 	public ArrayList<BoardDto> selectMemberBoardList(String loginId);
+
+	@Select("SELECT * FROM MEMBERS WHERE MID = #{kakaoId} AND MSTATE = 'k' ")
+	public MemberDto selectMemberInfo_kakao(String kakaoId);
+
+	@Insert("INSERT INTO MEMBERS(MID, MPW, MNAME, MEMAIL, MPROFILE, MSTATE) VALUES(#{mid}, 'kakao_'||#{mid}, #{mname}, #{memail}, #{mprofile}, 'k')")
+	public int insertMember_kakao(@Param("mid") String kakaoId, @Param("mname") String kakaoNickName, @Param("mprofile") String kakaoProfile, @Param("memail") String kakaoEmail);
 
 }

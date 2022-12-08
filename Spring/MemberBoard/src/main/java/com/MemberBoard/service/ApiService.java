@@ -8,13 +8,21 @@ import java.net.URLEncoder;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.MemberBoard.dao.MemberDao;
+import com.MemberBoard.dto.MemberDto;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 @Service
 public class ApiService {
+
+	@Autowired
+	private MemberDao mdao;
 
 	// 카카오 토큰
 	public String getAccessToken(String code) throws Exception {
@@ -77,17 +85,44 @@ public class ApiService {
 		conn.disconnect();
 		System.out.println(sb.toString());
 
-		// 2. 가져온 카카오 사용자 정보가 MEMBERS 테이블에 등록되어 있는지 확인
 		JsonElement userInfoElement = JsonParser.parseString(sb.toString());
 		String kakaoId = userInfoElement.getAsJsonObject().get("id").getAsString();
 		System.out.println("kakaoId: " + kakaoId);
-		String kakaoNickName = userInfoElement.getAsJsonObject().get("properties").getAsJsonObject().get("nickname").getAsString();
+		String kakaoNickName = userInfoElement.getAsJsonObject().get("properties").getAsJsonObject().get("nickname")
+				.getAsString();
 		System.out.println("kakaoNickName: " + kakaoNickName);
-		String kakaoProfile = userInfoElement.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image").getAsString();
+		String kakaoProfile = userInfoElement.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image")
+				.getAsString();
 		System.out.println("kakaoProfile: " + kakaoProfile);
-		String kakaoEmail = userInfoElement.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+		String kakaoEmail = userInfoElement.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email")
+				.getAsString();
 		System.out.println("kakaoEmail: " + kakaoEmail);
-		return null;
+
+		// 2. 가져온 카카오 사용자 정보가 MEMBERS 테이블에 등록되어 있는지 확인
+		Gson gson = new Gson();
+		JsonObject jobj = new JsonObject();
+
+		MemberDto kakaoInfoCheck = mdao.selectMemberInfo_kakao(kakaoId);
+
+		if (kakaoInfoCheck == null) {
+			// 등록된 정보가 아닐 경우
+			jobj.addProperty("kakaoId", kakaoId);
+			jobj.addProperty("kakaoNickName", kakaoNickName);
+			jobj.addProperty("kakaoProfile", kakaoProfile);
+			jobj.addProperty("kakaoEmail", kakaoEmail);
+			jobj.addProperty("joinCheck", "-1");
+		} else {
+			// 등록된 정보일 경우 로그인 처리
+			jobj.addProperty("joinCheck", "1");
+			session.setAttribute("loginInfo", kakaoInfoCheck);
+		}
+		return gson.toJson(jobj);
+	}
+
+	public String memberJoin_kakao(String kakaoId, String kakaoNickName, String kakaoProfile, String kakaoEmail) {
+		System.out.println("ApiService memberJoin_kakao 호출");
+		int insertResult = mdao.insertMember_kakao(kakaoId, kakaoNickName, kakaoProfile, kakaoEmail);
+		return insertResult + "";
 	}
 
 }

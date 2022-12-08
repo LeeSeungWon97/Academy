@@ -29,9 +29,10 @@
 	rel="stylesheet">
 
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.0.1/kakao.min.js"
-  integrity="sha384-eKjgHJ9+vwU/FCSUG3nV1RKFolUXLsc6nLQ2R1tD0t4YFPCvRmkcF8saIfOZNWf/" crossorigin="anonymous"></script>
+	integrity="sha384-eKjgHJ9+vwU/FCSUG3nV1RKFolUXLsc6nLQ2R1tD0t4YFPCvRmkcF8saIfOZNWf/"
+	crossorigin="anonymous"></script>
 <script>
-  Kakao.init('dfff033f6cfac59d19263657f553c417'); // 사용하려는 앱의 JavaScript 키 입력
+	Kakao.init('dfff033f6cfac59d19263657f553c417'); // 사용하려는 앱의 JavaScript 키 입력
 </script>
 
 </head>
@@ -73,31 +74,37 @@
 								<div class="text-center">
 									<h1 class="h4 text-gray-900 mb-4">로그인</h1>
 								</div>
+
+
 								<form class="user"
 									action="${pageContext.request.contextPath }/memberLogin"
 									enctype="multipart/form-data" method="post"
 									onsubmit="return loginCheck(this)">
-									<div class="form-group row">
-										<div class="col-sm-6 mb-3 mb-sm-0">
+
+
+									<div class="form-group">
+										<div class="col-sm-6" style="margin: auto;">
 											<input type="text" class="form-control form-control-user"
 												name="mid" placeholder="아이디">
 										</div>
 									</div>
-									<div class="form-group row">
-										<div class="col-sm-6 mb-3 mb-sm-0">
+
+									<div class="form-group">
+										<div class="col-sm-6" style="margin: auto;">
 											<input type="text" class="form-control form-control-user"
 												name="mpw" placeholder="비밀번호">
 										</div>
 									</div>
 
-									<div class="form-group row">
-										<div class="col-sm-6 mb-3 mb-sm-0">
+
+									<div class="form-group">
+										<div class="col-sm-6" style="margin: auto;">
 											<button type="submit"
 												class="btn btn-primary btn-user btn-block">로그인</button>
 										</div>
 									</div>
-									<hr>
 								</form>
+
 								<hr>
 								<div class="text-center">
 									<a id="kakao-login-btn" href="javascript:loginWithKakao()">
@@ -180,39 +187,61 @@
 			}
 		}
 	</script>
-	
+
 	<script type="text/javascript">
 		var kakaoAccessToken = '${kakaoAccessToken}';
-		if(kakaoAccessToken.length > 0){
+		if (kakaoAccessToken.length > 0) {
 			console.log(kakaoAccessToken);
 			memberLogin_kakao(kakaoAccessToken);
 		}
-		
-		function memberLogin_kakao(token){
+
+		function memberLogin_kakao(token) {
 			console.log("memberLogin_kakao 호출");
+			$
+					.ajax({
+						type : "post",
+						url : "${pageContext.request.contextPath }/memberLogin_kakao",
+						data : {
+							"token" : token
+						},
+						dataType : "json",
+						async : false,
+						success : function(result) {
+							if (result.joinCheck == '1') {
+								alert('카카오 계정으로 로그인 되었습니다.');
+								location.href = "${pageContext.request.contextPath}/";
+							} else {
+								var check = confirm('등록된 정보가 없습니다.\n카카오 정보를 등록하시겠습니까?');
+								console.log(check);
+								if (check) {
+									kakaoMemberJoin(result);
+								}
+							}
+						}
+
+					});
+		}
+
+		function kakaoMemberJoin(kakaoInfo) {
 			$.ajax({
-				type :"post",
-				url : "${pageContext.request.contextPath }/memberLogin_kakao",
-				data : {"token" : token},
-				dataType : "json",
+				type : "post",
+				url : "${pageContext.request.contextPath }/memberJoin_kakao",
+				data : kakaoInfo, //{"mid" : kakaoInfo.kkid, "kakaoNickName" : kakaoNickName, ...}
 				async : false,
-				success : function(result){
-					if(result.joinCheck == '1'){
-						alert('카카오 계정으로 로그인 되었습니다.');
-						location.href = "${pageContext.request.contextPath}/";
-					} else{
-						
+				success : function(result) {
+					console.log(result);
+					if (result == '1') {
+						alert('카카오 회원정보가 등록되었습니다.\n다시 로그인 해주세요');
+					} else {
+						alert('정보가 등록처리에 실패하였습니다.');
 					}
 				}
-					
 			});
 		}
-	
-	
-		function loginWithKakao(){
-			location.href="https://kauth.kakao.com/oauth/authorize?client_id=fc2f71bf7a40e334fb01ce30ee586a31&redirect_uri=http://localhost:8080/controller/kakaoLoginTest&response_type=code";
+
+		function loginWithKakao() {
+			location.href = "https://kauth.kakao.com/oauth/authorize?client_id=fc2f71bf7a40e334fb01ce30ee586a31&redirect_uri=http://localhost:8080/controller/kakaoLoginTest&response_type=code";
 		}
-	
 	</script>
 </body>
 
