@@ -19,7 +19,7 @@ import com.MemberBoard.service.MemberService;
 public class MemberController {
 	@Autowired
 	private MemberService msvc;
-	
+
 	@Autowired
 	HttpSession session;
 
@@ -56,7 +56,7 @@ public class MemberController {
 		String idCheck = msvc.idCheck(inputId);
 		return idCheck;
 	}
-	
+
 	@RequestMapping(value = "/memberLoginForm")
 	public ModelAndView memberLoginForm() {
 		System.out.println("로그인 페이지 이동요청");
@@ -65,14 +65,14 @@ public class MemberController {
 		mav.setViewName("member/MemberLoginForm");
 		return mav;
 	}
-	
+
 	@RequestMapping(value = "/memberLogin")
 	public ModelAndView memberLogin(MemberDto member) {
 		System.out.println("로그인 페이지 이동요청");
 		ModelAndView mav = new ModelAndView();
-		
+
 		MemberDto loginInfo = msvc.memberLogin(member);
-		if(loginInfo == null) {
+		if (loginInfo == null) {
 			System.out.println("로그인 실패");
 			mav.setViewName("redirect:/memberLoginForm");
 		} else {
@@ -80,10 +80,10 @@ public class MemberController {
 			session.setAttribute("loginInfo", loginInfo);
 			mav.setViewName("redirect:/");
 		}
-		
+
 		return mav;
 	}
-	
+
 	@RequestMapping(value = "/memberLogout")
 	public ModelAndView memberLogout() {
 		System.out.println("로그아웃 요청");
@@ -92,7 +92,7 @@ public class MemberController {
 		mav.setViewName("redirect:/");
 		return mav;
 	}
-	
+
 	@RequestMapping(value = "/memberInfo")
 	public ModelAndView memberInfo() {
 		System.out.println("내정보확인 페이지 요청");
@@ -100,13 +100,13 @@ public class MemberController {
 		MemberDto login = (MemberDto) session.getAttribute("loginInfo");
 		String loginId = login.getMid();
 		MemberDto memberInfo = msvc.memberInfo(loginId);
-		
+
 		ArrayList<BoardDto> boList = msvc.memberBoardList(loginId);
 		mav.addObject("memberInfo", memberInfo);
 		mav.addObject("boList", boList);
 		mav.setViewName("member/MemberInfoForm");
-		
+
 		return mav;
 	}
-	
+
 }

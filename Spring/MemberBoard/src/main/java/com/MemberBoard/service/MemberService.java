@@ -47,7 +47,7 @@ public class MemberService {
 		member.setMprofile(mprofile);
 		int insertResult = 0;
 		try {
-			insertResult = mdao.insertMemberJoin(member);			
+			insertResult = mdao.insertMemberJoin(member);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,7 +70,7 @@ public class MemberService {
 
 	public MemberDto memberLogin(MemberDto member) {
 		System.out.println("MemberService memberLogin()");
-		MemberDto loginInfo = mdao.selectLoginMember(member); 
+		MemberDto loginInfo = mdao.selectLoginMember(member);
 		return loginInfo;
 	}
 
