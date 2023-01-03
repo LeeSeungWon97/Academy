@@ -1,5 +1,7 @@
 package com.MovieProject.dao;
 
+import java.util.ArrayList;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
@@ -16,6 +18,7 @@ public interface MovieDao {
 	@Select("SELECT MVTITLE FROM MOVIES WHERE MVTITLE=#{mvtitle}")
 	String selectCheckMovie(String mvtitle);
 
-	
+	@Select("SELECT * FROM MOVIES")
+	ArrayList<MovieDto> selectMovieList();
 
 }

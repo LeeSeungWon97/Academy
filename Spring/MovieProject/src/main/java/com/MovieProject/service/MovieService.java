@@ -1,6 +1,7 @@
 package com.MovieProject.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,9 +19,9 @@ public class MovieService {
 	private MovieDao mvdao;
 
 	public int addMovieList() throws IOException {
-		
+
 		int insertResult = 0;
-		
+
 		// 1.CGV 영화 페이지 URL
 		String cgvurl = "http://www.cgv.co.kr/movies/?lt=1&ft=0";
 
@@ -47,10 +48,10 @@ public class MovieService {
 			// 제목
 			String mvtitle = contents.select("div.title > strong").text();
 			System.out.println("영화제목: " + mvtitle);
-			
+
 			// 영화 중복 체크
 			String movieCheck = mvdao.selectCheckMovie(mvtitle);
-			if(movieCheck != null) {
+			if (movieCheck != null) {
 				continue;
 			}
 
@@ -79,19 +80,18 @@ public class MovieService {
 			Elements image = baseMovie.select("div.box-image > a > span > img");
 			String mvpos = image.select("img").attr("src");
 			System.out.println("영화포스터: " + mvpos);
-			
+
 			// 영화 코드 생성 "MV001", "MV002"...
 			String maxMvcode = mvdao.selectMaxMvcode();
 			String mvcode = "MV";
-			if(maxMvcode == null) {
+			if (maxMvcode == null) {
 				mvcode = "MV001";
 			} else {
 				int mvcodeNum = Integer.parseInt(maxMvcode.replace("MV", ""));
 				mvcode = mvcode + String.format("%03d", mvcodeNum + 1);
 			}
 			System.out.println("영화코드: " + mvcode);
-			
-			
+
 			// dto에 영화 정보 저장
 			MovieDto movie = new MovieDto();
 			movie.setMvcode(mvcode);
@@ -102,9 +102,15 @@ public class MovieService {
 			movie.setMvinfo(mvinfo);
 			movie.setMvdate(mvdate);
 			movie.setMvpos(mvpos);
-			
+
 			insertResult += mvdao.insertMovie(movie);
 		}
 		return insertResult;
+	}
+
+	public ArrayList<MovieDto> callMovieList() {
+		System.out.println("MovieService callMovieList() 호출");
+		ArrayList<MovieDto> movieList =  mvdao.selectMovieList();
+		return movieList;
 	}
 }
