@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.MovieProject.dto.MemberDto;
@@ -46,6 +47,13 @@ public class MemberController {
 			mav.setViewName("memberjoinForm");
 		}		
 		return mav;
+	}
+	
+	@RequestMapping(value = "/memberIdCheck")
+	public @ResponseBody String memberIdCheck(String inputId) {
+		System.out.println("아이디 중복체크 확인 요청");
+		String checkResult = msvc.memberIdCheck(inputId);
+		return checkResult;
 	}
 
 	@RequestMapping(value="/memberLoginForm")

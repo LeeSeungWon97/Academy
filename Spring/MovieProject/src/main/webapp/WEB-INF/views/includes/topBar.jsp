@@ -8,11 +8,12 @@
 	</button>
 
 	<!-- Topbar Search -->
-	<form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+	<form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
+	action="${pageContext.request.contextPath }/movieSearch">
 		<div class="input-group">
-			<input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+			<input name = mvtitle type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
 			<div class="input-group-append">
-				<button class="btn btn-primary" type="button">
+				<button class="btn btn-primary" type="submit">
 					<i class="fas fa-search fa-sm"></i>
 				</button>
 			</div>
@@ -45,20 +46,21 @@
 
 		<!-- Nav Item - User Information -->
 		<li class="nav-item dropdown no-arrow"><a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<span class="mr-2 d-none d-lg-inline text-gray-600 small">
-					<c:choose>
-						<c:when test="${sessionScope.loginInfo.mname == null }">비회원	</c:when>
-						<c:otherwise>${sessionScope.loginInfo.mname }</c:otherwise>
-					</c:choose>
-				</span>
 				<c:choose>
 					<c:when test="${sessionScope.loginInfo.mprofile == null }">
-						<img class="img-profile rounded-circle" src="${pageContext.request.contextPath }/resources/img/undraw_profile.svg">					
+						<img class="img-profile rounded-circle" src="${pageContext.request.contextPath }/resources/img/undraw_profile.svg">
 					</c:when>
 					<c:otherwise>
 						<img class="img-profile rounded-circle" src="${pageContext.request.contextPath }/resources/memberProfileUpload/${sessionScope.loginInfo.mprofile}">
 					</c:otherwise>
 				</c:choose>
+				
+				<span class="mlr-1 mr-2 d-none d-lg-inline text-gray-600 small">
+					<c:choose>
+						<c:when test="${sessionScope.loginInfo.mname == null }">비회원	</c:when>
+						<c:otherwise>${sessionScope.loginInfo.mname }</c:otherwise>
+					</c:choose>
+				</span>
 
 
 			</a>

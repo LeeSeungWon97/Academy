@@ -57,7 +57,7 @@
 			aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
 			<div class="bg-white py-2 collapse-inner rounded">
 				<h6 class="collapse-header">Custom Utilities:</h6>
-				<a class="collapse-item" href="utilities-color.html">예매</a>
+				<a class="collapse-item" href="${pageContext.request.contextPath }/mvReservationForm">예매</a>
 			</div>
 		</div>
 	</li>

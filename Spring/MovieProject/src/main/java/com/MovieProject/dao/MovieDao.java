@@ -21,4 +21,10 @@ public interface MovieDao {
 	@Select("SELECT * FROM MOVIES")
 	ArrayList<MovieDto> selectMovieList();
 
+	@Select("SELECT * FROM MOVIES WHERE MVCODE = #{mvcode}")
+	MovieDto selectMovieInfo(String mvcode);
+
+	@Select("SELECT * FROM MOVIES WHERE MVTITLE LIKE '%'||#{mvtitle}||'%'")
+	ArrayList<MovieDto> selectSearchTitle(String mvtitle);
+
 }

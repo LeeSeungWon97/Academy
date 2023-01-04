@@ -13,4 +13,7 @@ public interface MemberDao {
 	@Select("SELECT * FROM MEMBERS WHERE MID = #{mid} AND MPW = #{mpw}")
 	public MemberDto selectLogin(MemberDto loginId);
 
+	@Select("SELECT MID FROM MEMBERS WHERE MID = #{inputId}")
+	public String selectIdCheck(String inputId);
+
 }

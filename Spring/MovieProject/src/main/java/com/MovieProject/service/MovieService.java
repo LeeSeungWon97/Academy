@@ -113,4 +113,16 @@ public class MovieService {
 		ArrayList<MovieDto> movieList =  mvdao.selectMovieList();
 		return movieList;
 	}
+
+	public MovieDto callMovieInfo(String mvcode) {
+		System.out.println("MovieService callMovieInfo() 호출");
+		MovieDto mvInfo = mvdao.selectMovieInfo(mvcode);
+		return mvInfo;
+	}
+
+	public ArrayList<MovieDto> callSearchTitle(String mvtitle) {
+		System.out.println("MovieService callSearchList() 호출");
+		ArrayList<MovieDto> searchTitleList= mvdao.selectSearchTitle(mvtitle);
+		return searchTitleList;
+	}
 }

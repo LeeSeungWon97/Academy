@@ -12,7 +12,7 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
-<title>Main</title>
+<title>MovieInfo</title>
 
 <!-- Custom fonts for this template-->
 <link href="${pageContext.request.contextPath }/resources/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -44,58 +44,43 @@
 
 				<!-- Begin Page Content -->
 				<div class="container-fluid">
+					<div class="form-group row">
+						<div class="col-sm-3 ml-0">
+							<img class="img-fit" src="${mvInfo.mvpos}" style="max-width: 250px; max-height: 250px">
+						</div>
+						<div class="mvtitle col-sm-9">
+							<div>
+								<strong style="font-size: 30px">${mvInfo.mvtitle }</strong>
+							</div>
+							<hr>
+							<div class="mb-3">감독: ${mvInfo.mvdir } / 배우: ${mvInfo.mvact }</div>
+							<div class="mb-3">장르: ${mvInfo.mvgenre } / 기본: ${mvInfo.mvinfo }</div>
+							<div class="mb-3">개봉: ${mvInfo.mvdate }</div>
+							<div class="mb-0">
+								<a href="${pageContext.request.contextPath }/mvReservationForm">
+									<button type="button" class="btn-reservation">예매하기</button>
+								</a>
+							</div>
+						</div>
 
-					<!-- Page Heading -->
-					<h1 class="h3 mb-4 text-gray-800">MovieList</h1>
-					<div class="row">
-						<c:forEach items="${movieList }" var="mvList" varStatus="i">
-								<!-- Donut Chart -->
-								<div class="col-xl-3 col-lg-5 col-xs-6 ">
-									<div class="card shadow mb-4">
-										<!-- Card Header - Dropdown -->
-										<div class="card-header py-3 bg-gray-900">
-											<h6 class="m-0 font-weight-bold text-center text-white">No.${i.count}</h6>
-										</div>
-										<!-- Card Body -->
-										<div class="card-body">
-											<div>
-											<a href="${pageContext.request.contextPath }/movieInfoForm?mvcode=${mvList.mvcode}">
-											<img class="img-fit" src="${mvList.mvpos}">
-											</a>
-												
-											</div>
-											<hr>
-											<div class="mvtitle" title="${mvList.mvtitle }">
-												<strong>${mvList.mvtitle }</strong><br>
-												<a href="${pageContext.request.contextPath }/mvReservationForm">
-													<button type="button" class="btn-reservation")>예매하기</button>
-												</a>
-											</div>
-										</div>
-									</div>
-								</div>
-						</c:forEach>
 					</div>
 
 				</div>
-				<!-- /.container-fluid -->
+				<!-- End of Main Content -->
+
+				<!-- Footer -->
+				<footer class="sticky-footer bg-white">
+					<div class="container my-auto">
+						<div class="copyright text-center my-auto">
+							<span>Copyright &copy; Your Website 2020</span>
+						</div>
+					</div>
+				</footer>
+				<!-- End of Footer -->
 
 			</div>
-			<!-- End of Main Content -->
-
-			<!-- Footer -->
-			<footer class="sticky-footer bg-white">
-				<div class="container my-auto">
-					<div class="copyright text-center my-auto">
-						<span>Copyright &copy; Your Website 2020</span>
-					</div>
-				</div>
-			</footer>
-			<!-- End of Footer -->
-
+			<!-- End of Content Wrapper -->
 		</div>
-		<!-- End of Content Wrapper -->
-
 	</div>
 	<!-- End of Page Wrapper -->
 
@@ -115,7 +100,6 @@
 
 	<!-- Custom scripts for all pages-->
 	<script src="${pageContext.request.contextPath }/resources/js/sb-admin-2.min.js"></script>
-
 </body>
 
 </html>
