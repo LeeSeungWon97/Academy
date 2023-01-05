@@ -31,26 +31,27 @@
 			document.getElementById('idCheckMsg').style.color = "red";
 			document.getElementById('idCheckMsg').innerText = "아이디를 입력해 주세요";
 		} else {
-			$.ajax({
-				type : "get",
-				url : "${pageContext.request.contextPath }/memberIdCheck",
-				data : {
-					"inputId" : idVal
-				},
-				success : function(checkResult) {
-					if (checkResult == 'ok') {
-						idCheckVal = true;
-						document.getElementById('idCheckMsg').style.color = 'green';
-						document.getElementById('idCheckMsg').innerText = "사용가능한 아이디";
-					} else {
-						idCheckVal = false;
-						document.getElementById('idCheckMsg').style.color = 'red';
-						document.getElementById('idCheckMsg').innerText = "이미 사용중인 아이디";
-						
-					}
-				}
-			});
-					
+			$
+					.ajax({
+						type : "get",
+						url : "${pageContext.request.contextPath }/memberIdCheck",
+						data : {
+							"inputId" : idVal
+						},
+						success : function(checkResult) {
+							if (checkResult == 'ok') {
+								idCheckVal = true;
+								document.getElementById('idCheckMsg').style.color = 'green';
+								document.getElementById('idCheckMsg').innerText = "사용가능한 아이디";
+							} else {
+								idCheckVal = false;
+								document.getElementById('idCheckMsg').style.color = 'red';
+								document.getElementById('idCheckMsg').innerText = "이미 사용중인 아이디";
+
+							}
+						}
+					});
+
 		}
 	}
 	function joinFormCheck(formObj) {
@@ -122,54 +123,48 @@
 					<div class="row">
 						<div class="col-lg-7 ml-auto mr-auto" style="background-color: white;">
 							<div class="p-5">
-								<div class="text-center">
-									<h1 class="h4 text-gray-900 mb-4">회원가입</h1>
-								</div>
-								<form  class="user" action="${pageContext.request.contextPath }/memberJoin" enctype="multipart/form-data" method="post" onsubmit="return joinFormCheck(this)">
-									<div class="form-group row" >
-										<div class="col-sm-6 m-auto">
-											<input id=inputId type="text" class="form-control form-control-user inline-block" name="mid" placeholder="아이디">
-											<button type="button" onclick="idCheck()">중복확인</button>
-											<p class="pl-3 m-0 text-xs" id="idCheckMsg"></p>
-										</div>
+								<form class="user" action="${pageContext.request.contextPath }/memberJoin" enctype="multipart/form-data" method="post" onsubmit="return joinFormCheck(this)">
+									<div class="text-center">
+										<h1 class="h4 text-gray-900 mb-4">회원가입</h1>
 									</div>
-									<div class="form-group row">
-										<div class="col-sm-6 m-auto">
-											<input type="text" class="form-control form-control-user" name="mpw" placeholder="비밀번호">
+									<div style="margin-left:30%">
+										<div class="form-group">
+											<label>아이디</label><br>
+											<input class="input-join" id=inputId type="text" name="mid">
+											<button class="btn-join" type="button" onclick="idCheck()">중복확인</button>
+											<p class="text-xs" id="idCheckMsg" style="padding-left:3%"></p>
 										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-sm-6 m-auto">
-											<input type="text" class="form-control form-control-user" name="mname" placeholder="이름">
-										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-sm-6 m-auto">
-											<input type="date" class="form-control form-control-user" name="mbirth" placeholder="연도.월.일">
-										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-sm-6 m-auto">
-											<input type="text" class="form-control form-control-user" name="maddr" placeholder="주소">
-										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-sm-6 m-auto">
-											<input type="email" class="form-control form-control-user" name="memail" placeholder="이메일">
-										</div>
-									</div>
-									<div class="form-group row">
-										<div class="col-sm-6 m-auto">
-											<input type="file" class="form-control form-control-user" name="mfile" placeholder="선택된 파일 없음" style="padding-top: 11px; height: 48px;">
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-sm-6 m-auto">
-											<button type="submit" class="btn btn-primary btn-user btn-block ">회원가입</button>
-										</div>
-									</div>
+										<div class="form-group">
+											<label>비밀번호</label><br>
+											<input class="input-join" type="text" name="mpw">
 
-									<hr>
+										</div>
+										<div class="form-group">
+											<label>이름</label><br>
+											<input class="input-join" type="text" name="mname">
+										</div>
+										<div class="form-group">
+											<label>생년월일</label><br>
+											<input class="input-join" type="date" name="mbirth">
+										</div>
+										<div class="form-group">
+											<label>주소</label><br>
+											<input class="input-join" type="text" name="maddr">
+
+										</div>
+										<div class="form-group">
+											<label>이메일</label><br>
+											<input class="input-join" type="email" name="memail">
+
+										</div>
+										<div class="form-group">
+											<label>프로필 사진</label><br>
+											<input class="input-join" type="file" name="mfile">
+										</div>
+										<div class="form-group col-sm-6">
+											<button class="btn btn-primary" type="submit" style="margin-left:35%">회원가입</button>
+										</div>
+									</div>
 								</form>
 
 								<hr>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.MovieProject.dao.MovieDao;
 import com.MovieProject.dto.MovieDto;
+import com.MovieProject.dto.TheaterDto;
 
 @Service
 public class MovieService {
@@ -110,7 +111,7 @@ public class MovieService {
 
 	public ArrayList<MovieDto> callMovieList() {
 		System.out.println("MovieService callMovieList() 호출");
-		ArrayList<MovieDto> movieList =  mvdao.selectMovieList();
+		ArrayList<MovieDto> movieList = mvdao.selectMovieList();
 		return movieList;
 	}
 
@@ -122,7 +123,25 @@ public class MovieService {
 
 	public ArrayList<MovieDto> callSearchTitle(String mvtitle) {
 		System.out.println("MovieService callSearchList() 호출");
-		ArrayList<MovieDto> searchTitleList= mvdao.selectSearchTitle(mvtitle);
+		ArrayList<MovieDto> searchTitleList = mvdao.selectSearchTitle(mvtitle);
 		return searchTitleList;
+	}
+
+	public ArrayList<String> getMvAge(ArrayList<MovieDto> movieList) {
+		System.out.println("MovieService getMvAge() 호출");
+		ArrayList<String> mvAge = new ArrayList<String>();
+		for (int i = 0; i < movieList.size(); i++) {
+			String info = movieList.get(i).getMvinfo();
+			String[] totalInfo = info.split(",");
+			String age = totalInfo[0];
+			mvAge.add(age);
+		}
+		return mvAge;
+	}
+
+	public ArrayList<TheaterDto> callTheaterList() {
+		System.out.println("MovieService callTheaterList() 호출");
+		ArrayList<TheaterDto> thList = mvdao.selectTheaterList();
+		return thList;
 	}
 }

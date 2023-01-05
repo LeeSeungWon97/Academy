@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 import com.MovieProject.dto.MovieDto;
+import com.MovieProject.dto.TheaterDto;
 
 public interface MovieDao {
 
@@ -26,5 +27,8 @@ public interface MovieDao {
 
 	@Select("SELECT * FROM MOVIES WHERE MVTITLE LIKE '%'||#{mvtitle}||'%'")
 	ArrayList<MovieDto> selectSearchTitle(String mvtitle);
+
+	@Select("SELECT * FROM THEATERS")
+	ArrayList<TheaterDto> selectTheaterList();
 
 }

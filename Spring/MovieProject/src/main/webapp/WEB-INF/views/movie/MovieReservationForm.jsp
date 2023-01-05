@@ -46,7 +46,41 @@
 				<div class="container-fluid">
 
 					<h1>Reservation Page</h1>
-					
+
+					<div class="col-lg-11 col-xl-11 col-xm-11 row">
+
+						<div class="mv-reservation">
+							<div class="caption">
+								<span>영화</span>
+							</div>
+							<c:forEach items="${movieList }" var="mvList" varStatus="status">
+								<div class="info">
+									<button class="ageBtn">
+										<span>${age[status.index] } ${mvList.mvtitle }</span>
+									</button>
+								</div>
+							</c:forEach>
+						</div>
+
+						<div class="th-reservation">
+							<div class="caption">
+								<span>극장</span>
+							</div>
+						</div>
+
+						<div class="day-reservation">
+							<div class="caption">
+								<span>날짜</span>
+							</div>
+						</div>
+
+						<div class="time-reservation">
+							<div class="caption">
+								<span>시간</span>
+							</div>
+						</div>
+
+					</div>
 
 				</div>
 				<!-- End of Main Content -->
@@ -66,23 +100,26 @@
 
 		</div>
 		<!-- End of Page Wrapper -->
+	</div>
+	<!-- Scroll to Top Button-->
+	<a class="scroll-to-top rounded" href="#page-top">
+		<i class="fas fa-angle-up"></i>
+	</a>
 
-		<!-- Scroll to Top Button-->
-		<a class="scroll-to-top rounded" href="#page-top">
-			<i class="fas fa-angle-up"></i>
-		</a>
+	<%@ include file="/WEB-INF/views/includes/logoutModal.jsp"%>
 
-		<%@ include file="/WEB-INF/views/includes/logoutModal.jsp"%>
+	<!-- Bootstrap core JavaScript-->
+	<script src="${pageContext.request.contextPath }/resources/vendor/jquery/jquery.min.js"></script>
+	<script src="${pageContext.request.contextPath }/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-		<!-- Bootstrap core JavaScript-->
-		<script src="${pageContext.request.contextPath }/resources/vendor/jquery/jquery.min.js"></script>
-		<script src="${pageContext.request.contextPath }/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<!-- Core plugin JavaScript-->
+	<script src="${pageContext.request.contextPath }/resources/vendor/jquery-easing/jquery.easing.min.js"></script>
 
-		<!-- Core plugin JavaScript-->
-		<script src="${pageContext.request.contextPath }/resources/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-		<!-- Custom scripts for all pages-->
-		<script src="${pageContext.request.contextPath }/resources/js/sb-admin-2.min.js"></script>
+	<!-- Custom scripts for all pages-->
+	<script src="${pageContext.request.contextPath }/resources/js/sb-admin-2.min.js"></script>
+	<script type="text/javascript">
+		
+	</script>
 </body>
 
 </html>

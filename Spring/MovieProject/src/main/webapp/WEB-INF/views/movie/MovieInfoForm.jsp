@@ -46,16 +46,18 @@
 				<div class="container-fluid">
 					<div class="form-group row">
 						<div class="col-sm-3 ml-0">
-							<img class="img-fit" src="${mvInfo.mvpos}" style="max-width: 250px; max-height: 250px">
+							<img class="img-fit" src="${mvInfo.mvpos}" style="max-width: 250px; max-height: 350px">
 						</div>
-						<div class="mvtitle col-sm-9">
-							<div>
-								<strong style="font-size: 30px">${mvInfo.mvtitle }</strong>
+						<div class="col-9" style="word-break: normal;">
+							<div class="infoTitlt">
+								<strong class="mvtitle" style="font-size: 25px; ">${mvInfo.mvtitle }</strong>
 							</div>
 							<hr>
-							<div class="mb-3">감독: ${mvInfo.mvdir } / 배우: ${mvInfo.mvact }</div>
-							<div class="mb-3">장르: ${mvInfo.mvgenre } / 기본: ${mvInfo.mvinfo }</div>
-							<div class="mb-3">개봉: ${mvInfo.mvdate }</div>
+							<div class="infoSpec">
+								<div class="mb-3">감독: ${mvInfo.mvdir } / 배우: ${mvInfo.mvact }</div>
+								<div class="mb-3">장르: ${mvInfo.mvgenre } / 기본: ${mvInfo.mvinfo }</div>
+								<div class="mb-3">개봉: ${mvInfo.mvdate }</div>
+							</div>
 							<div class="mb-0">
 								<a href="${pageContext.request.contextPath }/mvReservationForm">
 									<button type="button" class="btn-reservation">예매하기</button>

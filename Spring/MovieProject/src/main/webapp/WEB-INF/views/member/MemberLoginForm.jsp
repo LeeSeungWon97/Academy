@@ -24,6 +24,13 @@
     <!-- Custom styles for this template-->
     <link href="${pageContext.request.contextPath }/resources/css/sb-admin-2.css" rel="stylesheet">
 
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var logincheck= getElementById('logincheck').value;
+			console.log(logincheck);
+		});
+		
+	</script>
 </head>
 
 <body id="page-top">
@@ -54,6 +61,7 @@
 							<div class="p-5">
 								<div class="text-center">
 									<h1 class="h4 text-gray-900 mb-4">로그인</h1>
+									<p id="logincheck" style="display:hidden;">${loginCheck }</p>
 								</div>
 								<form class="user"
 									action="${pageContext.request.contextPath }/memberLogin"

@@ -70,10 +70,14 @@ public class MemberController {
 		ModelAndView mav = new ModelAndView();
 		System.out.println(loginId);
 		MemberDto loginInfo = msvc.memberLogin(loginId);
+		String loginCheck = "F";
 		if(loginInfo == null) {
+			mav.addObject("loginCheck", loginCheck);
 			mav.setViewName("redirect:/memberLoginForm");
 		}else {
 			session.setAttribute("loginInfo", loginInfo);
+			loginCheck = "T";
+			mav.addObject("loginCheck",loginCheck);
 			mav.setViewName("redirect:/");
 		}
 		return mav;

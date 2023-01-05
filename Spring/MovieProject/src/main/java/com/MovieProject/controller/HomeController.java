@@ -38,8 +38,7 @@ public class HomeController {
 		mav.setViewName("Main");
 		return mav;
 	}
-
-
+	
 	@RequestMapping(value = "/addMovieList")
 	public String addMovieList() throws IOException {
 		System.out.println("/addMovieList 요청");
