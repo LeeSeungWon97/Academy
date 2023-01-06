@@ -23,14 +23,6 @@
 
     <!-- Custom styles for this template-->
     <link href="${pageContext.request.contextPath }/resources/css/sb-admin-2.css" rel="stylesheet">
-
-	<script type="text/javascript">
-		$(document).ready(function(){
-			var logincheck= getElementById('logincheck').value;
-			console.log(logincheck);
-		});
-		
-	</script>
 </head>
 
 <body id="page-top">
@@ -61,20 +53,19 @@
 							<div class="p-5">
 								<div class="text-center">
 									<h1 class="h4 text-gray-900 mb-4">로그인</h1>
-									<p id="logincheck" style="display:hidden;">${loginCheck }</p>
 								</div>
 								<form class="user"
 									action="${pageContext.request.contextPath }/memberLogin"
-									method="post">
+									method="post" onsubmit="return checkInfo(this)">
 									<div class="form-group row">
 										<div class="col-sm-6 ml-auto mr-auto" >
-											<input type="text" class="form-control form-control-user"
+											<input id="id" type="text" class="form-control form-control-user"
 												name="mid" placeholder="아이디">
 										</div>
 									</div>
 									<div class="form-group row">
 										<div class="col-sm-6 ml-auto mr-auto">
-											<input type="text" class="form-control form-control-user"
+											<input id="pw" type="text" class="form-control form-control-user"
 												name="mpw" placeholder="비밀번호">
 										</div>
 									</div>
@@ -136,6 +127,23 @@
     <!-- Custom scripts for all pages-->
     <script src="${pageContext.request.contextPath }/resources/js/sb-admin-2.min.js"></script>
 
+	<script type="text/javascript">
+		function checkInfo(formObj){
+			var id = document.getElementById('id');
+			var pw = document.getElementById('pw');
+			if(id.value.length == 0){
+				alert('아이디를 입력해 주세요');
+				id.focus();
+				return false;
+			}else if(pw.value.length == 0){
+				alert('비밀번호를 입력해 주세요');
+				pw.focus();
+				return false;
+			}else{
+				return true;
+			}
+		}		
+	</script>
 </body>
 
 </html>

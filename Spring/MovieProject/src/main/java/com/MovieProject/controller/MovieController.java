@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.MovieProject.dto.MovieDto;
@@ -36,8 +37,8 @@ public class MovieController {
 		ArrayList<String> age = mvsvc.getMvAge(movieList);
 		ArrayList<TheaterDto> theaterList = mvsvc.callTheaterList();
 		mav.addObject("movieList", movieList);
-		mav.addObject("age",age);
-		mav.addObject("theaterList",theaterList);
+		mav.addObject("age", age);
+		mav.addObject("theaterList", theaterList);
 		mav.setViewName("movie/MovieReservationForm");
 		return mav;
 	}
@@ -51,5 +52,12 @@ public class MovieController {
 		mav.addObject("movieList", searchTitle);
 		mav.setViewName("Main");
 		return mav;
+	}
+
+	@RequestMapping(value = "/callTheater")
+	public @ResponseBody ArrayList<String> callTheater(String mvcode) {
+		System.out.println("상영극장 검색 요청");
+		ArrayList<String> theaterName = mvsvc.callTheaterName(mvcode);
+		return theaterName;
 	}
 }

@@ -53,13 +53,15 @@
 							<div class="caption">
 								<span>영화</span>
 							</div>
-							<c:forEach items="${movieList }" var="mvList" varStatus="status">
-								<div class="info">
-									<button class="ageBtn">
-										<span>${age[status.index] } ${mvList.mvtitle }</span>
-									</button>
-								</div>
-							</c:forEach>
+							<div class="reservation-content">
+								<c:forEach items="${movieList }" var="mvList" varStatus="status">
+									<div class="info">
+										<button class="ageBtn" onclick="callTheater('${mvList.mvcode}')">
+											<span>${age[status.index] } ${mvList.mvtitle }</span>
+										</button>
+									</div>
+								</c:forEach>
+							</div>
 						</div>
 
 						<div class="th-reservation">
@@ -118,7 +120,51 @@
 	<!-- Custom scripts for all pages-->
 	<script src="${pageContext.request.contextPath }/resources/js/sb-admin-2.min.js"></script>
 	<script type="text/javascript">
+		var selectMovie = "";
+		var selectTheater = "";
+
+		function callTheater(mvcode) {
+			selectMovie = mvcode;
+			$.ajax({
+				type : "get",
+				url : "${pageContext.request.contextPath }/callTheater",
+				data : {
+					"mvcode" : mvcode
+				},
+				async : false,
+				dataType : "json",
+				success : function(result) {
+					var output = '<div class="caption"><span>극장</span></div><div class="reservation-content">';
+					if (result.length != 0) {
+						for (var i = 0; i < result.length; i++) {
+							output += '<div class="info">';
+							output += '<button class="ageBtn" onclick = "callDate(\''+result[i]+'\')"';
+							output += '<span>' + result[i] + '</span>';
+							output += '</button>';
+							output += '</div>';
+						}
+						output += '</div>';
+					}
+					$(".th-reservation").html(output);
+				}
+			});		
+		}
 		
+		function callDate(thname){
+			selectTheater = thname;
+			$.ajax({
+				type: "get",
+				url: "${pageContext.request.contextPath }/callDate",
+				data:{
+					"mvcode": selectMovie,
+					"thname": selectTheater
+				},
+				async : false,
+				dataType : "json",
+				success : function(result) {
+				}
+			});	
+		}
 	</script>
 </body>
 

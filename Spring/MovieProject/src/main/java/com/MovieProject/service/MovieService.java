@@ -144,4 +144,10 @@ public class MovieService {
 		ArrayList<TheaterDto> thList = mvdao.selectTheaterList();
 		return thList;
 	}
+
+	public ArrayList<String> callTheaterName(String mvcode) {
+		System.out.println("MovieService callTheaterName() 호출");
+		ArrayList<String> thName = mvdao.selectTheaterName(mvcode);
+		return thName;
+	}
 }

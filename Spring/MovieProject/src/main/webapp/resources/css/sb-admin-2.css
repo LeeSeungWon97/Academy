@@ -11318,33 +11318,34 @@ body.sidebar-toggled footer.sticky-footer {
 div.mv-reservation {
 	margin-left: 1%;
 	width: 28%;
-	height: 1200px;
-	border: 2px solid red;
+	height: 400px;
+	border: 2px solid gray;
 	display: inline-block;
 }
 
 div.th-reservation {
 	width: 28%;
-	height: 1200px;
-	border: 2px solid blue;
+	height: 400px;
+	border: 2px solid gray;
 	display: inline-block;
 }
 
 div.day-reservation {
 	width: 13%;
-	height: 1200px;
-	border: 2px solid green;
+	height: 400px;
+	border: 2px solid gray;
 	display: inline-block;
 }
 
 div.time-reservation {
 	width: 28%;
-	height: 1200px;
-	border: 2px solid purple;
+	height: 400px;
+	border: 2px solid gray;
 	display: inline-block;
 }
 
 div.caption {
+	height: 10%;
 	border: black;
 	background-color: black;
 	text-align: center;
@@ -11362,4 +11363,8 @@ div.info {
 	width: 100%;
 	text-align: left;
 	font-weight: bold;
+}
+div.reservation-content {
+	height:90%;
+	overflow: scroll;
 }
