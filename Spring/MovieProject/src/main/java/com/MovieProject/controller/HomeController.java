@@ -22,13 +22,6 @@ public class HomeController {
 	@Autowired
 	private MovieService mvsvc;
 	
-//	@RequestMapping(value = "/", method = RequestMethod.GET)
-//	public String home(Locale locale, Model model) {
-//		System.out.println("MainPage 요청");
-//		
-//		return "Main";
-//	}
-	
 	@RequestMapping(value="/", method = RequestMethod.GET)
 	public ModelAndView home(Locale locale, Model model) {
 		System.out.println("MainPage 요청");

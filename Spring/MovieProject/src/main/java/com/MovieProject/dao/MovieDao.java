@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.MovieProject.dto.MovieDto;
+import com.MovieProject.dto.ScheduleDto;
 import com.MovieProject.dto.TheaterDto;
 
 public interface MovieDao {
@@ -40,5 +41,10 @@ public interface MovieDao {
 
 	@Select("SELECT TO_CHAR(SCDATE,'YYYY-MM-DD') FROM SCHEDULES WHERE SCMVCODE = #{mvcode} AND SCTHCODE = (SELECT THCODE FROM THEATERS WHERE THNAME = #{thname}) GROUP BY TO_CHAR(SCDATE,'YYYY-MM-DD') ORDER BY TO_CHAR(SCDATE,'YYYY-MM-DD') ASC")
 	ArrayList<String> selectMovieDate(@Param("mvcode") String mvcode, @Param("thname") String thname);
+
+	@Select("SELECT TO_CHAR(SCDATE,'HH24:MI') AS sctime, SCROOM " + "FROM SCHEDULES "
+			+ "WHERE SCMVCODE=#{mvcode} AND SCTHCODE=(SELECT THCODE FROM THEATERS WHERE THNAME = #{thname}) AND TO_CHAR(SCDATE,'YYYY-MM-DD')=#{scdate} "
+			+ "ORDER BY TO_CHAR(SCDATE,'YYYY-MM-DD HH24:MI:SS') ASC")
+	ArrayList<ScheduleDto> selectScheduleTime(@Param("mvcode") String mvcode, @Param("thname") String thname,@Param("scdate") String scdate);
 
 }

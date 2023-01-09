@@ -11359,12 +11359,38 @@ div.info {
 	margin-left: 5%;
 	border: none;
 }
-.ageBtn{
+.titleBtn{
 	width: 100%;
 	text-align: left;
 	font-weight: bold;
 }
+.theatorBtn{
+	width: 100%;
+	text-align: left;
+	font-weight: bold;	
+}
 div.reservation-content {
 	height:90%;
 	overflow: scroll;
+}
+.monthBtn{
+	width:100%;
+	text-align:center;
+	font-weight: bold;
+	color: white;
+	background-color: orange;
+}
+.dateBtn{
+	width:90%;
+	margin-left: 5%;
+	text-align:center;
+	font-weight: bold;
+}
+.timeBtn{
+	text-align: center;
+	font-weight: bold;
+}
+.d_none{
+	background-color: black;
+	color:white;
 }

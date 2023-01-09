@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.MovieProject.dao.MovieDao;
 import com.MovieProject.dto.MovieDto;
+import com.MovieProject.dto.ScheduleDto;
 import com.MovieProject.dto.TheaterDto;
 
 @Service
@@ -149,5 +150,27 @@ public class MovieService {
 		System.out.println("MovieService callTheaterName() 호출");
 		ArrayList<String> thName = mvdao.selectTheaterName(mvcode);
 		return thName;
+	}
+
+	public ArrayList<String[]> callDateInfo(String mvcode, String thname) {
+		System.out.println("MovieService callDateInfo() 호출");		
+		ArrayList<String[]> date = new ArrayList<String[]>();
+		ArrayList<String> dateList = mvdao.selectMovieDate(mvcode, thname);
+		for (int i = 0; i < dateList.size(); i++) {
+			String[] dateInfo = dateList.get(i).split("-");
+			date.add(dateInfo);
+		}
+		return date;
+	}
+
+	public ArrayList<String[]> callTimeInfo(String mvcode, String thname, String scdate) {
+		System.out.println("MovieService callTime Info() 호출");
+		ArrayList<String[]> timeInfo = new ArrayList<String[]>();
+		ArrayList<ScheduleDto> timeList = mvdao.selectScheduleTime(mvcode, thname, scdate);
+		for(int i = 0 ; i< timeList.size();i++) {
+			String[] info = {timeList.get(i).getSctime(), timeList.get(i).getScroom()};
+			timeInfo.add(info);
+		}
+		return timeInfo;
 	}
 }

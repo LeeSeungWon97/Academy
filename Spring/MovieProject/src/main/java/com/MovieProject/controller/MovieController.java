@@ -60,4 +60,19 @@ public class MovieController {
 		ArrayList<String> theaterName = mvsvc.callTheaterName(mvcode);
 		return theaterName;
 	}
+
+	@RequestMapping(value = "/callDate")
+	public @ResponseBody ArrayList<String[]> callDate(String mvcode, String thname) {
+		System.out.println("상영날짜 검색 요청");
+		ArrayList<String[]> dateList = mvsvc.callDateInfo(mvcode, thname);
+		return dateList;
+	}
+	
+	@RequestMapping(value = "callTime")
+	public @ResponseBody ArrayList<String[]> callTime(String mvcode, String thname, String scdate){
+		System.out.println("상영시간 검색 요청");
+		System.out.println(scdate);
+		ArrayList<String[]> timeList = mvsvc.callTimeInfo(mvcode,thname,scdate);
+		return timeList;
+	}
 }
