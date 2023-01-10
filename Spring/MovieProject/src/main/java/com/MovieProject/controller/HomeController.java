@@ -40,4 +40,9 @@ public class HomeController {
 		return null;
 	}
 
+	@RequestMapping(value = "/webSocketTest")
+	public String webSocketTest() {
+		System.out.println("webSocketTest 요청");
+		return "SocketTest";
+	}
 }

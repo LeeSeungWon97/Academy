@@ -51,7 +51,7 @@
 
 						<div class="mv-reservation">
 							<div class="caption">
-								<span>영화</span>
+								<span>영화</span> 
 							</div>
 							<div class="reservation-content">
 								<c:forEach items="${movieList }" var="mvList" varStatus="status">
