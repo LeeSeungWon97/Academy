@@ -55,6 +55,7 @@
 			<div class="bg-white py-2 collapse-inner rounded">
 				<h6 class="collapse-header">Test:</h6>
 				<a class="collapse-item" href="${pageContext.request.contextPath }/webSocketTest">WebSocketTest</a>
+				<a class="collapse-item" href="${pageContext.request.contextPath }/webSocketTest02">WebSocketTest02</a>
 			</div>
 		</div></li>
 </ul>

@@ -45,4 +45,11 @@ public class HomeController {
 		System.out.println("webSocketTest 요청");
 		return "SocketTest";
 	}
+	
+	@RequestMapping(value = "/webSocketTest02")
+	public String webSocketTest02() {
+		System.out.println("webSocketTest02 요청");
+		
+		return "SocketTest02";
+	}
 }

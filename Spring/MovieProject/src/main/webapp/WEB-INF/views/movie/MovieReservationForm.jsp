@@ -51,7 +51,7 @@
 
 						<div class="mv-reservation">
 							<div class="caption">
-								<span>영화</span> 
+								<span>영화</span>
 							</div>
 							<div class="reservation-content">
 								<c:forEach items="${movieList }" var="mvList" varStatus="status">
@@ -85,24 +85,27 @@
 					</div>
 
 				</div>
-				<!-- End of Main Content -->
 
-				<!-- Footer -->
-				<footer class="sticky-footer bg-white">
-					<div class="container my-auto">
-						<div class="copyright text-center my-auto">
-							<span>Copyright &copy; Your Website 2020</span>
-						</div>
-					</div>
-				</footer>
-				<!-- End of Footer -->
 
 			</div>
-			<!-- End of Content Wrapper -->
+			<!-- End of Main Content -->
+
+			<!-- Footer -->
+			<footer class="sticky-footer bg-white">
+				<div class="container my-auto">
+					<div class="copyright text-center my-auto">
+						<span>Copyright &copy; Your Website 2020</span>
+					</div>
+				</div>
+			</footer>
+			<!-- End of Footer -->
 
 		</div>
-		<!-- End of Page Wrapper -->
+		<!-- End of Content Wrapper -->
+
 	</div>
+	<!-- End of Page Wrapper -->
+
 	<!-- Scroll to Top Button-->
 	<a class="scroll-to-top rounded" href="#page-top">
 		<i class="fas fa-angle-up"></i>
@@ -123,13 +126,13 @@
 		var selectMovie = "";
 		var selectTheater = "";
 
-		function callTheater(mvcode,btnObj) {
+		function callTheater(mvcode, btnObj) {
 			var titleBtn = document.getElementsByClassName('titleBtn');
-			for(var i=0;i<titleBtn.length;i++){
+			for (var i = 0; i < titleBtn.length; i++) {
 				titleBtn[i].classList.remove('d_none');
 			}
 			btnObj.classList.add('d_none');
-			
+
 			selectMovie = mvcode;
 			$
 					.ajax({
@@ -158,13 +161,13 @@
 					});
 		}
 
-		function callDate(thname,btnObj) {
+		function callDate(thname, btnObj) {
 			var theatorBtn = document.getElementsByClassName('theatorBtn');
-			for(var i=0;i<theatorBtn.length;i++){
+			for (var i = 0; i < theatorBtn.length; i++) {
 				theatorBtn[i].classList.remove('d_none');
 			}
 			btnObj.classList.add('d_none');
-			
+
 			selectTheater = thname;
 			$
 					.ajax({
@@ -213,13 +216,13 @@
 					});
 		}
 
-		function callTime(scdate,btnObj) {
+		function callTime(scdate, btnObj) {
 			var dateBtn = document.getElementsByClassName('dateBtn');
-			for(var i=0;i<dateBtn.length;i++){
+			for (var i = 0; i < dateBtn.length; i++) {
 				dateBtn[i].classList.remove('d_none');
 			}
 			btnObj.classList.add('d_none');
-			
+
 			var date = scdate.replace(/,/g, '-');
 			$
 					.ajax({
@@ -279,13 +282,13 @@
 					});
 		}
 
-		function test(time,btnObj) {
+		function test(time, btnObj) {
 			var timeBtn = document.getElementsByClassName('timeBtn');
-			for(var i=0;i<timeBtn.length;i++){
+			for (var i = 0; i < timeBtn.length; i++) {
 				timeBtn[i].classList.remove('d_none');
 			}
 			btnObj.classList.add('d_none');
-			
+
 			console.log("영화시간:" + time);
 		}
 	</script>

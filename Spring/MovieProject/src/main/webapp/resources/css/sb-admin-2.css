@@ -11394,3 +11394,69 @@ div.reservation-content {
 	background-color: black;
 	color:white;
 }
+
+.userBox{
+	background-color: gray;
+ 	width: 50%;
+ 	height:400px;
+ 	color: white; 
+}
+.chatBox{
+	background-color: #9bbbd4;
+	width: 50%;
+	height:400px; 
+}
+.r_Data{
+	text-align: left;
+	color: black;
+}
+
+.r_Data>p{
+	font-size: 15px;
+}
+
+.r_Data>p>span{
+	background-color: white;
+	padding: 5px;
+	font-size: 13px;
+}
+
+.s_Data{
+	text-align: right;
+	color: black;
+}
+.s_Data>p>span{
+	background-color: yellow;
+	padding: 5px;
+	font-size: 13px;
+}
+
+.inputMsg{
+	background-color: white;
+	height: 20%;
+}
+.inputMsg>div>input{
+	border: none;
+}
+
+.notice{
+	text-align: center;
+	color: gray;
+	font-weight: bold;
+}
+
+.chatWindow{
+	padding:3%;
+	height: 80%;
+	overflow : auto;
+	-ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.sendBtn{
+	margin-top: auto; 
+}
+	

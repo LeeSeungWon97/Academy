@@ -15,7 +15,7 @@ public class ChatMessageHandler extends TextWebSocketHandler {
 	private ArrayList<WebSocketSession> sessionList = new ArrayList<WebSocketSession>();
 
 	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+	public void afterConnectionEstablished(WebSocketSession session) throws Exception {		
 		System.out.println("웹소켓 - 채팅 페이지 접속");
 		System.out.println("접속한 세션 ID: " + session.getId());
 //		session.sendMessage(new TextMessage("채팅 페이지 접속!"));
@@ -36,6 +36,7 @@ public class ChatMessageHandler extends TextWebSocketHandler {
 		System.out.println("페이지에서 보낸 메세지: " + message.getPayload());
 		JsonObject jsonObj = new JsonObject();
 		jsonObj.addProperty("type", "chat");
+		jsonObj.addProperty("sendId", session.getId());
 		jsonObj.addProperty("msg", message.getPayload());
 
 		for (int i = 0; i < sessionList.size(); i++) {

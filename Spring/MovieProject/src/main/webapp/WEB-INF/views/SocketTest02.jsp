@@ -12,7 +12,7 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
-<title>WebSocketTest</title>
+<title>SocketTest02</title>
 
 <!-- Custom fonts for this template-->
 <link href="${pageContext.request.contextPath }/resources/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -44,38 +44,46 @@
 
 				<!-- Begin Page Content -->
 				<div class="container-fluid">
-
+					<h2>SocketTest02</h2>
 					<!-- Page Heading -->
-					<h2>WebSocketTest</h2>
+					<div class="row">
+						<div class="chatBox col-xl-6">
 
-					<hr>
+							<div id="c_Window" class="chatWindow">
+								<div style="margin-bottom: 10px;"></div>
+							</div>
 
-					<!-- 페이지 목록 창 -->
-					<div class="card mx-auto" style="background-color: #86c5e5; width: 600px;">
-						<div class="row mt-5 mb-5">
-							<div id="chatList" class="col">
-								<div>
-									<span class="ml-3 p-3" style="background-color: white;">받은 메세지</span>
-
+							<div class="inputMsg row">
+								<div class="col">
+									<input type="text" id="msg" class="form-control" style="height: 100%; text-align: left;">
 								</div>
-								<div class="text-right" style="text-align: right;">
-									<span class="mr-3 p-3" style="background-color: yellow;">보낸 메세지</span>
+								<div class="sendBtn">
+									<button class="col-auto btn btn-primary" onclick="sendMsg()">send</button>
 								</div>
+
+							</div>
+
+						</div>
+						<div class="userBox col-auto">
+							접속중인 User
+							<hr>
+							<div id="u_Window">
+								<c:choose>
+									<c:when test="${sessionScope.loginInfo.mid != null}">
+										<div class="p-1">나(${sessionScope.loginInfo.mid})</div>
+									</c:when>
+									<c:otherwise>
+										<div class="p-1">나(비회원)</div>
+									</c:otherwise>
+								</c:choose>
 							</div>
 						</div>
-						<div class="row" style="background-color:white;">
-							<div class="col">
-								<input type="text" id="msg" class="form-control">
-							</div>
-							<div class="col-auto">
-								<button class="btn btn-primary" onclick="sendMsgTest()">메세지 보내기</button>
-							</div>
-						</div>
+
 					</div>
-					<!-- /.container-fluid -->
-
 
 				</div>
+				<!-- /.container-fluid -->
+
 			</div>
 			<!-- End of Main Content -->
 
@@ -114,45 +122,79 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 	<script type="text/javascript">
-		var sock = new SockJS('${pageContext.request.contextPath }/chatMessage');
+		var sock = new SockJS(
+				'${pageContext.request.contextPath }/chatMessage02');
 		sock.onopen = function() {
 			console.log('open');
-			/* sock.send('test 메세지'); */
-		};
+		}
 
 		sock.onmessage = function(e) {
-			console.log('받은 메세지', e.data);
+			console.log('받은 메세지: ' + e.data);
 			var msgData = JSON.parse(e.data);
-			var output = '';
-			if(msgData.type == 'notice'){
+			var chatOutput = '';
+			var userOutput = '';
+
+			switch (msgData.type) {
+			case 'connectUser':
 				console.log("공지사항");
-				output += '<div class="text-center my-4">';
-				output += '<span class="ml-3 p-3" style="background-color: white;">'+msgData.msg+'</span>';
-				output += '</div>';
-			}else{
-				console.log("일반메세지");
+				console.log(msgData.userid);
+				// 채팅창
+				chatOutput += '<div class="notice">';
+				chatOutput += '<span>' + msgData.userid + msgData.sending
+						+ '</span>';
+				chatOutput += '</div>';
+				$('#c_Window').append(chatOutput);
+				// 유저목록
+				userOutput += '<div id="' + msgData.userid + '" class="p-1">'
+						+ msgData.userid + '</div>';
+				$("#u_Window").append(userOutput);
+				break;
+			case 'chat':
+				console.log("chat");
+				console.log(msgData.sendId);
 				console.log(msgData.msg);
-				output += '<div class="text-left my-4">';
-				output += '<p>'+msgData.sendId+'</p>';
-				output += '<span class="ml-3 p-3" style="background-color: white;">'+msgData.msg+'</span>';
-				output += '</div>';
+				chatOutput += '<div class="r_Data">';
+				chatOutput += '<p>';
+				chatOutput += msgData.sendId;
+				chatOutput += '<br>';
+				chatOutput += '<span>' + msgData.msg + '</span>';
+				chatOutput += '</p>';
+				chatOutput += '</div>';
+				$('#c_Window').append(chatOutput);
+				break;
+
+			case 'disconnectUser':
+				console.log("공지사항");
+				console.log(msgData.userid);
+				chatOutput += '<div class="notice">';
+				chatOutput += '<span>' + msgData.userid + msgData.sending
+						+ '</span>';
+				chatOutput += '</div>';
+				$('#c_Window').append(chatOutput);
+				
+				// 접속 중 목록 삭제
+				$("#"+msgData.userid).remove();
+				break;
 			}
-			$("#chatList").append(output);
-		};
+			
 
-		sock.onclose = function() {
-			console.log('close');
-		};
+		}
 
-		function sendMsgTest() {
-			var inputValue = document.getElementById('msg').value;
-			console.log("입력한 메세지: " + inputValue);
-			sock.send(inputValue);
-			var output = '<div class="text-right my-4 mr-3" style="text-align: right;">';
-			output += '<span class="p-3" style="background-color: yellow;">'+inputValue+'</span>';
+		sock.onclose = function(e) {
+			console.log('close');			
+		}
+
+		function sendMsg() {
+			var inputMsg = document.getElementById('msg').value;
+			console.log(inputMsg);
+			sock.send(inputMsg);
+			var output = '<div class="s_Data">';
+			output += '<p>';
+			output += '<span>' + inputMsg + '</span>';
+			output += '</p>';
 			output += '</div>';
-			$("#chatList").append(output);
-			document.getElementById('msg').value="";
+			$('#c_Window').append(output);
+			document.getElementById('msg').value = '';
 		}
 	</script>
 

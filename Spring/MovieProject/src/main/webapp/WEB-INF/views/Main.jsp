@@ -68,7 +68,7 @@
 											<div class="mvtitle" title="${mvList.mvtitle }">
 												<strong>${mvList.mvtitle }</strong><br>
 												<a href="${pageContext.request.contextPath }/mvReservationForm">
-													<button type="button" class="btn-reservation")>예매하기</button>
+													<button type="button" class="btn-reservation">예매하기</button>
 												</a>
 											</div>
 										</div>
