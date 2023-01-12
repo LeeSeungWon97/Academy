@@ -56,6 +56,9 @@
 				<h6 class="collapse-header">Test:</h6>
 				<a class="collapse-item" href="${pageContext.request.contextPath }/webSocketTest">WebSocketTest</a>
 				<a class="collapse-item" href="${pageContext.request.contextPath }/webSocketTest02">WebSocketTest02</a>
+				<a class="collapse-item" href="${pageContext.request.contextPath }/noticeSendPage">noticeSendPage</a>
+				<a class="collapse-item" href="${pageContext.request.contextPath }/testPage">testPage</a>
+				
 			</div>
 		</div></li>
 </ul>

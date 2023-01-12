@@ -53,8 +53,17 @@
 		<websocket:sockjs></websocket:sockjs>
 	</websocket:handlers>
 	
+	<websocket:handlers>
+		<websocket:mapping handler="noticeHandler" path="/noticeSendPage"/>
+		<websocket:handshake-interceptors>
+			<beans:bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"></beans:bean>
+		</websocket:handshake-interceptors>
+		<websocket:sockjs></websocket:sockjs>
+	</websocket:handlers>
+	
 	<beans:bean id="chatHandler" class="com.MovieProject.webSocketTest.ChatMessageHandler"></beans:bean>
 	<beans:bean id="chatHandler02" class="com.MovieProject.webSocketTest.ChatMessageHandler02"></beans:bean>
+	<beans:bean id="noticeHandler" class="com.MovieProject.webSocketTest.NoticeHandler"></beans:bean>
 	
 	<context:component-scan base-package="com.MovieProject.controller" />
 	<context:component-scan base-package="com.MovieProject.service" />

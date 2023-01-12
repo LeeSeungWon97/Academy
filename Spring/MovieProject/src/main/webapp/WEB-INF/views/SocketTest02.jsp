@@ -55,7 +55,7 @@
 
 							<div class="inputMsg row">
 								<div class="col">
-									<input type="text" id="msg" class="form-control" style="height: 100%; text-align: left;">
+									<input type="text" id="msg" class="form-control" style="height: 100%; text-align: left;" onkeypress="keyevent(this)">
 								</div>
 								<div class="sendBtn">
 									<button class="col-auto btn btn-primary" onclick="sendMsg()">send</button>
@@ -67,16 +67,7 @@
 						<div class="userBox col-auto">
 							접속중인 User
 							<hr>
-							<div id="u_Window">
-								<c:choose>
-									<c:when test="${sessionScope.loginInfo.mid != null}">
-										<div class="p-1">나(${sessionScope.loginInfo.mid})</div>
-									</c:when>
-									<c:otherwise>
-										<div class="p-1">나(비회원)</div>
-									</c:otherwise>
-								</c:choose>
-							</div>
+							<div id="u_Window"></div>
 						</div>
 
 					</div>
@@ -135,6 +126,18 @@
 			var userOutput = '';
 
 			switch (msgData.type) {
+			case 'connectUserList':
+				console.log(msgData.userList);
+				for(var userInfo of msgData.userList){
+					console.log(userInfo.userId);
+					if(userInfo.userId != msgData.userid){
+					userOutput += '<div id="' + userInfo.userId + '" class="p-1">'
+					+ userInfo.userId + '</div>';						
+					}
+				}
+				$("#u_Window").append(userOutput);
+				break;
+
 			case 'connectUser':
 				console.log("공지사항");
 				console.log(msgData.userid);
@@ -148,6 +151,7 @@
 				userOutput += '<div id="' + msgData.userid + '" class="p-1">'
 						+ msgData.userid + '</div>';
 				$("#u_Window").append(userOutput);
+				$('#c_Window').scrollTop($('#c_Window')[0].scrollHeight);
 				break;
 			case 'chat':
 				console.log("chat");
@@ -161,6 +165,7 @@
 				chatOutput += '</p>';
 				chatOutput += '</div>';
 				$('#c_Window').append(chatOutput);
+				$('#c_Window').scrollTop($('#c_Window')[0].scrollHeight);
 				break;
 
 			case 'disconnectUser':
@@ -171,17 +176,18 @@
 						+ '</span>';
 				chatOutput += '</div>';
 				$('#c_Window').append(chatOutput);
-				
+				$('#c_Window').scrollTop($('#c_Window')[0].scrollHeight);
+
 				// 접속 중 목록 삭제
-				$("#"+msgData.userid).remove();
+				$("#" + msgData.userid).remove();
 				break;
+
 			}
-			
 
 		}
 
 		sock.onclose = function(e) {
-			console.log('close');			
+			console.log('close');
 		}
 
 		function sendMsg() {
@@ -194,8 +200,18 @@
 			output += '</p>';
 			output += '</div>';
 			$('#c_Window').append(output);
+			$('#c_Window').scrollTop($('#c_Window')[0].scrollHeight);
 			document.getElementById('msg').value = '';
 		}
+		
+		function keyevent(){
+			var keycode = event.keyCode;
+			if(keycode == 13){
+				sendMsg();
+			}
+		}
+		
+		
 	</script>
 
 </body>

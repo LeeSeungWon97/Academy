@@ -9,11 +9,13 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.MovieProject.dto.MemberDto;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class ChatMessageHandler02 extends TextWebSocketHandler {
 
 	private ArrayList<WebSocketSession> sessionList = new ArrayList<WebSocketSession>();
+	private Gson gson = new Gson();
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -38,18 +40,38 @@ public class ChatMessageHandler02 extends TextWebSocketHandler {
 			}
 		}
 
+		// 새로 접속한 클라이언트에 이전에 접속중인 클라이언트 목록 전송
+		JsonArray userList = new JsonArray();
+		for (int i = 0; i < sessionList.size(); i++) {
+			JsonObject userInfo = new JsonObject();
+			MemberDto userinfo = (MemberDto) sessionList.get(i).getAttributes().get("loginInfo");
+			String userid = sessionList.get(i).getId();
+			if (userinfo != null) {
+				userid = userinfo.getMid();
+			}
+			userInfo.addProperty("userId", userid);
+			userList.add(userInfo);
+		}
+
+		JsonObject sendUserList = new JsonObject();
+		sendUserList.addProperty("type", "connectUserList");
+		sendUserList.add("userList", userList);
+		String sendUserList_json = gson.toJson(sendUserList);
+
+		session.sendMessage(new TextMessage(sendUserList_json));
+
 	}
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		System.out.println("페이지에서 보낸 메세지: " + message.getPayload());
-		
+
 		MemberDto loginInfo = (MemberDto) session.getAttributes().get("loginInfo");
 		String loginId = session.getId();
 		if (loginInfo != null) {
 			loginId = loginInfo.getMid();
 		}
-		
+
 		JsonObject jsonObj = new JsonObject();
 		jsonObj.addProperty("type", "chat");
 		jsonObj.addProperty("sendId", loginId);

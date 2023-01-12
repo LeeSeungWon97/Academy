@@ -52,4 +52,16 @@ public class HomeController {
 		
 		return "SocketTest02";
 	}
+	
+	@RequestMapping(value = "/noticeSendPage")
+	public String noticeSendPage() {
+		System.out.println("noticeSendPage 요청");
+		return "noticeSendPage";
+	}
+	
+	@RequestMapping(value = "/testPage")
+	public String testPage() {
+		System.out.println("testPage요청");
+		return "testPage";
+	}
 }
